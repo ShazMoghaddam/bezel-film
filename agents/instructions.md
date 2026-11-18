@@ -9,7 +9,8 @@ Bezel Film turns a repo, a README or a dataset into a short narrated film. You d
    - How long should it be? (default 45 to 60 seconds)
    - Which shape: 16:9 (YouTube, slides), 9:16 (Reels, Shorts, TikTok) or 1:1 (LinkedIn, X)?
    - Which style: `data-story`, `product-launch` or `whiteboard`?
-   - Voiceover on or off?
+   - Voiceover: a female voice, a male voice, or none? (default female)
+   - Captions on or off? (default on)
 2. **Gather the material.** Read the README, the code or the dataset. Only use facts and numbers that come from the material or from the user. Never invent figures.
 3. **Write `film.json`** following the rules below. Start the file with `"$schema": "./node_modules/bezel-film/schema/film.schema.json"` so editors can check it.
 4. **Check it** with `npx bezel-film validate film.json` and fix every problem it reports.
@@ -23,7 +24,8 @@ Bezel Film turns a repo, a README or a dataset into a short narrated film. You d
   "title": "Northside Coffee: a year in numbers",
   "style": "data-story",
   "format": { "aspect": "16:9", "resolution": "1080p", "fps": 30 },
-  "voice": { "engine": "kokoro" },
+  "voice": { "engine": "kokoro", "gender": "female" },
+  "captions": true,
   "music": { "source": "generated", "mood": "calm" },
   "scenes": [
     { "type": "title", "title": "A year in numbers", "narration": "Here is our year, told in numbers." },
@@ -33,6 +35,8 @@ Bezel Film turns a repo, a README or a dataset into a short narrated film. You d
 ```
 
 Only `spec`, `title`, `style` and `scenes` are required. Everything else has a sensible default.
+
+Map the user's answers to settings: a male voice is `"voice": { "gender": "male" }`, no voiceover is `"voice": { "engine": "none" }`, and no captions is `"captions": false`.
 
 ## Scene types
 

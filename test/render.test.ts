@@ -140,3 +140,20 @@ describe("explicit durations", () => {
     expect(timeline.scenes[0]!.end).toBe(1.2);
   });
 });
+
+describe("kokoroVoiceName", async () => {
+  const { kokoroVoiceName } = await import("../src/render/voice.js");
+
+  it("uses the best female voice by default", () => {
+    expect(kokoroVoiceName(film([{ type: "title", title: "A", duration: 2 }]))).toBe("af_heart");
+  });
+
+  it("uses the best male voice when asked", () => {
+    expect(kokoroVoiceName(film([{ type: "title", title: "A", duration: 2 }], { voice: { gender: "male" } }))).toBe("am_michael");
+  });
+
+  it("lets a named voice override gender", () => {
+    const f = film([{ type: "title", title: "A", duration: 2 }], { voice: { gender: "male", voice: "bf_emma" } });
+    expect(kokoroVoiceName(f)).toBe("bf_emma");
+  });
+});

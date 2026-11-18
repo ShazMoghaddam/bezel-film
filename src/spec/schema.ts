@@ -17,6 +17,7 @@ export const RESOLUTIONS = ["1080p", "4k"] as const;
 export const FRAME_RATES = [24, 30, 60] as const;
 export const TRANSITIONS = ["cut", "fade", "slide", "wipe"] as const;
 export const VOICE_ENGINES = ["kokoro", "piper", "none"] as const;
+export const VOICE_GENDERS = ["female", "male"] as const;
 export const MUSIC_SOURCES = ["generated", "file", "none"] as const;
 export const MUSIC_MOODS = ["calm", "upbeat", "dramatic", "ambient"] as const;
 
@@ -174,7 +175,8 @@ const formatSchema = z.object({
 
 const voiceSchema = z.object({
   engine: z.enum(VOICE_ENGINES).default("kokoro"),
-  voice: text(60).optional().describe("Voice name for the chosen engine. Leave out for the default."),
+  gender: z.enum(VOICE_GENDERS).default("female").describe("A female or male voice. Picks the best-sounding voice of that kind."),
+  voice: text(60).optional().describe("A specific voice name for the engine, e.g. \"bf_emma\". Overrides gender."),
   speed: z.number().min(0.5).max(2).default(1),
 });
 

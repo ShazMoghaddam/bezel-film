@@ -20,7 +20,7 @@ describe("validateFilm", () => {
     expect(result.ok).toBe(true);
     if (!result.ok) return;
     expect(result.film.format).toEqual({ aspect: "16:9", resolution: "1080p", fps: 30 });
-    expect(result.film.voice).toEqual({ engine: "kokoro", speed: 1 });
+    expect(result.film.voice).toEqual({ engine: "kokoro", gender: "female", speed: 1 });
     expect(result.film.music).toEqual({ source: "generated", mood: "calm", volume: 0.2 });
     expect(result.film.captions).toBe(true);
   });
