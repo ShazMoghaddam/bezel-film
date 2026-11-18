@@ -26,20 +26,32 @@ To render the example film: `npx tsx src/cli.ts render examples/northside-coffee
 | `src/spec/` | The film spec (`schema.ts`) and validation. This is the source of truth for the film file. |
 | `src/render/` | The renderer: voice (`voice.ts`), timing (`timeline.ts`), the scene page (`page.ts`, `runtime.ts`), music (`music.ts`, `colours.ts`, `nature.ts`, `instruments.ts`, `soundtrack.ts`), frame capture and ffmpeg (`index.ts`). |
 | `src/cli.ts` | The `bezel-film` command. |
+| `src/init.ts`, `src/agents.ts` | `bezel-film init`, and the list of coding agents and where their instructions go. |
 | `styles/` | One folder per style: colours, fonts and motion. |
 | `agents/instructions.md` | The single source for every agent's instructions. |
 | `agents/generated/` | Built from the source. Don't edit these by hand. |
 | `schema/` | JSON Schema built from `src/spec/schema.ts`. Don't edit by hand. |
 | `instruments/` | Recorded instruments for the music. Built by `npm run instruments`; don't edit by hand. |
 | `examples/` | Example films, checked in CI. |
-| `docs/` | The README banner and social preview, built from `docs/banner.html` by `npm run banner`. |
+| `docs/` | The README banner and social preview, built from `docs/banner.html` by `npm run banner`, and the demo (`welcome.gif`, `welcome.mp4`), built by `npm run demo`. |
+
+## Trying `init`
+
+`init` normally installs the published package. To try your local changes instead, pack them and point `init` at the tarball:
+
+```bash
+npm pack
+mkdir /tmp/try-init && cd /tmp/try-init
+BEZEL_FILM_INSTALL_SPEC=/path/to/bezel-film-x.y.z.tgz npx /path/to/bezel-film-x.y.z.tgz init
+```
 
 ## Generated files
 
 Two things are generated, and CI fails if they're out of date:
 
 - Changed `src/spec/schema.ts`? Run `npm run schema`.
-- Changed `agents/instructions.md`? Run `npm run agents`.
+- Changed `agents/instructions.md`? Run `npm run agents`. Keep it under about 5,500 characters: Windsurf rule files are capped at 6,000, and a test checks this.
+- Changed the welcome film or how films look? Run `npm run demo` (it needs the voice, so run `npx bezel-film setup` first) to refresh the README demo.
 
 Commit the generated files along with your change.
 

@@ -1,23 +1,33 @@
-<!-- Generated from agents/instructions.md by `npm run agents`. Edit that file, not this one. -->
+<!-- bezel-film:start -->
+<!-- Added by Bezel Film. Run `npx bezel-film init` again to update this section. -->
 
 # Making a film with Bezel Film
 
 Bezel Film turns a repo, a README or a dataset into a short narrated film. You describe the film in one JSON file, and Bezel Film renders it. You never write animation code yourself unless the user asks for a custom scene.
+
+## Setting up
+
+If the project has no `node_modules/bezel-film` folder, set it up first. Use the name of the agent you are (`claude`, `codex`, `gemini`, `cursor`, `copilot` or `windsurf`):
+
+```bash
+npx bezel-film init --yes --agents claude --no-sample
+```
+
+It installs Bezel Film, adds these instructions and does the one-time downloads (about 200 MB, so tell the user it takes a few minutes).
 
 ## How to direct a film
 
 1. **Ask one short round of questions** before writing anything. Keep it to these, and skip any the user has already answered:
    - What is the film about, and who is it for?
    - How long should it be? (default 45 to 60 seconds)
-   - Which shape: 16:9 (YouTube, slides), 9:16 (Reels, Shorts, TikTok) or 1:1 (LinkedIn, X)?
-   - Which style: `data-story`, `product-launch` or `whiteboard`?
+   - Which shape: 16:9 (YouTube, slides), 9:16 (Reels, Shorts, TikTok) or 1:1 (LinkedIn, X)? (default 16:9, the most polished for now)
    - Voiceover: a female voice, a male voice, or none? (default female)
    - Captions on or off? (default on)
    - Music: calm, upbeat, dramatic, epic, ambient, reflective, or none? (default calm)
 2. **Gather the material.** Read the README, the code or the dataset. Only use facts and numbers that come from the material or from the user. Never invent figures.
-3. **Write `film.json`** following the rules below. Start the file with `"$schema": "./node_modules/bezel-film/schema/film.schema.json"` so editors can check it.
-4. **Check it** with `npx bezel-film validate film.json` and fix every problem it reports.
-5. **Render** with `npx bezel-film render film.json` and tell the user where the video is. The first render downloads the voice and a headless browser once (about 200 MB), so let the user know it takes longer.
+3. **Write the film file** at `films/<short-name>/film.json` (for example `films/sales-2026/film.json`), following the rules below. Start it with `"$schema": "../../node_modules/bezel-film/schema/film.schema.json"` so editors can check it. `films/welcome/film.json` is a working example.
+4. **Check it** with `npx bezel-film validate films/<short-name>/film.json` and fix every problem it reports.
+5. **Render** with `npx bezel-film render films/<short-name>/film.json`. The video is saved next to the film file as `film.mp4`. Tell the user where it is.
 
 ## The film file
 
@@ -67,3 +77,4 @@ Every scene can also have `id`, `narration`, `duration` (seconds) and `transitio
 - **Keep on-screen text short.** Points under about ten words each. Code snippets under fifteen lines.
 - **Use the style's defaults** for colour, type and motion. Don't fight them.
 - **Only the `data-story` style renders today.** `product-launch`, `whiteboard` and `custom` scenes are coming, so don't use them yet.
+<!-- bezel-film:end -->

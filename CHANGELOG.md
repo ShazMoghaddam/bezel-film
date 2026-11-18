@@ -5,6 +5,23 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+### Added
+
+- `npx bezel-film init` sets up a folder in one step: installs Bezel Film, adds instructions for your coding agents (ticking the ones it finds), does the one-time downloads and makes a welcome film so you can see it work. `--yes`, `--agents` and `--no-sample` let agents and scripts run it too.
+- Shared instruction files like `AGENTS.md` only get a marked Bezel Film section, which `init` updates in place. Your own text is never touched.
+- The agent instructions now start with setup: if Bezel Film isn't installed, the agent runs `init` first. Films live in `films/<name>/`.
+- A welcome film, and a README demo built from it with `npm run demo`.
+
+### Changed
+
+- The README now starts with the demo and a three-step guide to your first film, with the technical reference further down.
+- Charts leave room for captions, so a long caption never covers a chart's labels.
+- The Cursor rule now applies to film files in any folder.
+
+### Fixed
+
+- `validate` says "1 scene", not "1 scenes".
+
 ## [0.1.0] - 2026-11-18
 
 The first release: describe a film in one JSON file, and Bezel Film renders it to an MP4 with voiceover, captions and music.

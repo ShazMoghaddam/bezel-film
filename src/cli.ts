@@ -7,6 +7,7 @@ import { estimateFilmSeconds, validateFilm } from "./spec/validate.js";
 const HELP = `Bezel Film: make short films in code.
 
 Usage
+  bezel-film init                   Set up this folder: install, agent instructions, a welcome film
   bezel-film validate <film.json>   Check a film file and show a summary
   bezel-film render <film.json>     Render the film to an MP4
   bezel-film voices                 Hear a short line in each recommended voice
@@ -16,6 +17,10 @@ Usage
 Options
   -o, --output <path>   Where render saves the video (default: next to the film file),
                         or where voices saves its samples (default: voice-samples)
+  -y, --yes             init: skip the questions and use the defaults
+  --agents <list>       init: agents to add instructions for, e.g. claude,cursor
+                        (claude, codex, gemini, cursor, copilot, windsurf)
+  --no-sample           init: don't make the welcome film
   -h, --help            Show this help
   -v, --version         Show the version
 `;
@@ -53,7 +58,8 @@ async function validate(path: string | undefined): Promise<number> {
   const { film } = result;
   console.log(`✓ ${path} is a valid film`);
   console.log(`  "${film.title}" · ${film.style} · ${film.format.aspect} ${film.format.resolution} ${film.format.fps}fps`);
-  console.log(`  ${film.scenes.length} scenes · about ${formatSeconds(estimateFilmSeconds(film))}`);
+  const scenes = film.scenes.length;
+  console.log(`  ${scenes} scene${scenes === 1 ? "" : "s"} · about ${formatSeconds(estimateFilmSeconds(film))}`);
   return 0;
 }
 
@@ -158,6 +164,11 @@ async function main(argv: string[]): Promise<number> {
       help: { type: "boolean", short: "h" },
       version: { type: "boolean", short: "v" },
       output: { type: "string", short: "o" },
+      yes: { type: "boolean", short: "y" },
+      agents: { type: "string" },
+      "no-sample": { type: "boolean" },
+      "no-install": { type: "boolean" },
+      "no-downloads": { type: "boolean" },
     },
   });
 
@@ -178,6 +189,22 @@ async function main(argv: string[]): Promise<number> {
       return validate(file);
     case "render":
       return render(file, values.output);
+    case "init": {
+      const { init } = await import("./init.js");
+      const { AGENT_IDS } = await import("./agents.js");
+      const agents = values.agents?.split(",").map((name) => name.trim().toLowerCase()).filter(Boolean);
+      const unknown = agents?.filter((name) => !(AGENT_IDS as readonly string[]).includes(name));
+      if (unknown?.length) throw new UsageError(`Unknown agent "${unknown[0]}". Choose from: ${AGENT_IDS.join(", ")}`);
+      return init({
+        cwd: process.cwd(),
+        yes: !!values.yes,
+        agents: agents as import("./agents.js").AgentId[] | undefined,
+        sample: !values["no-sample"],
+        // For tests only: skip the install and the downloads.
+        install: !values["no-install"],
+        downloads: !values["no-downloads"],
+      });
+    }
     case "setup":
       return setup();
     case "voices":

@@ -7,64 +7,76 @@
 [![Node](https://img.shields.io/node/v/bezel-film?color=2EC4B6)](https://nodejs.org)
 [![Licence: MIT](https://img.shields.io/badge/licence-MIT-FFB020)](LICENSE)
 
-**Make short narrated films in code, from a repo, a README or a dataset.**
+**Turn an idea into a short narrated film. Just describe it.**
 
-Describe your film in one JSON file. Bezel Film draws every scene, adds a voiceover, captions and music composed for your film, and renders an MP4. It runs on your own computer, needs no API keys, and comes with instructions for the coding agents you already use, so you can just ask for a film.
+Bezel Film makes polished short films with a voiceover, captions, charts and music written for each film. Tell your coding agent what you want in plain words, and it does the rest. Everything runs on your own computer, with no accounts and no API keys.
 
-> **Status: early development.** Rendering works for the `data-story` style, with voice, captions and music. More styles and formats are on the [roadmap](#roadmap).
+<a href="docs/welcome.mp4"><img src="docs/welcome.gif" alt="The welcome film: a title card, a big number, a colourful bar chart, a list of ideas and a closing card, with captions along the bottom" width="720"></a>
 
-## Why Bezel Film
+[▶ Watch the welcome film with sound](docs/welcome.mp4)
 
-- **Repo to film.** Point your agent at a project or a dataset and get a short explainer or data story.
-- **Charts built in.** Chart scenes are drawn with [Bezel Charts](https://github.com/ShazMoghaddam/bezel-charts), so data looks sharp and animates cleanly.
-- **Offline after a one-time setup.** A local voice ([Kokoro](https://huggingface.co/hexgrad/Kokoro-82M)) and a headless browser download once, the first time. After that, nothing leaves your computer. No accounts, no keys, no upload.
-- **Music written for every film.** Six moods played on recorded piano, strings, harp and timpani, composed fresh from your film's title and dipping automatically whenever the voice speaks. Or bring your own track.
-- **Smooth and repeatable.** Every frame is drawn on a frozen clock, so films come out smooth on any computer and identical every time.
-- **Works with your agent.** Ready-made instructions for Claude Code, Codex, Gemini CLI, Cursor, GitHub Copilot, Windsurf and any agent that reads `AGENTS.md`.
-- **Every shape.** 16:9, 9:16 and 1:1, in full HD or 4K.
+## Make your first film
 
-## Quick start
+You need [Node.js](https://nodejs.org) 22 or later, and ideally a coding agent such as Claude Code, Cursor or Codex.
 
-Needs Node 22 or later.
+**1. Set up a folder.** In an empty folder, run:
 
 ```bash
-npm install --save-dev bezel-film
-npx bezel-film validate film.json
-npx bezel-film render film.json
+npx bezel-film init
 ```
 
-```
-Rendering "Northside Coffee: a year in numbers"
-✓ Saved film.mp4 · 38s · rendered in 1m 59s
-```
+It asks which coding agent you use, installs Bezel Film, downloads the voice and a browser once (about 200 MB), and makes a welcome film so you can see it work.
 
-Render time depends on your computer. That run was on a small two-core machine, and most laptops are faster.
+**2. Describe your film.** Open your coding agent in that folder and say what you want:
 
-The video is saved next to the film file. Use `-o` to choose another path: `npx bezel-film render film.json -o videos/coffee.mp4`.
+> Make a 45-second film about our 2026 sales, with upbeat music and a male voice.
 
-### First run
+It asks a few quick questions, writes the film, checks it and renders it.
 
-The first render downloads two things, once: the voice model (about 90 MB) and a headless browser (about 100 MB). To do that up front instead, run:
+**3. Watch it.** Your video is saved as `films/<name>/film.mp4`, ready to share.
+
+No coding agent? Copy `films/welcome`, change the words and numbers in its `film.json`, then run:
 
 ```bash
-npx bezel-film setup
+npx bezel-film render films/<your-film>/film.json
 ```
 
-You don't need to install ffmpeg. Bezel Film uses yours if you have it, and otherwise fetches a copy when you install.
+## What you get
 
-On Linux, the voice engine also tries to download large GPU files it doesn't need. Skip them with:
+- **Films from your ideas, projects and data.** Titles, big numbers, charts, lists, code and quotes, each scene timed to its voiceover.
+- **A natural voice.** Female or male, made on your computer. Hear the options with `npx bezel-film voices`.
+- **Music written for every film.** Six moods, played on recorded piano, strings, harp and timpani, dipping whenever the voice speaks. Or bring your own track.
+- **Charts that move.** Drawn with [Bezel Charts](https://github.com/ShazMoghaddam/bezel-charts), in bold colours.
+- **Works with your agent.** Claude Code, Codex, Gemini CLI, Cursor, GitHub Copilot, Windsurf, and any agent that reads `AGENTS.md`.
+- **Private and offline.** After the one-time download, nothing leaves your computer.
+- **Smooth and repeatable.** Every frame is drawn on a frozen clock, so films look the same on any computer, every time.
 
-```bash
-ONNXRUNTIME_NODE_INSTALL_CUDA=skip npm install --save-dev bezel-film
-```
+> **Early days:** there's one visual style so far, and 16:9 is the most polished shape. More styles, and layouts tuned for TikTok, Reels, Shorts and LinkedIn, are on the [roadmap](#roadmap).
 
-## The film file
+## Reference
+
+Everything below is for when you want to go further or edit films by hand.
+
+### Commands
+
+| Command | What it does |
+| --- | --- |
+| `npx bezel-film init` | Sets up a folder: installs Bezel Film, adds agent instructions, makes a welcome film |
+| `npx bezel-film render <film.json>` | Renders a film to an MP4 next to the film file (`-o` to choose another path) |
+| `npx bezel-film validate <film.json>` | Checks a film file and shows a summary |
+| `npx bezel-film voices` | Records a short line in eight recommended voices |
+| `npx bezel-film setup` | Does the one-time downloads (voice and browser) |
+| `npx bezel-film schema` | Prints the film file's JSON Schema |
+
+`init` also takes `--yes` (no questions), `--agents claude,cursor` and `--no-sample`, so agents and scripts can run it too.
+
+### The film file
 
 A film is a few settings plus a list of scenes. Only `spec`, `title`, `style` and `scenes` are required.
 
 ```json
 {
-  "$schema": "./node_modules/bezel-film/schema/film.schema.json",
+  "$schema": "../../node_modules/bezel-film/schema/film.schema.json",
   "spec": 1,
   "title": "Northside Coffee: a year in numbers",
   "style": "data-story",
@@ -87,7 +99,7 @@ A film is a few settings plus a list of scenes. Only `spec`, `title`, `style` an
 
 Each scene lasts as long as its narration, so the voice and visuals always line up. See the full [example film](examples/northside-coffee/film.json).
 
-### Scene types
+#### Scene types
 
 | Type | Use it for | Main fields |
 | --- | --- | --- |
@@ -102,12 +114,12 @@ Each scene lasts as long as its narration, so the voice and visuals always line 
 
 Every scene can also take `narration`, `duration`, `transition` and `id`.
 
-### Settings
+#### Settings
 
 | Setting | Options | Default |
 | --- | --- | --- |
-| `style` | `data-story`, `product-launch`, `whiteboard` | required |
-| `format.aspect` | `16:9`, `9:16`, `1:1` | `16:9` |
+| `style` | `data-story` (`product-launch` and `whiteboard` are coming) | required |
+| `format.aspect` | `16:9`, `9:16`, `1:1` (16:9 is the most polished for now) | `16:9` |
 | `format.resolution` | `1080p`, `4k` | `1080p` |
 | `format.fps` | `24`, `30`, `60` | `30` |
 | `voice.engine` | `kokoro`, `none` (`piper` is planned) | `kokoro` |
@@ -157,27 +169,40 @@ These environment variables are optional:
 | `BEZEL_FILM_CACHE` | Where downloaded models are kept (default `~/.cache/bezel-film`) |
 | `BEZEL_FILM_WORKERS` | How many browser pages draw frames at once (default: spare CPU cores, up to 4) |
 
-## Using it with a coding agent
+### Coding agents
 
-Bezel Film ships instructions for each agent in `agents/generated/`, all built from one source so they never drift apart. They tell the agent to ask you one short round of questions, write the film file, validate it and offer a storyboard preview before rendering.
+`init` asks which agents you use (ticking the ones it finds) and adds instructions for each. Files other tools also use, like `AGENTS.md`, only get a clearly marked Bezel Film section added; your own text is never touched. Run `init` again to update them.
 
 | Agent | File |
 | --- | --- |
 | Claude Code | `.claude/skills/bezel-film/SKILL.md` |
-| OpenAI Codex and others | `AGENTS.md` |
+| Codex, and any agent that reads `AGENTS.md` | `AGENTS.md` |
 | Gemini CLI | `GEMINI.md` |
 | Cursor | `.cursor/rules/bezel-film.mdc` |
 | GitHub Copilot | `.github/copilot-instructions.md` |
 | Windsurf | `.windsurf/rules/bezel-film.md` |
 
-A `bezel-film init` command that copies the right file into your project is on the roadmap.
+### Installing by hand
+
+Prefer not to use `init`? Install it into any project and do the downloads up front:
+
+```bash
+npm install --save-dev bezel-film
+npx bezel-film setup
+```
+
+You don't need ffmpeg: Bezel Film uses yours if you have it, and otherwise fetches a copy when you install.
+
+On Linux, the voice engine also tries to download large GPU files it doesn't need. Skip them by putting `ONNXRUNTIME_NODE_INSTALL_CUDA=skip` in front of the command, for example `ONNXRUNTIME_NODE_INSTALL_CUDA=skip npx bezel-film init`. Macs and Windows don't need this.
 
 ## Roadmap
 
-- **v0.1.0 (released):** rendering for the `data-story` style in 16:9, Kokoro voiceover, captions and music
-- **v0.2.0:** layouts tuned for 9:16 and 1:1, 4K, storyboard preview, `bezel-film init`
-- **v0.3.0:** `product-launch` and `whiteboard` styles, repo and README to film
-- **Later:** optional paid voices, an optional Python helper for turning datasets into film files
+- **v0.1.0 (released):** the `data-story` style, voiceover, captions and music
+- **v0.2.0:** `init`, so anyone can start in one command, and an agent-first README
+- **v0.3.0:** made for social: presets for TikTok, Reels, Shorts and LinkedIn (mobile and desktop), with safe zones and tuned vertical layouts
+- **v0.4.0:** premium motion: spring easing, staggered entrances and sound effects that land with the movement
+- **v0.5.0:** product stories: map, timeline and roadmap scenes, and a draft film from a repo or README
+- **v0.6.0 onwards:** more looks, including product launch, whiteboard and sketch, cinematic, playful and minimal
 
 ## Contributing
 
