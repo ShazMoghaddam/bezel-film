@@ -3,7 +3,9 @@ import { createRequire } from "node:module";
 import { availableParallelism, tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import type { Film } from "../spec/schema.js";
-import { clipSeconds, mixToWav } from "./audio.js";
+import { clipSeconds, encodeStereoWav, mixToWav } from "./audio.js";
+import { MUSIC_SAMPLE_RATE } from "./music.js";
+import { buildMusic } from "./soundtrack.js";
 import type { Browser, Page } from "playwright-core";
 import { launchBrowser } from "./browser.js";
 import { findFfmpeg, startEncoder } from "./ffmpeg.js";
@@ -22,6 +24,8 @@ export interface RenderOptions {
   voice?: Voice | null;
   /** Called with short status updates, e.g. for a progress line in the terminal. */
   onProgress?: Progress;
+  /** Folder the film file is in, so a music file path can be relative to it. Defaults to the current folder. */
+  baseDir?: string;
   /** Called with notes the user should see, such as a scene being lengthened. */
   onWarning?: (message: string) => void;
 }
@@ -169,13 +173,13 @@ async function speakFilm(film: Film, voice: Voice | null, onProgress?: Progress)
  *   2. Page: every scene is laid out in a hidden browser page.
  *   3. Frames: the page's clock is frozen and stepped one frame at a time, with a
  *      screenshot of each, so the result is smooth and identical on any computer.
- *   4. Video: ffmpeg joins the frames and the voice into an MP4.
+ *   4. Music: composed for the film (or your own track), dipping under every spoken line.
+ *   5. Video: ffmpeg joins the frames, voice and music into an MP4.
  */
 export async function renderFilm(film: Film, options: RenderOptions): Promise<RenderResult> {
   const { onProgress, onWarning } = options;
   const style = await loadStyle(film.style);
   const ffmpeg = findFfmpeg();
-  if (film.music.source !== "none") onWarning?.("Music isn't built yet, so this film has no music. It arrives in a later version.");
 
   // A voice passed in belongs to the caller; one we load ourselves, we also clean up.
   const ownVoice = options.voice === undefined;
@@ -194,7 +198,7 @@ export async function renderFilm(film: Film, options: RenderOptions): Promise<Re
   let encoder: ReturnType<typeof startEncoder> | undefined;
 
   try {
-    let audio: string | undefined;
+    let narration: string | undefined;
     const placed = timeline.scenes.flatMap((timed) =>
       timed.lines.flatMap((line, i) => {
         const clip = speech.clips[timed.index]?.[i];
@@ -202,14 +206,20 @@ export async function renderFilm(film: Film, options: RenderOptions): Promise<Re
       }),
     );
     if (placed.length) {
-      audio = join(work, "narration.wav");
-      await writeFile(audio, mixToWav(placed, timeline.duration));
+      narration = join(work, "narration.wav");
+      await writeFile(narration, mixToWav(placed, timeline.duration));
+    }
+    let music: string | undefined;
+    const track = await buildMusic({ film, timeline, ffmpeg, baseDir: options.baseDir ?? process.cwd(), onProgress, onWarning });
+    if (track) {
+      music = join(work, "music.wav");
+      await writeFile(music, encodeStereoWav(track.left, track.right, MUSIC_SAMPLE_RATE));
     }
 
     const page = await openFilmPage(browser, film, style, timeline);
     const fps = film.format.fps;
     const frames = Math.round(timeline.duration * fps);
-    encoder = startEncoder({ ffmpeg, fps, audio, output: options.output });
+    encoder = startEncoder({ ffmpeg, fps, narration, music, output: options.output });
     const extraPages = await Promise.all(
       Array.from({ length: Math.min(workerCount(), frames) - 1 }, () => openFilmPage(browser, film, style, timeline)),
     );

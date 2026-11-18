@@ -17,6 +17,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Render smoke test in CI.
 - Choose a female or male voice with `voice.gender`. Each picks the best-sounding Kokoro voice of that kind.
 - The agent instructions now ask about voice (female, male or none) and captions (on or off) in the opening round.
+- Music composed for every film, in six moods: calm, upbeat, dramatic, epic, ambient and reflective. The same film always gets the same music.
+- Recorded piano, strings, harp and timpani from the VS Chamber Orchestra: Community Edition (CC0), shipped in the package.
+- The music dips automatically whenever the voice speaks, and fades out with the picture.
+- Ambient music sits on a nature sound: rain, sea waves, a stream or wind in the leaves, set with `music.nature` or picked from the title.
+- Use your own track with `music.source: "file"`.
+- `bezel-film voices` records a short line in eight recommended voices, so you can hear them before choosing.
 
 ### Fixed
 

@@ -15,7 +15,7 @@ const result = validateFilm({
   style: "data-story",
   format: { fps: 24 },
   voice: { engine: "none" },
-  music: { source: "none" },
+  music: { mood: "epic" },
   scenes: [
     { type: "title", title: "Smoke test", subtitle: "Every scene type", duration: 1.2 },
     { type: "stat", value: "48,210", label: "cups", context: "up 22%", duration: 1.2 },

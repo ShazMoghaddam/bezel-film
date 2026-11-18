@@ -9,11 +9,13 @@ const HELP = `Bezel Film: make short films in code.
 Usage
   bezel-film validate <film.json>   Check a film file and show a summary
   bezel-film render <film.json>     Render the film to an MP4
+  bezel-film voices                 Hear a short line in each recommended voice
   bezel-film setup                  Do the one-time downloads now (voice and browser)
   bezel-film schema                 Print the film file's JSON Schema
 
 Options
-  -o, --output <file>   Where render saves the video (default: next to the film file)
+  -o, --output <path>   Where render saves the video (default: next to the film file),
+                        or where voices saves its samples (default: voice-samples)
   -h, --help            Show this help
   -v, --version         Show the version
 `;
@@ -91,6 +93,7 @@ async function render(path: string | undefined, output: string | undefined): Pro
   try {
     const done = await renderFilm(result.film, {
       output: target,
+      baseDir: dirname(path!),
       onProgress: status.update,
       onWarning: (message) => {
         status.done();
@@ -103,6 +106,28 @@ async function render(path: string | undefined, output: string | undefined): Pro
   } catch (error) {
     status.done();
     throw error;
+  }
+}
+
+async function voices(folder: string): Promise<number> {
+  const status = statusLine();
+  const { kokoroSpeaker } = await import("./render/voice.js");
+  const { sampleVoices } = await import("./render/samples.js");
+  const speaker = await kokoroSpeaker(status.update);
+  try {
+    const { files, all } = await sampleVoices({ speaker, folder, onProgress: status.update });
+    status.done();
+    console.log("Voice samples:");
+    for (const { voice, path } of files) {
+      console.log(`  ${voice.name.padEnd(8)} ${voice.gender.padEnd(7)} ${voice.accent.padEnd(9)} grade ${voice.grade.padEnd(3)} ${path}`);
+    }
+    const play = process.platform === "darwin" ? `open ${all}` : all;
+    console.log(`\nHear them all in a row: ${play}`);
+    console.log(`To use one, add it to your film file, e.g. "voice": { "voice": "${files[3]?.voice.id ?? "bf_emma"}" }`);
+    return 0;
+  } finally {
+    status.done();
+    await speaker.dispose();
   }
 }
 
@@ -155,6 +180,8 @@ async function main(argv: string[]): Promise<number> {
       return render(file, values.output);
     case "setup":
       return setup();
+    case "voices":
+      return voices(values.output ?? "voice-samples");
     case "schema":
       console.log(JSON.stringify(await readJson(new URL("schema/film.schema.json", root)), null, 2));
       return 0;

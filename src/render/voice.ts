@@ -35,14 +35,16 @@ export function cacheDir(): string {
 
 export type Progress = (message: string) => void;
 
-/** Loads the local Kokoro voice, downloading the model once on first use (about 90 MB). */
-export async function kokoroVoice(options: { voice?: string; speed?: number; onProgress?: Progress } = {}): Promise<Voice> {
+type KokoroEngine = Awaited<ReturnType<typeof import("kokoro-js").KokoroTTS.from_pretrained>>;
+
+/** Loads the Kokoro engine, downloading the model once on first use (about 90 MB). */
+async function loadKokoro(onProgress?: Progress): Promise<KokoroEngine> {
   // Loaded only when needed, so validating a film never pays for the voice engine.
   const [{ KokoroTTS }, { env }] = await Promise.all([import("kokoro-js"), import("@huggingface/transformers")]);
   env.cacheDir = join(cacheDir(), "models");
 
   let lastPercent = -1;
-  const tts = await KokoroTTS.from_pretrained(KOKORO_MODEL, {
+  return KokoroTTS.from_pretrained(KOKORO_MODEL, {
     dtype: "q8",
     device: "cpu",
     progress_callback: (event: { status?: string; progress?: number }) => {
@@ -50,26 +52,54 @@ export async function kokoroVoice(options: { voice?: string; speed?: number; onP
       const percent = Math.floor(event.progress);
       if (percent !== lastPercent && percent % 10 === 0) {
         lastPercent = percent;
-        options.onProgress?.(`Downloading the voice model (one time only): ${percent}%`);
+        onProgress?.(`Downloading the voice model (one time only): ${percent}%`);
       }
     },
   });
+}
 
-  const voice = options.voice ?? DEFAULT_KOKORO_VOICE;
-  if (!(voice in tts.voices)) {
-    throw new Error(`Unknown Kokoro voice "${voice}". Try one of: ${Object.keys(tts.voices).join(", ")}`);
+function checkVoiceName(engine: KokoroEngine, voice: string): keyof KokoroEngine["voices"] {
+  if (!(voice in engine.voices)) {
+    throw new Error(`Unknown Kokoro voice "${voice}". Try one of: ${Object.keys(engine.voices).join(", ")}`);
   }
+  return voice as keyof KokoroEngine["voices"];
+}
 
+/** A Kokoro engine that can speak in any of its voices. Used by `bezel-film voices`. */
+export interface Speaker {
+  /** Every voice name the engine knows. */
+  voices: string[];
+  speakAs(voice: string, text: string, speed?: number): Promise<Clip>;
+  dispose(): Promise<void>;
+}
+
+export async function kokoroSpeaker(onProgress?: Progress): Promise<Speaker> {
+  const engine = await loadKokoro(onProgress);
   return {
-    async speak(text) {
-      const audio = await tts.generate(text, { voice: voice as keyof typeof tts.voices, speed: options.speed ?? 1 });
+    voices: Object.keys(engine.voices),
+    async speakAs(voice, text, speed = 1) {
+      const audio = await engine.generate(text, { voice: checkVoiceName(engine, voice), speed });
       return { samples: audio.audio, sampleRate: audio.sampling_rate };
     },
     // Releases the engine's native threads. Without this, Node can crash on exit on a Mac
-    // ("mutex lock failed") after the video is already saved.
+    // ("mutex lock failed") after the work is already saved.
     async dispose() {
-      await tts.model.dispose();
+      await engine.model.dispose();
     },
+  };
+}
+
+/** The local Kokoro voice, speaking in one chosen voice. */
+export async function kokoroVoice(options: { voice?: string; speed?: number; onProgress?: Progress } = {}): Promise<Voice> {
+  const speaker = await kokoroSpeaker(options.onProgress);
+  const voice = options.voice ?? DEFAULT_KOKORO_VOICE;
+  if (!speaker.voices.includes(voice)) {
+    await speaker.dispose();
+    throw new Error(`Unknown Kokoro voice "${voice}". Try one of: ${speaker.voices.join(", ")}`);
+  }
+  return {
+    speak: (text) => speaker.speakAs(voice, text, options.speed ?? 1),
+    dispose: () => speaker.dispose(),
   };
 }
 

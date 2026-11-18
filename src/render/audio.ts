@@ -15,8 +15,18 @@ export function mixToWav(placed: { clip: Clip; start: number }[], durationSecond
   return encodeWav(track, sampleRate);
 }
 
-/** Mono 16-bit PCM WAV. Small, lossless and something ffmpeg reads everywhere. */
-export function encodeWav(samples: Float32Array, sampleRate: number): Buffer {
+/** Stereo 16-bit PCM WAV from separate left and right channels. */
+export function encodeStereoWav(left: Float32Array, right: Float32Array, sampleRate: number): Buffer {
+  const interleaved = new Float32Array(left.length * 2);
+  for (let i = 0; i < left.length; i++) {
+    interleaved[i * 2] = left[i]!;
+    interleaved[i * 2 + 1] = right[i] ?? 0;
+  }
+  return encodeWav(interleaved, sampleRate, 2);
+}
+
+/** 16-bit PCM WAV (mono, or interleaved stereo). Small, lossless and something ffmpeg reads everywhere. */
+export function encodeWav(samples: Float32Array, sampleRate: number, channels: 1 | 2 = 1): Buffer {
   const bytes = samples.length * 2;
   const wav = Buffer.alloc(44 + bytes);
   wav.write("RIFF", 0);
@@ -25,10 +35,10 @@ export function encodeWav(samples: Float32Array, sampleRate: number): Buffer {
   wav.write("fmt ", 12);
   wav.writeUInt32LE(16, 16); // size of the format block
   wav.writeUInt16LE(1, 20); // PCM
-  wav.writeUInt16LE(1, 22); // mono
+  wav.writeUInt16LE(channels, 22);
   wav.writeUInt32LE(sampleRate, 24);
-  wav.writeUInt32LE(sampleRate * 2, 28); // bytes per second
-  wav.writeUInt16LE(2, 32); // bytes per sample
+  wav.writeUInt32LE(sampleRate * 2 * channels, 28); // bytes per second
+  wav.writeUInt16LE(2 * channels, 32); // bytes per frame
   wav.writeUInt16LE(16, 34); // bits per sample
   wav.write("data", 36);
   wav.writeUInt32LE(bytes, 40);
