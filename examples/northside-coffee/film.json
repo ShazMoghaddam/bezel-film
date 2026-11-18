@@ -1,0 +1,63 @@
+{
+  "$schema": "../../schema/film.schema.json",
+  "spec": 1,
+  "title": "Northside Coffee: a year in numbers",
+  "style": "data-story",
+  "format": { "aspect": "16:9", "resolution": "1080p", "fps": 30 },
+  "voice": { "engine": "kokoro" },
+  "music": { "source": "generated", "mood": "upbeat" },
+  "scenes": [
+    {
+      "id": "intro",
+      "type": "title",
+      "title": "A year in numbers",
+      "subtitle": "Northside Coffee · sample data",
+      "narration": "Northside Coffee had a busy year. Here it is, told in numbers."
+    },
+    {
+      "id": "cups",
+      "type": "stat",
+      "value": "48,210",
+      "label": "cups served",
+      "context": "up 22% on last year",
+      "narration": "We served just over forty-eight thousand cups, up twenty-two percent on last year."
+    },
+    {
+      "id": "by-quarter",
+      "type": "chart",
+      "chart": {
+        "type": "bars",
+        "heading": "Winter was our busiest season",
+        "values": [9800, 11200, 12400, 14810],
+        "labels": ["Q1", "Q2", "Q3", "Q4"]
+      },
+      "narration": "Every quarter beat the last, and winter was the busiest of all."
+    },
+    {
+      "id": "favourites",
+      "type": "chart",
+      "chart": {
+        "type": "donut",
+        "heading": "Flat whites lead the way",
+        "values": [38, 24, 18, 12, 8],
+        "labels": ["Flat white", "Latte", "Americano", "Cappuccino", "Other"],
+        "suffix": "%"
+      },
+      "narration": "Flat whites made up more than a third of every order."
+    },
+    {
+      "id": "learned",
+      "type": "points",
+      "heading": "What we learned",
+      "points": ["Mornings drive two thirds of sales", "Oat milk now outsells dairy", "Loyalty cards double repeat visits"],
+      "narration": "Three things stood out: busy mornings, the rise of oat milk, and the power of a loyalty card."
+    },
+    {
+      "id": "outro",
+      "type": "outro",
+      "title": "Here's to next year",
+      "cta": "Made with Bezel Film",
+      "narration": "Thanks for a brilliant year. Here's to the next one."
+    }
+  ]
+}
