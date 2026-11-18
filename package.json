@@ -1,0 +1,74 @@
+{
+  "name": "bezel-film",
+  "version": "0.0.1",
+  "description": "Make short narrated films in code from a repo, README or dataset. Offline, no API keys, built for coding agents.",
+  "keywords": [
+    "video",
+    "film",
+    "explainer",
+    "animation",
+    "data-story",
+    "charts",
+    "text-to-speech",
+    "ai-agents",
+    "claude-code",
+    "cli"
+  ],
+  "author": {
+    "name": "Shaz Moghaddam",
+    "url": "https://shazmoghaddam.github.io/"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ShazMoghaddam/bezel-film.git"
+  },
+  "homepage": "https://github.com/ShazMoghaddam/bezel-film#readme",
+  "bugs": {
+    "url": "https://github.com/ShazMoghaddam/bezel-film/issues"
+  },
+  "type": "module",
+  "bin": {
+    "bezel-film": "dist/cli.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./schema": "./schema/film.schema.json",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "schema",
+    "styles",
+    "agents/generated"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "schema": "tsx scripts/build-schema.ts",
+    "schema:check": "tsx scripts/build-schema.ts --check",
+    "agents": "tsx scripts/build-agents.ts",
+    "agents:check": "tsx scripts/build-agents.ts --check",
+    "example": "tsx src/cli.ts validate examples/northside-coffee/film.json",
+    "check": "npm run typecheck && npm test && npm run schema:check && npm run agents:check && npm run example",
+    "prepublishOnly": "npm run check && npm run build"
+  },
+  "dependencies": {
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vitest": "^5.1.1"
+  }
+}

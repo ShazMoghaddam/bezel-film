@@ -1,0 +1,682 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "spec": {
+      "type": "number",
+      "const": 1,
+      "description": "Version of the film spec format."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "style": {
+      "type": "string",
+      "enum": [
+        "data-story",
+        "product-launch",
+        "whiteboard"
+      ]
+    },
+    "format": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "aspect": {
+          "default": "16:9",
+          "type": "string",
+          "enum": [
+            "16:9",
+            "9:16",
+            "1:1"
+          ]
+        },
+        "resolution": {
+          "default": "1080p",
+          "type": "string",
+          "enum": [
+            "1080p",
+            "4k"
+          ]
+        },
+        "fps": {
+          "default": 30,
+          "anyOf": [
+            {
+              "type": "number",
+              "const": 24
+            },
+            {
+              "type": "number",
+              "const": 30
+            },
+            {
+              "type": "number",
+              "const": 60
+            }
+          ]
+        }
+      }
+    },
+    "voice": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "engine": {
+          "default": "kokoro",
+          "type": "string",
+          "enum": [
+            "kokoro",
+            "piper",
+            "none"
+          ]
+        },
+        "voice": {
+          "description": "Voice name for the chosen engine. Leave out for the default.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "speed": {
+          "default": 1,
+          "type": "number",
+          "minimum": 0.5,
+          "maximum": 2
+        }
+      }
+    },
+    "music": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "source": {
+          "default": "generated",
+          "type": "string",
+          "enum": [
+            "generated",
+            "file",
+            "none"
+          ]
+        },
+        "file": {
+          "description": "Path to your own track, used when source is \"file\".",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "mood": {
+          "default": "calm",
+          "type": "string",
+          "enum": [
+            "calm",
+            "upbeat",
+            "dramatic",
+            "ambient"
+          ]
+        },
+        "volume": {
+          "default": 0.2,
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "captions": {
+      "default": true,
+      "type": "boolean"
+    },
+    "scenes": {
+      "minItems": 1,
+      "maxItems": 40,
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "description": "Optional name for the scene, handy for previews and error messages.",
+                "type": "string",
+                "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+              },
+              "narration": {
+                "description": "What the voice says during this scene. Scene length is timed from this unless duration is set.",
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 600
+              },
+              "duration": {
+                "description": "Length in seconds. Overrides the timing worked out from narration.",
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "maximum": 120
+              },
+              "transition": {
+                "description": "How this scene enters. Defaults to the style's choice.",
+                "type": "string",
+                "enum": [
+                  "cut",
+                  "fade",
+                  "slide",
+                  "wipe"
+                ]
+              },
+              "type": {
+                "type": "string",
+                "const": "title"
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "subtitle": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              }
+            },
+            "required": [
+              "type",
+              "title"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "description": "Optional name for the scene, handy for previews and error messages.",
+                "type": "string",
+                "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+              },
+              "narration": {
+                "description": "What the voice says during this scene. Scene length is timed from this unless duration is set.",
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 600
+              },
+              "duration": {
+                "description": "Length in seconds. Overrides the timing worked out from narration.",
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "maximum": 120
+              },
+              "transition": {
+                "description": "How this scene enters. Defaults to the style's choice.",
+                "type": "string",
+                "enum": [
+                  "cut",
+                  "fade",
+                  "slide",
+                  "wipe"
+                ]
+              },
+              "type": {
+                "type": "string",
+                "const": "stat"
+              },
+              "value": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 24
+                  }
+                ],
+                "description": "The big number, e.g. 42 or \"£1.2M\"."
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "context": {
+                "description": "A short line that gives the number meaning, e.g. \"up from 18 last year\".",
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              }
+            },
+            "required": [
+              "type",
+              "value",
+              "label"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "description": "Optional name for the scene, handy for previews and error messages.",
+                "type": "string",
+                "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+              },
+              "narration": {
+                "description": "What the voice says during this scene. Scene length is timed from this unless duration is set.",
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 600
+              },
+              "duration": {
+                "description": "Length in seconds. Overrides the timing worked out from narration.",
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "maximum": 120
+              },
+              "transition": {
+                "description": "How this scene enters. Defaults to the style's choice.",
+                "type": "string",
+                "enum": [
+                  "cut",
+                  "fade",
+                  "slide",
+                  "wipe"
+                ]
+              },
+              "type": {
+                "type": "string",
+                "const": "chart"
+              },
+              "chart": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "bars",
+                      "line",
+                      "area",
+                      "combo",
+                      "waterfall",
+                      "histogram",
+                      "boxplot",
+                      "scatter",
+                      "ring",
+                      "donut",
+                      "gauge",
+                      "progress",
+                      "bullet",
+                      "heatmap",
+                      "spark"
+                    ]
+                  },
+                  "heading": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "values": {
+                    "anyOf": [
+                      {
+                        "minItems": 1,
+                        "type": "array",
+                        "items": {
+                          "type": "number"
+                        }
+                      },
+                      {
+                        "minItems": 1,
+                        "type": "array",
+                        "items": {
+                          "minItems": 1,
+                          "type": "array",
+                          "items": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    ],
+                    "description": "One list of numbers, or a list of lists for several series."
+                  },
+                  "labels": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 40
+                    }
+                  },
+                  "series": {
+                    "description": "Series names, one per list in values.",
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 40
+                    }
+                  },
+                  "prefix": {
+                    "type": "string",
+                    "maxLength": 8
+                  },
+                  "suffix": {
+                    "type": "string",
+                    "maxLength": 12
+                  },
+                  "options": {
+                    "description": "Any other Bezel Charts attribute, passed straight through, e.g. { \"goal\": 80 }.",
+                    "type": "object",
+                    "propertyNames": {
+                      "type": "string"
+                    },
+                    "additionalProperties": {
+                      "type": [
+                        "string",
+                        "number",
+                        "boolean"
+                      ]
+                    }
+                  }
+                },
+                "required": [
+                  "type",
+                  "values"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "chart"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "description": "Optional name for the scene, handy for previews and error messages.",
+                "type": "string",
+                "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+              },
+              "narration": {
+                "description": "What the voice says during this scene. Scene length is timed from this unless duration is set.",
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 600
+              },
+              "duration": {
+                "description": "Length in seconds. Overrides the timing worked out from narration.",
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "maximum": 120
+              },
+              "transition": {
+                "description": "How this scene enters. Defaults to the style's choice.",
+                "type": "string",
+                "enum": [
+                  "cut",
+                  "fade",
+                  "slide",
+                  "wipe"
+                ]
+              },
+              "type": {
+                "type": "string",
+                "const": "points"
+              },
+              "heading": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "points": {
+                "minItems": 1,
+                "maxItems": 6,
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 140
+                }
+              }
+            },
+            "required": [
+              "type",
+              "points"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "description": "Optional name for the scene, handy for previews and error messages.",
+                "type": "string",
+                "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+              },
+              "narration": {
+                "description": "What the voice says during this scene. Scene length is timed from this unless duration is set.",
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 600
+              },
+              "duration": {
+                "description": "Length in seconds. Overrides the timing worked out from narration.",
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "maximum": 120
+              },
+              "transition": {
+                "description": "How this scene enters. Defaults to the style's choice.",
+                "type": "string",
+                "enum": [
+                  "cut",
+                  "fade",
+                  "slide",
+                  "wipe"
+                ]
+              },
+              "type": {
+                "type": "string",
+                "const": "code"
+              },
+              "language": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 24
+              },
+              "code": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4000
+              },
+              "highlight": {
+                "description": "Line numbers to highlight, starting at 1.",
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991
+                }
+              },
+              "caption": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              }
+            },
+            "required": [
+              "type",
+              "language",
+              "code"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "description": "Optional name for the scene, handy for previews and error messages.",
+                "type": "string",
+                "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+              },
+              "narration": {
+                "description": "What the voice says during this scene. Scene length is timed from this unless duration is set.",
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 600
+              },
+              "duration": {
+                "description": "Length in seconds. Overrides the timing worked out from narration.",
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "maximum": 120
+              },
+              "transition": {
+                "description": "How this scene enters. Defaults to the style's choice.",
+                "type": "string",
+                "enum": [
+                  "cut",
+                  "fade",
+                  "slide",
+                  "wipe"
+                ]
+              },
+              "type": {
+                "type": "string",
+                "const": "quote"
+              },
+              "quote": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 280
+              },
+              "attribution": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              }
+            },
+            "required": [
+              "type",
+              "quote"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "description": "Optional name for the scene, handy for previews and error messages.",
+                "type": "string",
+                "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+              },
+              "narration": {
+                "description": "What the voice says during this scene. Scene length is timed from this unless duration is set.",
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 600
+              },
+              "duration": {
+                "description": "Length in seconds. Overrides the timing worked out from narration.",
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "maximum": 120
+              },
+              "transition": {
+                "description": "How this scene enters. Defaults to the style's choice.",
+                "type": "string",
+                "enum": [
+                  "cut",
+                  "fade",
+                  "slide",
+                  "wipe"
+                ]
+              },
+              "type": {
+                "type": "string",
+                "const": "outro"
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "url": {
+                "type": "string",
+                "format": "uri"
+              },
+              "cta": {
+                "description": "Call to action, e.g. \"Star it on GitHub\".",
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              }
+            },
+            "required": [
+              "type",
+              "title"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "description": "Optional name for the scene, handy for previews and error messages.",
+                "type": "string",
+                "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+              },
+              "narration": {
+                "description": "What the voice says during this scene. Scene length is timed from this unless duration is set.",
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 600
+              },
+              "duration": {
+                "description": "Length in seconds. Overrides the timing worked out from narration.",
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "maximum": 120
+              },
+              "transition": {
+                "description": "How this scene enters. Defaults to the style's choice.",
+                "type": "string",
+                "enum": [
+                  "cut",
+                  "fade",
+                  "slide",
+                  "wipe"
+                ]
+              },
+              "type": {
+                "type": "string",
+                "const": "custom"
+              },
+              "module": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200,
+                "description": "Path to your own scene module, relative to the film file."
+              },
+              "props": {
+                "type": "object",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "additionalProperties": {}
+              }
+            },
+            "required": [
+              "type",
+              "module"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "required": [
+    "spec",
+    "title",
+    "style",
+    "scenes"
+  ],
+  "$id": "https://github.com/ShazMoghaddam/bezel-film/blob/main/schema/film.schema.json",
+  "title": "Bezel Film",
+  "description": "One file that describes a whole film: settings plus a list of scenes."
+}
