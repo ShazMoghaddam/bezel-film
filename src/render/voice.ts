@@ -14,6 +14,8 @@ export interface Clip {
  */
 export interface Voice {
   speak(text: string): Promise<Clip>;
+  /** Frees the voice engine. Called once rendering is done. */
+  dispose?(): Promise<void>;
 }
 
 export const DEFAULT_KOKORO_VOICE = "af_heart";
@@ -55,6 +57,11 @@ export async function kokoroVoice(options: { voice?: string; speed?: number; onP
     async speak(text) {
       const audio = await tts.generate(text, { voice: voice as keyof typeof tts.voices, speed: options.speed ?? 1 });
       return { samples: audio.audio, sampleRate: audio.sampling_rate };
+    },
+    // Releases the engine's native threads. Without this, Node can crash on exit on a Mac
+    // ("mutex lock failed") after the video is already saved.
+    async dispose() {
+      await tts.model.dispose();
     },
   };
 }

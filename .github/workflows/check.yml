@@ -8,6 +8,10 @@ on:
 permissions:
   contents: read
 
+env:
+  # The voice engine would otherwise download large GPU files on Linux. Bezel Film runs the voice on the CPU.
+  ONNXRUNTIME_NODE_INSTALL_CUDA: skip
+
 concurrency:
   group: check-${{ github.ref }}
   cancel-in-progress: true
