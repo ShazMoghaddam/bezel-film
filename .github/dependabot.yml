@@ -12,6 +12,9 @@ updates:
       # so the code can't use features that only exist in newer Node versions.
       - dependency-name: "@types/node"
         update-types: ["version-update:semver-major"]
+      # Must stay on the same major version as the one kokoro-js uses, so they share one copy.
+      - dependency-name: "@huggingface/transformers"
+        update-types: ["version-update:semver-major"]
     commit-message:
       prefix: "chore(deps)"
 

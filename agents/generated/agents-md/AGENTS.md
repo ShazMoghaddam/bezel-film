@@ -15,8 +15,7 @@ Bezel Film turns a repo, a README or a dataset into a short narrated film. You d
 2. **Gather the material.** Read the README, the code or the dataset. Only use facts and numbers that come from the material or from the user. Never invent figures.
 3. **Write `film.json`** following the rules below. Start the file with `"$schema": "./node_modules/bezel-film/schema/film.schema.json"` so editors can check it.
 4. **Check it** with `npx bezel-film validate film.json` and fix every problem it reports.
-5. **Offer a storyboard preview** before the full render, so the user can change scenes cheaply.
-6. **Render** with `npx bezel-film render film.json` and tell the user where the video is.
+5. **Render** with `npx bezel-film render film.json` and tell the user where the video is. The first render downloads the voice and a headless browser once (about 200 MB), so let the user know it takes longer.
 
 ## The film file
 
@@ -60,3 +59,4 @@ Every scene can also have `id`, `narration`, `duration` (seconds) and `transitio
 - **Keep charts simple:** seven bars or fewer, short labels, one point per chart. Say the takeaway in the narration and in `chart.heading`.
 - **Keep on-screen text short.** Points under about ten words each. Code snippets under fifteen lines.
 - **Use the style's defaults** for colour, type and motion. Don't fight them.
+- **Only the `data-story` style renders today.** `product-launch`, `whiteboard` and `custom` scenes are coming, so don't use them yet.

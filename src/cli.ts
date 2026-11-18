@@ -1,18 +1,21 @@
 #!/usr/bin/env node
 import { readFile } from "node:fs/promises";
 import { parseArgs } from "node:util";
+import { basename, dirname, extname, join } from "node:path";
 import { estimateFilmSeconds, validateFilm } from "./spec/validate.js";
 
 const HELP = `Bezel Film: make short films in code.
 
 Usage
   bezel-film validate <film.json>   Check a film file and show a summary
-  bezel-film render <film.json>     Render the film (coming in v0.1.0)
+  bezel-film render <film.json>     Render the film to an MP4
+  bezel-film setup                  Do the one-time downloads now (voice and browser)
   bezel-film schema                 Print the film file's JSON Schema
 
 Options
-  -h, --help       Show this help
-  -v, --version    Show the version
+  -o, --output <file>   Where render saves the video (default: next to the film file)
+  -h, --help            Show this help
+  -v, --version         Show the version
 `;
 
 const root = new URL("..", import.meta.url);
@@ -52,6 +55,75 @@ async function validate(path: string | undefined): Promise<number> {
   return 0;
 }
 
+/** One status line that rewrites itself in a terminal, or plain lines elsewhere (e.g. CI logs). */
+function statusLine() {
+  const tty = process.stdout.isTTY;
+  let last = "";
+  let lastPrinted = 0;
+  return {
+    update(message: string) {
+      if (message === last) return;
+      last = message;
+      if (tty) return void process.stdout.write(`\r\x1b[2K  ${message}`);
+      // In logs (e.g. CI), a line every few seconds is plenty.
+      if (Date.now() - lastPrinted < 5000) return;
+      lastPrinted = Date.now();
+      console.log(`  ${message}`);
+    },
+    done() {
+      if (tty && last) process.stdout.write("\r\x1b[2K");
+      last = "";
+    },
+  };
+}
+
+async function render(path: string | undefined, output: string | undefined): Promise<number> {
+  const result = validateFilm(await loadFilmFile(path));
+  if (!result.ok) {
+    console.error(`✗ ${path} has ${result.errors.length} problem${result.errors.length === 1 ? "" : "s"}. Run bezel-film validate ${path} to see them.`);
+    return 1;
+  }
+  const target = output ?? join(dirname(path!), `${basename(path!, extname(path!))}.mp4`);
+  const status = statusLine();
+  const started = Date.now();
+  console.log(`Rendering "${result.film.title}"`);
+  const { renderFilm } = await import("./render/index.js");
+  try {
+    const done = await renderFilm(result.film, {
+      output: target,
+      onProgress: status.update,
+      onWarning: (message) => {
+        status.done();
+        console.log(`  ! ${message}`);
+      },
+    });
+    status.done();
+    console.log(`✓ Saved ${done.output} · ${formatSeconds(done.seconds)} · rendered in ${formatSeconds((Date.now() - started) / 1000)}`);
+    return 0;
+  } catch (error) {
+    status.done();
+    throw error;
+  }
+}
+
+async function setup(): Promise<number> {
+  const status = statusLine();
+  const { installBrowser } = await import("./render/browser.js");
+  const { kokoroVoice, cacheDir } = await import("./render/voice.js");
+  const { findFfmpeg } = await import("./render/ffmpeg.js");
+  console.log("Setting up Bezel Film. This downloads about 200 MB, once.");
+  await installBrowser(status.update);
+  status.done();
+  console.log("  ✓ Headless browser");
+  await kokoroVoice({ onProgress: status.update });
+  status.done();
+  console.log(`  ✓ Voice model (saved in ${cacheDir()})`);
+  findFfmpeg();
+  console.log("  ✓ ffmpeg");
+  console.log("All set. Everything now works offline.");
+  return 0;
+}
+
 async function main(argv: string[]): Promise<number> {
   const { values, positionals } = parseArgs({
     args: argv,
@@ -59,6 +131,7 @@ async function main(argv: string[]): Promise<number> {
     options: {
       help: { type: "boolean", short: "h" },
       version: { type: "boolean", short: "v" },
+      output: { type: "string", short: "o" },
     },
   });
 
@@ -78,8 +151,9 @@ async function main(argv: string[]): Promise<number> {
     case "validate":
       return validate(file);
     case "render":
-      console.error("Rendering is not built yet. It arrives in v0.1.0. For now, use `bezel-film validate`.");
-      return 1;
+      return render(file, values.output);
+    case "setup":
+      return setup();
     case "schema":
       console.log(JSON.stringify(await readJson(new URL("schema/film.schema.json", root)), null, 2));
       return 0;
