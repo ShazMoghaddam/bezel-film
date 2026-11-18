@@ -9,3 +9,4 @@ out/
 .env.*
 coverage/
 voice-samples/
+docs/.banner-*.html

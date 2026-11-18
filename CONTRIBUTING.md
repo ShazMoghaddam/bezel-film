@@ -32,6 +32,7 @@ To render the example film: `npx tsx src/cli.ts render examples/northside-coffee
 | `schema/` | JSON Schema built from `src/spec/schema.ts`. Don't edit by hand. |
 | `instruments/` | Recorded instruments for the music. Built by `npm run instruments`; don't edit by hand. |
 | `examples/` | Example films, checked in CI. |
+| `docs/` | The README banner and social preview, built from `docs/banner.html` by `npm run banner`. |
 
 ## Generated files
 

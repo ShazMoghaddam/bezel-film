@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+@font-face{font-family:"Space Grotesk";font-weight:700;src:url(file:///home/claude/bezel-film-repo/node_modules/@fontsource/space-grotesk/files/space-grotesk-latin-700-normal.woff2)}
+@font-face{font-family:"Space Grotesk";font-weight:600;src:url(file:///home/claude/bezel-film-repo/node_modules/@fontsource/space-grotesk/files/space-grotesk-latin-600-normal.woff2)}
+@font-face{font-family:"Inter";font-weight:400;src:url(file:///home/claude/bezel-film-repo/node_modules/@fontsource/inter/files/inter-latin-400-normal.woff2)}
+@font-face{font-family:"Inter";font-weight:600;src:url(file:///home/claude/bezel-film-repo/node_modules/@fontsource/inter/files/inter-latin-600-normal.woff2)}
+@font-face{font-family:"JetBrains Mono";font-weight:400;src:url(file:///home/claude/bezel-film-repo/node_modules/@fontsource/jetbrains-mono/files/jetbrains-mono-latin-400-normal.woff2)}
+:root{--bg:#0B1020;--surface:#151B2E;--text:#F5F7FB;--muted:#9AA3B8;--p0:#4C8DFF;--p1:#FF5D73;--p2:#2EC4B6;--p3:#FFB020;--p4:#9B5DE5;--p5:#7BD389;--p6:#FF8A3D}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:Inter,sans-serif;-webkit-font-smoothing:antialiased}
+.glow{position:absolute;inset:0;background:
+  radial-gradient(38% 60% at 12% 18%,color-mix(in srgb,var(--p0) 22%,transparent),transparent 70%),
+  radial-gradient(30% 50% at 92% 88%,color-mix(in srgb,var(--p1) 18%,transparent),transparent 70%),
+  radial-gradient(26% 42% at 70% 8%,color-mix(in srgb,var(--p4) 16%,transparent),transparent 70%)}
+.grain{position:absolute;inset:0;background-image:radial-gradient(rgb(255 255 255/.05) 1px,transparent 1px);background-size:14px 14px;mask-image:radial-gradient(ellipse at 30% 40%,#000 20%,transparent 75%)}
+
+/* Wordmark */
+.brand{position:absolute;display:flex;flex-direction:column;gap:18px;z-index:3}
+.mark-row{display:flex;align-items:center;gap:22px}
+.mark{width:84px;height:84px;border-radius:24px;flex:none;display:grid;place-items:center;
+  background:conic-gradient(from 210deg,var(--p0),var(--p4),var(--p1),var(--p3),var(--p2),var(--p0));
+  box-shadow:0 14px 40px rgb(76 141 255/.35)}
+.mark::after{content:"";width:0;height:0;border-left:30px solid var(--bg);border-top:19px solid transparent;border-bottom:19px solid transparent;margin-left:8px}
+h1{font-family:"Space Grotesk";font-weight:700;font-size:92px;letter-spacing:-.035em;line-height:.95}
+h1 span{background:linear-gradient(90deg,var(--p0),var(--p4) 45%,var(--p1));-webkit-background-clip:text;background-clip:text;color:transparent}
+.tagline{font-family:"Space Grotesk";font-weight:600;font-size:31px;letter-spacing:-.01em;line-height:1.2;max-width:560px}
+.tagline em{font-style:normal;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chip{font-weight:600;font-size:17px;padding:7px 14px;border-radius:99px;color:var(--c);background:color-mix(in srgb,var(--c) 14%,transparent);border:1px solid color-mix(in srgb,var(--c) 45%,transparent)}
+
+/* Film strip */
+.strip{position:absolute;display:flex;gap:18px;padding:30px 22px;background:#05080F;border-radius:14px;z-index:2;
+  box-shadow:0 30px 80px rgb(0 0 0/.55),inset 0 0 0 1px rgb(255 255 255/.06)}
+.strip::before,.strip::after{content:"";position:absolute;left:14px;right:14px;height:12px;
+  background:repeating-linear-gradient(90deg,rgb(255 255 255/.16) 0 16px,transparent 16px 34px);border-radius:3px}
+.strip::before{top:9px}.strip::after{bottom:9px}
+.frame{width:256px;height:144px;flex:none;border-radius:6px;overflow:hidden;position:relative;background:var(--bg);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:12px;
+  box-shadow:inset 0 0 0 1px rgb(255 255 255/.08)}
+.frame::before{content:"";position:absolute;inset:0;background:radial-gradient(60% 70% at 30% 20%,color-mix(in srgb,var(--c,var(--p0)) 22%,transparent),transparent 70%)}
+.frame > *{position:relative}
+.f-title{font-family:"Space Grotesk";font-weight:700;font-size:24px;letter-spacing:-.02em;line-height:1}
+.f-rule{width:70px;height:5px;border-radius:9px;margin-top:9px;background:linear-gradient(90deg,var(--p0),var(--p1),var(--p2),var(--p3))}
+.f-stat{font-family:"Space Grotesk";font-weight:700;font-size:50px;letter-spacing:-.04em;line-height:.95;color:var(--c)}
+.f-label{font-family:"Space Grotesk";font-weight:600;font-size:15px;margin-top:4px}
+.f-heading{font-family:"Space Grotesk";font-weight:700;font-size:13px;margin-bottom:5px}
+.f-chart{width:228px}
+.f-caption{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);white-space:nowrap;font-weight:600;font-size:10.5px;padding:2px 7px;border-radius:4px;background:rgb(0 0 0/.65)}
+.f-points{list-style:none;text-align:left;display:flex;flex-direction:column;gap:7px}
+.f-points li{display:flex;align-items:center;gap:8px;font-weight:600;font-size:13px}
+.f-points i{width:9px;height:9px;border-radius:50%;background:var(--c);box-shadow:0 0 8px var(--c)}
+
+/* Soundtrack lane */
+.lane{position:absolute;z-index:2;display:flex;flex-direction:column;gap:8px}
+.lane-row{display:flex;align-items:center;gap:12px;font-family:"JetBrains Mono";font-size:12px;color:var(--muted)}
+.lane-row b{width:46px;font-weight:400;text-align:right}
+.lane svg{display:block}
+
+/* Footer */
+.by{position:absolute;z-index:3;display:flex;align-items:center;gap:16px;font-size:19px;color:var(--muted)}
+.by strong{color:var(--text);font-weight:600}
+.by .dot{width:5px;height:5px;border-radius:50%;background:var(--p3)}
+.by .url{font-family:"JetBrains Mono";font-size:17px;color:var(--text);padding:5px 12px;border-radius:8px;background:rgb(255 255 255/.06);border:1px solid rgb(255 255 255/.1)}
+
+/* Social preview: 1280 x 640 */
+.social .brand{left:72px;top:60px}
+.social .strip{left:72px;top:356px;transform:rotate(-2.5deg);transform-origin:left center;width:1260px}
+.social .lane{left:94px;top:556px}
+.social .by{right:72px;top:72px;flex-direction:column;align-items:flex-end;gap:10px}
+
+/* README banner: 1280 x 400 */
+.banner h1{font-size:76px}
+.banner .mark{width:70px;height:70px;border-radius:20px}
+.banner .mark::after{border-left-width:25px;border-top-width:16px;border-bottom-width:16px}
+.banner .tagline{font-size:25px;max-width:440px}
+.banner .chip{font-size:14px;padding:5px 11px}
+.banner .brand{left:56px;top:50px;gap:14px}
+.banner .chip.agent{display:none}
+.banner .strip{left:600px;top:62px;transform:rotate(-3deg) scale(.84);transform-origin:left center}
+.banner .lane{left:640px;top:262px}
+.banner .by{left:56px;bottom:34px;font-size:16px}
+.banner .by .url{font-size:14px}
+</style>
+</head>
+<body class="MODE">
+<div class="glow"></div>
+<div class="grain"></div>
+
+<div class="brand">
+  <div class="mark-row"><div class="mark"></div><h1>Bezel <span>Film</span></h1></div>
+  <p class="tagline">Short narrated films, made in code. <em>From a repo, a README or a dataset.</em></p>
+  <div class="chips">
+    <span class="chip" style="--c:var(--p0)">Voiceover</span>
+    <span class="chip" style="--c:var(--p1)">Music</span>
+    <span class="chip" style="--c:var(--p2)">Captions</span>
+    <span class="chip" style="--c:var(--p3)">Charts</span>
+    <span class="chip" style="--c:var(--p4)">Offline</span>
+    <span class="chip agent" style="--c:var(--p5)">Any coding agent</span>
+  </div>
+</div>
+
+<div class="strip">
+  <div class="frame" style="--c:var(--p4)"><div class="f-title">A year<br>in numbers</div><div class="f-rule"></div></div>
+  <div class="frame" style="--c:var(--p0)"><div class="f-stat">48,210</div><div class="f-label">cups served</div><div class="f-caption">We served over forty-eight thousand cups.</div></div>
+  <div class="frame" style="--c:var(--p3)"><div class="f-heading">Every quarter beat the last</div><bezel-chart class="f-chart" id="bars"></bezel-chart></div>
+  <div class="frame" style="--c:var(--p1)"><div class="f-heading">Lattes lead the way</div><bezel-chart class="f-chart" id="donut"></bezel-chart></div>
+  <div class="frame" style="--c:var(--p2)"><ul class="f-points">
+    <li style="--c:var(--p2)"><i></i>Voice timed to every scene</li>
+    <li style="--c:var(--p1)"><i></i>Music that dips under it</li>
+    <li style="--c:var(--p3)"><i></i>Same film, every time</li></ul></div>
+</div>
+
+<div class="lane">
+  <div class="lane-row"><b>voice</b><svg id="voice"></svg></div>
+  <div class="lane-row"><b>music</b><svg id="music"></svg></div>
+</div>
+
+<div class="by"><span><strong>Shaz Moghaddam</strong> · London</span><span class="url">shazmoghaddam.github.io</span></div>
+
+<script src="file:///home/claude/bezel-film-repo/node_modules/bezel-charts/dist/bezel-charts.iife.js"></script>
+<script>
+const palette = "#4C8DFF,#FF5D73,#2EC4B6,#FFB020,#9B5DE5,#7BD389,#FF8A3D";
+for (const [id, type, data] of [
+  ["bars", "bars", { values: [9800, 11200, 12400, 14810], labels: ["Q1", "Q2", "Q3", "Q4"] }],
+  ["donut", "donut", { values: [18300, 11600, 8700, 5800, 3810], labels: ["Latte", "Mocha", "Chai", "Tea", "Other"], "center-label": "orders" }],
+]) {
+  const el = document.getElementById(id);
+  for (const [k, v] of Object.entries({ type, theme: "dark", frame: "none", background: "transparent", color: palette, compact: "", "no-tooltips": "", static: "", width: "228", height: type === "bars" ? "96" : "104" })) el.setAttribute(k, v);
+  const { "center-label": centre, ...rest } = data;
+  if (centre) el.setAttribute("center-label", centre);
+  el.data = rest;
+}
+// The soundtrack lane: voice in bursts (one per sentence), music as a smooth, continuous wave.
+let seed = 7; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+const W = document.body.classList.contains("social") ? 1080 : 540, H = 26;
+const voice = document.getElementById("voice"), music = document.getElementById("music");
+for (const svg of [voice, music]) { svg.setAttribute("width", W); svg.setAttribute("height", H); svg.setAttribute("viewBox", `0 0 ${W} ${H}`); }
+let bars = "";
+for (let x = 0; x < W; x += 5) {
+  const sentence = Math.sin(x / 47) > -0.25 && (x % 230) < 190;
+  const h = sentence ? 4 + rnd() * (H - 6) : 1.5;
+  bars += `<rect x="${x}" y="${(H - h) / 2}" width="3" height="${h}" rx="1.5" fill="${sentence ? "#F5F7FB" : "#3A4258"}"/>`;
+}
+voice.innerHTML = bars;
+// The music glides down while the voice speaks and back up in the gaps, like the real thing.
+let path = `M0 ${H / 2}`;
+let duck = 1;
+for (let x = 0; x <= W; x += 2) {
+  const speaking = Math.sin(x / 47) > -0.25 && (x % 230) < 190;
+  duck += ((speaking ? 0.4 : 1) - duck) * 0.12;
+  const y = H / 2 + Math.sin(x / 11) * (0.6 + 0.4 * Math.sin(x / 61)) * (H / 2 - 2) * duck;
+  path += ` L${x} ${y.toFixed(1)}`;
+}
+music.innerHTML = `<defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#4C8DFF"/><stop offset=".5" stop-color="#9B5DE5"/><stop offset="1" stop-color="#FF5D73"/></linearGradient></defs><path d="${path}" fill="none" stroke="url(#g)" stroke-width="2.5" stroke-linecap="round"/>`;
+</script>
+</body>
+</html>

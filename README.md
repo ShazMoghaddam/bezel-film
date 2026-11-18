@@ -1,3 +1,5 @@
+[![Bezel Film: short narrated films, made in code. A film strip of scenes (a title card, a big number, a bar chart, a donut chart) above a soundtrack of voice and music. By Shaz Moghaddam, London.](docs/banner.png)](https://shazmoghaddam.github.io/)
+
 # Bezel Film
 
 [![Check](https://github.com/ShazMoghaddam/bezel-film/actions/workflows/check.yml/badge.svg)](https://github.com/ShazMoghaddam/bezel-film/actions/workflows/check.yml)
@@ -172,7 +174,7 @@ A `bezel-film init` command that copies the right file into your project is on t
 
 ## Roadmap
 
-- **v0.1.0:** rendering for the `data-story` style in 16:9, Kokoro voiceover, captions and music (all done, release coming)
+- **v0.1.0 (released):** rendering for the `data-story` style in 16:9, Kokoro voiceover, captions and music
 - **v0.2.0:** layouts tuned for 9:16 and 1:1, 4K, storyboard preview, `bezel-film init`
 - **v0.3.0:** `product-launch` and `whiteboard` styles, repo and README to film
 - **Later:** optional paid voices, an optional Python helper for turning datasets into film files
