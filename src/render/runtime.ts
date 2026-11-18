@@ -160,7 +160,8 @@ export const RUNTIME_JS = String.raw`
       const height = el.offsetHeight;
       if (!width || !height) throw new Error("A chart drew with no size");
       const heading = el.closest(".scene").querySelector(".heading");
-      const room = innerHeight * 0.66 - (heading ? heading.getBoundingClientRect().height : 0);
+      // Leave room at the bottom for captions, so they never cover the chart's labels.
+      const room = innerHeight * (data.captions ? 0.56 : 0.66) - (heading ? heading.getBoundingClientRect().height : 0);
       const scale = Math.min((innerWidth * 0.8) / width, room / height);
       const frame = el.parentElement;
       frame.style.width = width * scale + "px";
