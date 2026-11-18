@@ -24,12 +24,13 @@ To render the example film: `npx tsx src/cli.ts render examples/northside-coffee
 | Folder | What lives there |
 | --- | --- |
 | `src/spec/` | The film spec (`schema.ts`) and validation. This is the source of truth for the film file. |
-| `src/render/` | The renderer: voice (`voice.ts`), timing (`timeline.ts`), the scene page (`page.ts`, `runtime.ts`), frame capture and ffmpeg (`index.ts`). |
+| `src/render/` | The renderer: voice (`voice.ts`), timing (`timeline.ts`), the scene page (`page.ts`, `runtime.ts`), music (`music.ts`, `colours.ts`, `nature.ts`, `instruments.ts`, `soundtrack.ts`), frame capture and ffmpeg (`index.ts`). |
 | `src/cli.ts` | The `bezel-film` command. |
 | `styles/` | One folder per style: colours, fonts and motion. |
 | `agents/instructions.md` | The single source for every agent's instructions. |
 | `agents/generated/` | Built from the source. Don't edit these by hand. |
 | `schema/` | JSON Schema built from `src/spec/schema.ts`. Don't edit by hand. |
+| `instruments/` | Recorded instruments for the music. Built by `npm run instruments`; don't edit by hand. |
 | `examples/` | Example films, checked in CI. |
 
 ## Generated files

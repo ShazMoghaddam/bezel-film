@@ -1,0 +1,466 @@
+{
+  "source": "https://github.com/sgossner/VSCO-2-CE/tree/440300901dfe9275fd84e0b7763af1f8443ae62e",
+  "licence": "CC0-1.0",
+  "instruments": {
+    "piano-soft": [
+      {
+        "file": "piano-soft/player-dyn1-rr1-006.opus",
+        "midi": 33,
+        "cents": -4
+      },
+      {
+        "file": "piano-soft/player-dyn1-rr1-008.opus",
+        "midi": 37,
+        "cents": -11
+      },
+      {
+        "file": "piano-soft/player-dyn1-rr1-010.opus",
+        "midi": 41,
+        "cents": 1
+      },
+      {
+        "file": "piano-soft/player-dyn1-rr1-012.opus",
+        "midi": 45,
+        "cents": 0
+      },
+      {
+        "file": "piano-soft/player-dyn1-rr1-014.opus",
+        "midi": 49,
+        "cents": -1
+      },
+      {
+        "file": "piano-soft/player-dyn1-rr1-016.opus",
+        "midi": 53,
+        "cents": -1
+      },
+      {
+        "file": "piano-soft/player-dyn1-rr1-018.opus",
+        "midi": 57,
+        "cents": 5
+      },
+      {
+        "file": "piano-soft/player-dyn1-rr1-020.opus",
+        "midi": 61,
+        "cents": 2
+      },
+      {
+        "file": "piano-soft/player-dyn1-rr1-022.opus",
+        "midi": 65,
+        "cents": 2
+      },
+      {
+        "file": "piano-soft/player-dyn1-rr1-024.opus",
+        "midi": 69,
+        "cents": 2
+      },
+      {
+        "file": "piano-soft/player-dyn1-rr1-026.opus",
+        "midi": 73,
+        "cents": 4
+      },
+      {
+        "file": "piano-soft/player-dyn1-rr1-028.opus",
+        "midi": 77,
+        "cents": 4
+      },
+      {
+        "file": "piano-soft/player-dyn1-rr1-030.opus",
+        "midi": 81,
+        "cents": 7
+      },
+      {
+        "file": "piano-soft/player-dyn1-rr1-032.opus",
+        "midi": 85,
+        "cents": 28
+      },
+      {
+        "file": "piano-soft/player-dyn1-rr1-034.opus",
+        "midi": 89,
+        "cents": 17
+      },
+      {
+        "file": "piano-soft/player-dyn1-rr1-036.opus",
+        "midi": 93,
+        "cents": 0
+      }
+    ],
+    "piano": [
+      {
+        "file": "piano/player-dyn2-rr1-006.opus",
+        "midi": 33,
+        "cents": -3
+      },
+      {
+        "file": "piano/player-dyn2-rr1-008.opus",
+        "midi": 37,
+        "cents": -9
+      },
+      {
+        "file": "piano/player-dyn2-rr1-010.opus",
+        "midi": 41,
+        "cents": 4
+      },
+      {
+        "file": "piano/player-dyn2-rr1-012.opus",
+        "midi": 45,
+        "cents": -6
+      },
+      {
+        "file": "piano/player-dyn2-rr1-014.opus",
+        "midi": 49,
+        "cents": -2
+      },
+      {
+        "file": "piano/player-dyn2-rr1-016.opus",
+        "midi": 53,
+        "cents": 1
+      },
+      {
+        "file": "piano/player-dyn2-rr1-018.opus",
+        "midi": 57,
+        "cents": 2
+      },
+      {
+        "file": "piano/player-dyn2-rr1-020.opus",
+        "midi": 61,
+        "cents": 2
+      },
+      {
+        "file": "piano/player-dyn2-rr1-022.opus",
+        "midi": 65,
+        "cents": 1
+      },
+      {
+        "file": "piano/player-dyn2-rr1-024.opus",
+        "midi": 69,
+        "cents": 1
+      },
+      {
+        "file": "piano/player-dyn2-rr1-026.opus",
+        "midi": 73,
+        "cents": 4
+      },
+      {
+        "file": "piano/player-dyn2-rr1-028.opus",
+        "midi": 77,
+        "cents": 4
+      },
+      {
+        "file": "piano/player-dyn2-rr1-030.opus",
+        "midi": 81,
+        "cents": 6
+      },
+      {
+        "file": "piano/player-dyn2-rr1-032.opus",
+        "midi": 85,
+        "cents": 11
+      },
+      {
+        "file": "piano/player-dyn2-rr1-034.opus",
+        "midi": 89,
+        "cents": 13
+      },
+      {
+        "file": "piano/player-dyn2-rr1-036.opus",
+        "midi": 93,
+        "cents": 16
+      }
+    ],
+    "violins": [
+      {
+        "file": "violins/vlnens-susvib-g2-v1.opus",
+        "midi": 55,
+        "cents": 2
+      },
+      {
+        "file": "violins/vlnens-susvib-a2-v1.opus",
+        "midi": 57,
+        "cents": -2
+      },
+      {
+        "file": "violins/vlnens-susvib-b2-v1.opus",
+        "midi": 59,
+        "cents": 1
+      },
+      {
+        "file": "violins/vlnens-susvib-d3-v1.opus",
+        "midi": 62,
+        "cents": 3
+      },
+      {
+        "file": "violins/vlnens-susvib-f-3-v1.opus",
+        "midi": 66,
+        "cents": 5
+      },
+      {
+        "file": "violins/vlnens-susvib-a3-v1.opus",
+        "midi": 69,
+        "cents": 4
+      },
+      {
+        "file": "violins/vlnens-susvib-c4-v1.opus",
+        "midi": 72,
+        "cents": 2
+      },
+      {
+        "file": "violins/vlnens-susvib-e4-v1.opus",
+        "midi": 76,
+        "cents": 0
+      },
+      {
+        "file": "violins/vlnens-susvib-g4-v1.opus",
+        "midi": 79,
+        "cents": -2
+      },
+      {
+        "file": "violins/vlnens-susvib-b4-v1.opus",
+        "midi": 83,
+        "cents": 1
+      },
+      {
+        "file": "violins/vlnens-susvib-d5-v1.opus",
+        "midi": 86,
+        "cents": 2
+      }
+    ],
+    "cellos": [
+      {
+        "file": "cellos/susvib-c1-v1-1.opus",
+        "midi": 36,
+        "cents": 3
+      },
+      {
+        "file": "cellos/susvib-e1-v1-1.opus",
+        "midi": 40,
+        "cents": 0
+      },
+      {
+        "file": "cellos/susvib-g1-v1-1.opus",
+        "midi": 43,
+        "cents": 0
+      },
+      {
+        "file": "cellos/susvib-b1-v1-1.opus",
+        "midi": 47,
+        "cents": 2
+      },
+      {
+        "file": "cellos/susvib-d2-v1-1.opus",
+        "midi": 50,
+        "cents": 5
+      },
+      {
+        "file": "cellos/susvib-f2-v1-1.opus",
+        "midi": 53,
+        "cents": 2
+      },
+      {
+        "file": "cellos/susvib-a2-v1-1.opus",
+        "midi": 57,
+        "cents": -1
+      },
+      {
+        "file": "cellos/susvib-c3-v1-1.opus",
+        "midi": 60,
+        "cents": 6
+      },
+      {
+        "file": "cellos/susvib-e3-v1-1.opus",
+        "midi": 64,
+        "cents": -1
+      },
+      {
+        "file": "cellos/susvib-g3-v1-1.opus",
+        "midi": 67,
+        "cents": 8
+      },
+      {
+        "file": "cellos/susvib-b3-v1-1.opus",
+        "midi": 71,
+        "cents": 1
+      },
+      {
+        "file": "cellos/susvib-d4-v1-1.opus",
+        "midi": 74,
+        "cents": -2
+      },
+      {
+        "file": "cellos/susvib-f4-v1-1.opus",
+        "midi": 77,
+        "cents": 4
+      }
+    ],
+    "solo-violin": [
+      {
+        "file": "solo-violin/llvln-arcovib-g3-p.opus",
+        "midi": 55,
+        "cents": 0
+      },
+      {
+        "file": "solo-violin/llvln-arcovib-c4-p.opus",
+        "midi": 60,
+        "cents": 28
+      },
+      {
+        "file": "solo-violin/llvln-arcovib-e4-p.opus",
+        "midi": 64,
+        "cents": 4
+      },
+      {
+        "file": "solo-violin/llvln-arcovib-g4-p.opus",
+        "midi": 67,
+        "cents": -2
+      },
+      {
+        "file": "solo-violin/llvln-arcovib-a4-p.opus",
+        "midi": 69,
+        "cents": 5
+      },
+      {
+        "file": "solo-violin/llvln-arcovib-c5-p.opus",
+        "midi": 72,
+        "cents": -1
+      },
+      {
+        "file": "solo-violin/llvln-arcovib-e5-p.opus",
+        "midi": 76,
+        "cents": 7
+      },
+      {
+        "file": "solo-violin/llvln-arcovib-g5-p.opus",
+        "midi": 79,
+        "cents": 7
+      },
+      {
+        "file": "solo-violin/llvln-arcovib-a5-p.opus",
+        "midi": 81,
+        "cents": -5
+      },
+      {
+        "file": "solo-violin/llvln-arcovib-c6-p.opus",
+        "midi": 84,
+        "cents": -2
+      }
+    ],
+    "harp": [
+      {
+        "file": "harp/ksharp-g1-mp.opus",
+        "midi": 31,
+        "cents": -22
+      },
+      {
+        "file": "harp/ksharp-d2-mf.opus",
+        "midi": 38,
+        "cents": -4
+      },
+      {
+        "file": "harp/ksharp-f2-mf.opus",
+        "midi": 41,
+        "cents": -7
+      },
+      {
+        "file": "harp/ksharp-a2-mf.opus",
+        "midi": 45,
+        "cents": -3
+      },
+      {
+        "file": "harp/ksharp-c3-mf.opus",
+        "midi": 48,
+        "cents": -2
+      },
+      {
+        "file": "harp/ksharp-e3-mf.opus",
+        "midi": 52,
+        "cents": -3
+      },
+      {
+        "file": "harp/ksharp-g3-mf.opus",
+        "midi": 55,
+        "cents": -7
+      },
+      {
+        "file": "harp/ksharp-b3-mf.opus",
+        "midi": 59,
+        "cents": -11
+      },
+      {
+        "file": "harp/ksharp-d4-mf.opus",
+        "midi": 62,
+        "cents": -12
+      },
+      {
+        "file": "harp/ksharp-f4-mf.opus",
+        "midi": 65,
+        "cents": -1
+      },
+      {
+        "file": "harp/ksharp-a4-mf.opus",
+        "midi": 69,
+        "cents": -10
+      },
+      {
+        "file": "harp/ksharp-c5-mf.opus",
+        "midi": 72,
+        "cents": -11
+      },
+      {
+        "file": "harp/ksharp-e5-mf.opus",
+        "midi": 76,
+        "cents": -11
+      },
+      {
+        "file": "harp/ksharp-g5-mf.opus",
+        "midi": 79,
+        "cents": -6
+      },
+      {
+        "file": "harp/ksharp-b5-mf.opus",
+        "midi": 83,
+        "cents": -8
+      },
+      {
+        "file": "harp/ksharp-d6-mf.opus",
+        "midi": 86,
+        "cents": -8
+      }
+    ],
+    "timpani": [
+      {
+        "file": "timpani/timpani1-hit-v3-rr1-sum.opus"
+      },
+      {
+        "file": "timpani/timpani2-hit-v3-rr1-sum.opus"
+      },
+      {
+        "file": "timpani/timpani3-hit-v3-rr1-sum.opus"
+      },
+      {
+        "file": "timpani/timpani4-hit-v3-rr1-sum.opus"
+      },
+      {
+        "file": "timpani/timpani5-hit-v3-rr1-sum.opus"
+      }
+    ],
+    "timpani-roll": [
+      {
+        "file": "timpani-roll/timpani1-roll-v3-rr1-sum.opus"
+      },
+      {
+        "file": "timpani-roll/timpani3-roll-v3-rr1-sum.opus"
+      },
+      {
+        "file": "timpani-roll/timpani5-roll-v3-rr1-sum.opus"
+      }
+    ],
+    "bass-drum": [
+      {
+        "file": "bass-drum/bdrumnewhit-v4-rr1-sum.opus"
+      }
+    ],
+    "cymbal-swell": [
+      {
+        "file": "cymbal-swell/suscymb1-cresc-median-v1.opus"
+      }
+    ]
+  }
+}

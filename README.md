@@ -7,15 +7,16 @@
 
 **Make short narrated films in code, from a repo, a README or a dataset.**
 
-Describe your film in one JSON file. Bezel Film draws every scene, adds a voiceover and captions, and renders an MP4. It runs on your own computer, needs no API keys, and comes with instructions for the coding agents you already use, so you can just ask for a film.
+Describe your film in one JSON file. Bezel Film draws every scene, adds a voiceover, captions and music composed for your film, and renders an MP4. It runs on your own computer, needs no API keys, and comes with instructions for the coding agents you already use, so you can just ask for a film.
 
-> **Status: early development.** Rendering works for the `data-story` style. Music, more styles and more formats are on the [roadmap](#roadmap).
+> **Status: early development.** Rendering works for the `data-story` style, with voice, captions and music. More styles and formats are on the [roadmap](#roadmap).
 
 ## Why Bezel Film
 
 - **Repo to film.** Point your agent at a project or a dataset and get a short explainer or data story.
 - **Charts built in.** Chart scenes are drawn with [Bezel Charts](https://github.com/ShazMoghaddam/bezel-charts), so data looks sharp and animates cleanly.
 - **Offline after a one-time setup.** A local voice ([Kokoro](https://huggingface.co/hexgrad/Kokoro-82M)) and a headless browser download once, the first time. After that, nothing leaves your computer. No accounts, no keys, no upload.
+- **Music written for every film.** Six moods played on recorded piano, strings, harp and timpani, composed fresh from your film's title and dipping automatically whenever the voice speaks. Or bring your own track.
 - **Smooth and repeatable.** Every frame is drawn on a frozen clock, so films come out smooth on any computer and identical every time.
 - **Works with your agent.** Ready-made instructions for Claude Code, Codex, Gemini CLI, Cursor, GitHub Copilot, Windsurf and any agent that reads `AGENTS.md`.
 - **Every shape.** 16:9, 9:16 and 1:1, in full HD or 4K.
@@ -111,8 +112,37 @@ Every scene can also take `narration`, `duration`, `transition` and `id`.
 | `voice.gender` | `female`, `male` | `female` |
 | `voice.voice` | a specific [Kokoro voice](https://huggingface.co/hexgrad/Kokoro-82M/blob/main/VOICES.md), e.g. `af_heart`, `bf_emma`, `bm_george` | `af_heart` |
 | `voice.speed` | `0.5` to `2` | `1` |
-| `music.source` | `generated`, `file`, `none` (music is coming soon) | `generated` |
+| `music.source` | `generated`, `file`, `none` | `generated` |
+| `music.mood` | `calm`, `upbeat`, `dramatic`, `epic`, `ambient`, `reflective` | `calm` |
+| `music.nature` | `rain`, `waves`, `stream`, `wind` (ambient only) | picked from the title |
+| `music.volume` | `0` to `1` | `0.2` |
+| `music.file` | path to your own track, relative to the film file | none |
 | `captions` | `true`, `false` | `true` |
+
+### Music
+
+Every film gets its own music, composed from its title: the same film always sounds the same, and two films never sound quite alike. The music dips whenever the voice speaks, rises in the gaps, and fades out with the picture.
+
+| Mood | How it feels |
+| --- | --- |
+| `calm` | Flowing piano broken chords and a gentle melody over warm cellos, with soft violins above |
+| `upbeat` | A driving groove: full drum kit, deep pulsing bass, dark piano chords and strings |
+| `dramatic` | Opens on a timpani rumble; cellos and violins build, with timpani hits, a solo violin and cymbal swells |
+| `epic` | Dramatic, with a rolling frame drum groove and a choir swelling in |
+| `ambient` | Rain, sea waves, a stream or wind in the leaves, with a few slow, distant piano and harp notes |
+| `reflective` | Expressive solo piano, a breath, then a lone whistle with slow vibrato, answered by the piano |
+
+To use your own track, set `"music": { "source": "file", "file": "my-track.mp3" }`. It's trimmed to the film's length, or fades out early if it's shorter.
+
+### Voices
+
+Hear the recommended voices before you choose one:
+
+```bash
+npx bezel-film voices
+```
+
+It records a short line in eight voices (four female, four male, including two British) and saves them, plus one file with them all in a row.
 
 ### Advanced settings
 
@@ -142,7 +172,7 @@ A `bezel-film init` command that copies the right file into your project is on t
 
 ## Roadmap
 
-- **v0.1.0:** ~~rendering for the `data-story` style in 16:9, Kokoro voiceover, captions~~ (done), music made in code
+- **v0.1.0:** rendering for the `data-story` style in 16:9, Kokoro voiceover, captions and music (all done, release coming)
 - **v0.2.0:** layouts tuned for 9:16 and 1:1, 4K, storyboard preview, `bezel-film init`
 - **v0.3.0:** `product-launch` and `whiteboard` styles, repo and README to film
 - **Later:** optional paid voices, an optional Python helper for turning datasets into film files
@@ -159,6 +189,7 @@ Bezel Film is [MIT](LICENSE) licensed. It downloads and uses these, each under i
 - [Playwright](https://github.com/microsoft/playwright) and Chromium: Apache 2.0 and BSD
 - [ffmpeg](https://ffmpeg.org), via [ffmpeg-static](https://github.com/eugeneware/ffmpeg-static): GPL 3.0. It runs as a separate program and isn't part of Bezel Film's code.
 - Space Grotesk, Inter and JetBrains Mono fonts: SIL Open Font License
+- Instrument recordings from the [VS Chamber Orchestra: Community Edition](https://github.com/sgossner/VSCO-2-CE) by Versilian Studios: CC0 (public domain). See [instruments/CREDITS.md](instruments/CREDITS.md).
 
 ---
 

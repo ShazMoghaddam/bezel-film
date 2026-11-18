@@ -157,3 +157,45 @@ describe("kokoroVoiceName", async () => {
     expect(kokoroVoiceName(f)).toBe("bf_emma");
   });
 });
+
+describe("sampleVoices", async () => {
+  const { mkdtemp, readFile, readdir, rm } = await import("node:fs/promises");
+  const { tmpdir } = await import("node:os");
+  const { join } = await import("node:path");
+  const { VOICE_SHORTLIST, joinClips, sampleVoices } = await import("../src/render/samples.js");
+
+  it("records every shortlisted voice, plus one file with them all", async () => {
+    const folder = await mkdtemp(join(tmpdir(), "voices-"));
+    const heard: string[] = [];
+    const speaker = {
+      voices: VOICE_SHORTLIST.map((voice) => voice.id),
+      async speakAs(voice: string, text: string) {
+        heard.push(`${voice}: ${text}`);
+        return { samples: new Float32Array(240), sampleRate: 24_000 };
+      },
+      async dispose() {},
+    };
+    try {
+      const result = await sampleVoices({ speaker, folder });
+      expect(heard[0]).toBe("af_heart: Hi, I'm Heart. This is how your film's narration would sound.");
+      expect(result.files).toHaveLength(VOICE_SHORTLIST.length);
+      expect(await readdir(folder)).toContain("01-af_heart.wav");
+      // Eight clips of 240 samples, each followed by a 0.8 second gap.
+      const all = await readFile(result.all);
+      expect(all.readUInt32LE(40)).toBe(8 * (240 + 19_200) * 2);
+    } finally {
+      await rm(folder, { recursive: true, force: true });
+    }
+  });
+
+  it("puts a gap of silence between clips", () => {
+    const clip = { samples: new Float32Array([0.5]), sampleRate: 4 };
+    const wav = joinClips([clip, clip], 0.5);
+    const samples = Array.from({ length: 6 }, (_, i) => wav.readInt16LE(44 + i * 2));
+    expect(samples).toEqual([16384, 0, 0, 16384, 0, 0]);
+  });
+
+  it("only lists voices Kokoro grades C or better", () => {
+    expect(VOICE_SHORTLIST.every((voice) => /^[ABC]/.test(voice.grade))).toBe(true);
+  });
+});

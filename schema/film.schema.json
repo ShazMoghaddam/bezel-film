@@ -105,6 +105,7 @@
       "properties": {
         "source": {
           "default": "generated",
+          "description": "Music composed for the film, your own track, or none.",
           "type": "string",
           "enum": [
             "generated",
@@ -113,23 +114,37 @@
           ]
         },
         "file": {
-          "description": "Path to your own track, used when source is \"file\".",
+          "description": "Path to your own track, relative to the film file. Used when source is \"file\".",
           "type": "string",
           "minLength": 1,
           "maxLength": 300
         },
         "mood": {
           "default": "calm",
+          "description": "calm: flowing piano. upbeat: a driving groove. dramatic: building strings and timpani. epic: dramatic with a frame drum and choir. ambient: nature sounds and distant piano. reflective: expressive piano and a lone whistle.",
           "type": "string",
           "enum": [
             "calm",
             "upbeat",
             "dramatic",
-            "ambient"
+            "epic",
+            "ambient",
+            "reflective"
+          ]
+        },
+        "nature": {
+          "description": "The nature sound under ambient music. Picked from the title if left out.",
+          "type": "string",
+          "enum": [
+            "rain",
+            "waves",
+            "stream",
+            "wind"
           ]
         },
         "volume": {
           "default": 0.2,
+          "description": "How loud the music is between lines. It dips further while someone speaks.",
           "type": "number",
           "minimum": 0,
           "maximum": 1

@@ -45,7 +45,8 @@
     "dist",
     "schema",
     "styles",
-    "agents/generated"
+    "agents/generated",
+    "instruments"
   ],
   "engines": {
     "node": ">=22"
@@ -61,7 +62,8 @@
     "example": "tsx src/cli.ts validate examples/northside-coffee/film.json",
     "check": "npm run typecheck && npm test && npm run schema:check && npm run agents:check && npm run example",
     "prepublishOnly": "npm run check && npm run build",
-    "smoke": "tsx scripts/smoke-render.ts"
+    "smoke": "tsx scripts/smoke-render.ts",
+    "instruments": "tsx scripts/build-instruments.ts"
   },
   "dependencies": {
     "@fontsource/inter": "^5.3.0",

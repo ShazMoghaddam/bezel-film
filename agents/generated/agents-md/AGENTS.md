@@ -13,6 +13,7 @@ Bezel Film turns a repo, a README or a dataset into a short narrated film. You d
    - Which style: `data-story`, `product-launch` or `whiteboard`?
    - Voiceover: a female voice, a male voice, or none? (default female)
    - Captions on or off? (default on)
+   - Music: calm, upbeat, dramatic, epic, ambient, reflective, or none? (default calm)
 2. **Gather the material.** Read the README, the code or the dataset. Only use facts and numbers that come from the material or from the user. Never invent figures.
 3. **Write `film.json`** following the rules below. Start the file with `"$schema": "./node_modules/bezel-film/schema/film.schema.json"` so editors can check it.
 4. **Check it** with `npx bezel-film validate film.json` and fix every problem it reports.
@@ -38,7 +39,9 @@ Bezel Film turns a repo, a README or a dataset into a short narrated film. You d
 
 Only `spec`, `title`, `style` and `scenes` are required. Everything else has a sensible default.
 
-Map the user's answers to settings: a male voice is `"voice": { "gender": "male" }`, no voiceover is `"voice": { "engine": "none" }`, and no captions is `"captions": false`.
+Map the user's answers to settings: a male voice is `"voice": { "gender": "male" }`, no voiceover is `"voice": { "engine": "none" }`, no captions is `"captions": false`, a music mood is `"music": { "mood": "upbeat" }`, and no music is `"music": { "source": "none" }`.
+
+Pick a mood that suits the story if the user has no preference: `calm` for most data stories, `upbeat` for launches and good news, `dramatic` or `epic` for a big reveal, `ambient` for a quiet, natural feel, and `reflective` for something personal or looking back. If the user wants to hear voices first, run `npx bezel-film voices`.
 
 ## Scene types
 
