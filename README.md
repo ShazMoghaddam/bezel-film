@@ -7,15 +7,16 @@
 
 **Make short narrated films in code, from a repo, a README or a dataset.**
 
-Describe your film in one JSON file. Bezel Film draws every scene, adds a voiceover and music, and renders a video. It runs offline, needs no API keys, and comes with instructions for the coding agents you already use, so you can just ask for a film.
+Describe your film in one JSON file. Bezel Film draws every scene, adds a voiceover and captions, and renders an MP4. It runs on your own computer, needs no API keys, and comes with instructions for the coding agents you already use, so you can just ask for a film.
 
-> **Status: early development.** The film format, validator and agent instructions are ready. Rendering arrives in **v0.1.0**. Follow the [roadmap](#roadmap) to see what's next.
+> **Status: early development.** Rendering works for the `data-story` style. Music, more styles and more formats are on the [roadmap](#roadmap).
 
 ## Why Bezel Film
 
 - **Repo to film.** Point your agent at a project or a dataset and get a short explainer or data story.
 - **Charts built in.** Chart scenes are drawn with [Bezel Charts](https://github.com/ShazMoghaddam/bezel-charts), so data looks sharp and animates cleanly.
-- **Offline by default.** A local voice ([Kokoro](https://huggingface.co/hexgrad/Kokoro-82M)) and music made in code. No accounts, no keys, no upload.
+- **Offline after a one-time setup.** A local voice ([Kokoro](https://huggingface.co/hexgrad/Kokoro-82M)) and a headless browser download once, the first time. After that, nothing leaves your computer. No accounts, no keys, no upload.
+- **Smooth and repeatable.** Every frame is drawn on a frozen clock, so films come out smooth on any computer and identical every time.
 - **Works with your agent.** Ready-made instructions for Claude Code, Codex, Gemini CLI, Cursor, GitHub Copilot, Windsurf and any agent that reads `AGENTS.md`.
 - **Every shape.** 16:9, 9:16 and 1:1, in full HD or 4K.
 
@@ -26,13 +27,27 @@ Needs Node 22 or later.
 ```bash
 npm install --save-dev bezel-film
 npx bezel-film validate film.json
+npx bezel-film render film.json
 ```
 
 ```
-✓ film.json is a valid film
-  "Northside Coffee: a year in numbers" · data-story · 16:9 1080p 30fps
-  6 scenes · about 34s
+Rendering "Northside Coffee: a year in numbers"
+✓ Saved film.mp4 · 38s · rendered in 1m 59s
 ```
+
+Render time depends on your computer. That run was on a small two-core machine, and most laptops are faster.
+
+The video is saved next to the film file. Use `-o` to choose another path: `npx bezel-film render film.json -o videos/coffee.mp4`.
+
+### First run
+
+The first render downloads two things, once: the voice model (about 90 MB) and a headless browser (about 100 MB). To do that up front instead, run:
+
+```bash
+npx bezel-film setup
+```
+
+You don't need to install ffmpeg. Bezel Film uses yours if you have it, and otherwise fetches a copy when you install.
 
 ## The film file
 
@@ -86,9 +101,22 @@ Every scene can also take `narration`, `duration`, `transition` and `id`.
 | `format.aspect` | `16:9`, `9:16`, `1:1` | `16:9` |
 | `format.resolution` | `1080p`, `4k` | `1080p` |
 | `format.fps` | `24`, `30`, `60` | `30` |
-| `voice.engine` | `kokoro`, `piper`, `none` | `kokoro` |
-| `music.source` | `generated`, `file`, `none` | `generated` |
+| `voice.engine` | `kokoro`, `none` (`piper` is planned) | `kokoro` |
+| `voice.voice` | any [Kokoro voice](https://huggingface.co/hexgrad/Kokoro-82M/blob/main/VOICES.md), e.g. `af_heart`, `bf_emma`, `bm_george` | `af_heart` |
+| `voice.speed` | `0.5` to `2` | `1` |
+| `music.source` | `generated`, `file`, `none` (music is coming soon) | `generated` |
 | `captions` | `true`, `false` | `true` |
+
+### Advanced settings
+
+These environment variables are optional:
+
+| Variable | What it does |
+| --- | --- |
+| `BEZEL_FILM_FFMPEG` | Path to the ffmpeg to use |
+| `BEZEL_FILM_CHROME` | Path to a Chrome or Chromium to draw with |
+| `BEZEL_FILM_CACHE` | Where downloaded models are kept (default `~/.cache/bezel-film`) |
+| `BEZEL_FILM_WORKERS` | How many browser pages draw frames at once (default: spare CPU cores, up to 4) |
 
 ## Using it with a coding agent
 
@@ -107,8 +135,8 @@ A `bezel-film init` command that copies the right file into your project is on t
 
 ## Roadmap
 
-- **v0.1.0:** rendering for the `data-story` style in 16:9, Kokoro voiceover, captions, generated music
-- **v0.2.0:** 9:16 and 1:1, 4K, storyboard preview, `bezel-film init`
+- **v0.1.0:** ~~rendering for the `data-story` style in 16:9, Kokoro voiceover, captions~~ (done), music made in code
+- **v0.2.0:** layouts tuned for 9:16 and 1:1, 4K, storyboard preview, `bezel-film init`
 - **v0.3.0:** `product-launch` and `whiteboard` styles, repo and README to film
 - **Later:** optional paid voices, an optional Python helper for turning datasets into film files
 
@@ -118,7 +146,12 @@ Ideas, bug reports and pull requests are welcome. See [CONTRIBUTING.md](CONTRIBU
 
 ## Licence
 
-[MIT](LICENSE)
+Bezel Film is [MIT](LICENSE) licensed. It downloads and uses these, each under its own licence:
+
+- [Kokoro](https://huggingface.co/hexgrad/Kokoro-82M) voice model and [kokoro-js](https://github.com/hexgrad/kokoro): Apache 2.0
+- [Playwright](https://github.com/microsoft/playwright) and Chromium: Apache 2.0 and BSD
+- [ffmpeg](https://ffmpeg.org), via [ffmpeg-static](https://github.com/eugeneware/ffmpeg-static): GPL 3.0. It runs as a separate program and isn't part of Bezel Film's code.
+- Space Grotesk, Inter and JetBrains Mono fonts: SIL Open Font License
 
 ---
 

@@ -1,0 +1,249 @@
+import type { Film, Scene } from "../spec/schema.js";
+import type { Style } from "./style.js";
+import type { Timeline, TimedScene } from "./timeline.js";
+
+/**
+ * Builds the web page the film is drawn in. Every scene sits on the page at once,
+ * stacked and transparent; the runtime (runtime.ts) shows the right one for each frame.
+ *
+ * All text from the film file is escaped before it goes into the page, and chart
+ * data travels as JSON, so a film file can never inject code.
+ */
+
+const ESCAPES: Record<string, string> = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
+export const escapeHtml = (text: string) => text.replace(/[&<>"']/g, (char) => ESCAPES[char]!);
+/** JSON that's safe inside a <script> tag. */
+const safeJson = (value: unknown) => JSON.stringify(value).replace(/</g, "\\u003c");
+
+/** Delay (ms) before an element's entrance, measured from the start of its scene. */
+const delay = (ms: number, extra = "") => `style="--d:${Math.round(ms)}ms${extra ? `;${extra}` : ""}"`;
+
+/** How far into the scene the voice starts, so list items can appear as they're spoken. */
+function speechWindow(timed: TimedScene): { from: number; to: number } {
+  const first = timed.lines[0];
+  const last = timed.lines.at(-1);
+  if (!first || !last) return { from: 300, to: (timed.end - timed.start) * 1000 * 0.6 };
+  return { from: (first.start - timed.start) * 1000, to: (last.end - timed.start) * 1000 };
+}
+
+function sceneBody(timed: TimedScene, style: Style): string {
+  const scene: Scene = timed.scene;
+  const stagger = style.motion.staggerMs;
+  switch (scene.type) {
+    case "title":
+      return `<div class="center">
+        <h1 class="rise display" ${delay(0)}>${escapeHtml(scene.title)}</h1>
+        <div class="rule grow" ${delay(stagger * 3)}></div>
+        ${scene.subtitle ? `<p class="rise lead muted" ${delay(stagger * 5)}>${escapeHtml(scene.subtitle)}</p>` : ""}
+      </div>`;
+
+    case "stat":
+      return `<div class="center">
+        <div class="rise stat-value" ${delay(0)} data-count="${escapeHtml(String(scene.value))}">${escapeHtml(String(scene.value))}</div>
+        <div class="rise stat-label" ${delay(stagger * 3)}>${escapeHtml(scene.label)}</div>
+        ${scene.context ? `<div class="rise" ${delay(stagger * 6)}><span class="chip">${escapeHtml(scene.context)}</span></div>` : ""}
+      </div>`;
+
+    case "chart":
+      return `<div class="center wide">
+        ${scene.chart.heading ? `<h2 class="rise heading" ${delay(0)}>${escapeHtml(scene.chart.heading)}</h2>` : ""}
+        <div class="card rise" ${delay(stagger * 2)}><div class="chart-frame" data-chart="${timed.index}"></div></div>
+      </div>`;
+
+    case "points": {
+      const { from, to } = speechWindow(timed);
+      const step = scene.points.length > 1 ? (to - from) / scene.points.length : 0;
+      const items = scene.points
+        .map((point, i) => `<li class="rise" ${delay(from + i * step, `--c:var(--p${i % style.colours.palette.length})`)}><span class="dot"></span><span>${escapeHtml(point)}</span></li>`)
+        .join("");
+      return `<div class="column">
+        ${scene.heading ? `<h2 class="rise heading" ${delay(0)}>${escapeHtml(scene.heading)}</h2>` : ""}
+        <ul class="points">${items}</ul>
+      </div>`;
+    }
+
+    case "code": {
+      const highlight = new Set(scene.highlight ?? []);
+      const lines = scene.code
+        .replace(/\s+$/, "")
+        .split("\n")
+        .map((line, i) => `<span class="ln${highlight.has(i + 1) ? " hl" : ""}"><b>${i + 1}</b>${escapeHtml(line) || " "}</span>`)
+        .join("");
+      return `<div class="center wide">
+        <figure class="code rise" ${delay(0)}>
+          <div class="code-bar"><i></i><i></i><i></i><span>${escapeHtml(scene.language)}</span></div>
+          <pre><code>${lines}</code></pre>
+        </figure>
+        ${scene.caption ? `<p class="rise muted lead" ${delay(stagger * 4)}>${escapeHtml(scene.caption)}</p>` : ""}
+      </div>`;
+    }
+
+    case "quote":
+      return `<div class="column narrow">
+        <div class="rise quote-mark" ${delay(0)}>“</div>
+        <blockquote class="rise quote" ${delay(stagger * 2)}>${escapeHtml(scene.quote)}</blockquote>
+        ${scene.attribution ? `<p class="rise muted lead" ${delay(stagger * 5)}>${escapeHtml(scene.attribution)}</p>` : ""}
+      </div>`;
+
+    case "outro":
+      return `<div class="center">
+        <h1 class="rise display" ${delay(0)}>${escapeHtml(scene.title)}</h1>
+        ${scene.cta ? `<div class="rise" ${delay(stagger * 4)}><span class="cta">${escapeHtml(scene.cta)}</span></div>` : ""}
+        ${scene.url ? `<p class="rise url" ${delay(stagger * 6)}>${escapeHtml(scene.url.replace(/^https?:\/\//, ""))}</p>` : ""}
+      </div>`;
+
+    case "custom":
+      throw new Error(`Custom scenes aren't supported by the renderer yet (scene ${timed.index + 1}).`);
+  }
+}
+
+function css(style: Style): string {
+  const { colours, fonts, motion, layout } = style;
+  const palette = colours.palette.map((colour, i) => `--p${i}:${colour};`).join("");
+  return `
+@font-face{font-family:"${fonts.heading}";font-weight:600;src:url(/fonts/heading-600.woff2) format("woff2")}
+@font-face{font-family:"${fonts.heading}";font-weight:700;src:url(/fonts/heading-700.woff2) format("woff2")}
+@font-face{font-family:"${fonts.body}";font-weight:400;src:url(/fonts/body-400.woff2) format("woff2")}
+@font-face{font-family:"${fonts.body}";font-weight:600;src:url(/fonts/body-600.woff2) format("woff2")}
+@font-face{font-family:"${fonts.mono}";font-weight:400;src:url(/fonts/mono-400.woff2) format("woff2")}
+:root{--bg:${colours.background};--surface:${colours.surface};--text:${colours.text};--muted:${colours.muted};--accent:${colours.accent};${palette}
+  --u:calc(min(100vw,100vh)/100);--safe:${layout.safeArea * 100}vmin;--ease:${motion.easing};--enter:${motion.enterMs}ms;
+  --heading:"${fonts.heading}",system-ui,sans-serif;--body:"${fonts.body}",system-ui,sans-serif;--mono:"${fonts.mono}",ui-monospace,monospace}
+*{box-sizing:border-box;margin:0;padding:0;animation-play-state:paused!important}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:var(--body);-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision}
+.backdrop,.grain{will-change:transform}
+.backdrop{position:absolute;inset:-20%;background:
+  radial-gradient(40% 45% at 20% 25%,color-mix(in srgb,var(--p0) 16%,transparent),transparent 70%),
+  radial-gradient(35% 40% at 85% 75%,color-mix(in srgb,var(--p1) 13%,transparent),transparent 70%),
+  radial-gradient(30% 35% at 70% 15%,color-mix(in srgb,var(--p2) 10%,transparent),transparent 70%)}
+.grain{position:absolute;inset:0;background-image:radial-gradient(color-mix(in srgb,var(--text) 5%,transparent) 1px,transparent 1px);background-size:calc(var(--u)*2.4) calc(var(--u)*2.4);mask-image:radial-gradient(ellipse at center,#000 30%,transparent 80%);opacity:.5}
+#stage{position:absolute;inset:0}
+.scene{position:absolute;inset:0;padding:var(--safe);display:flex;align-items:center;justify-content:center;opacity:0;--c:var(--p0)}
+.center{display:flex;flex-direction:column;align-items:center;text-align:center;gap:calc(var(--u)*2.6);max-width:84%}
+.center.wide{width:100%;max-width:100%}
+.column{display:flex;flex-direction:column;gap:calc(var(--u)*3.4);width:fit-content;max-width:min(100%,calc(var(--u)*150))}
+.column.narrow{max-width:min(100%,calc(var(--u)*120))}
+.rise{animation:rise var(--enter) var(--ease) var(--d,0ms) both}
+.grow{animation:grow calc(var(--enter)*1.6) var(--ease) var(--d,0ms) both}
+@keyframes rise{from{opacity:0;transform:translateY(calc(var(--u)*3))}to{opacity:1;transform:none}}
+@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.display{font-family:var(--heading);font-weight:700;font-size:calc(var(--u)*10);line-height:1.02;letter-spacing:-.025em;text-wrap:balance}
+.heading{font-family:var(--heading);font-weight:700;font-size:calc(var(--u)*6);letter-spacing:-.02em;line-height:1.05}
+.lead{font-size:calc(var(--u)*3.2);line-height:1.35;text-wrap:balance}
+.muted{color:var(--muted)}
+.rule{width:calc(var(--u)*22);height:calc(var(--u)*.9);border-radius:99px;transform-origin:left;
+  background:linear-gradient(90deg,var(--p0),var(--p1),var(--p2),var(--p3))}
+.stat-value{font-family:var(--heading);font-weight:700;font-size:calc(var(--u)*24);line-height:.95;letter-spacing:-.04em;font-variant-numeric:tabular-nums;color:var(--c)}
+.stat-label{font-family:var(--heading);font-weight:600;font-size:calc(var(--u)*5);letter-spacing:-.01em}
+.chip{display:inline-block;padding:calc(var(--u)*1) calc(var(--u)*2.4);border-radius:99px;font-weight:600;font-size:calc(var(--u)*2.6);
+  color:var(--c);background:color-mix(in srgb,var(--c) 14%,transparent);border:1px solid color-mix(in srgb,var(--c) 40%,transparent)}
+.card{padding:calc(var(--u)*3.4) calc(var(--u)*4);border-radius:calc(var(--u)*3);
+  background:color-mix(in srgb,var(--surface) 88%,transparent);border:1px solid color-mix(in srgb,var(--text) 8%,transparent);
+  box-shadow:0 calc(var(--u)*3) calc(var(--u)*8) rgb(0 0 0/.35)}
+.chart-frame{position:relative}
+.chart-frame bezel-chart{display:block;position:absolute;left:0;top:0;transform-origin:0 0}
+.points{list-style:none;display:flex;flex-direction:column;gap:calc(var(--u)*2.4)}
+.points li{display:flex;align-items:center;gap:calc(var(--u)*2.4);font-size:calc(var(--u)*4.2);font-weight:600;line-height:1.2}
+.dot{flex:none;width:calc(var(--u)*2.2);height:calc(var(--u)*2.2);border-radius:50%;background:var(--c);box-shadow:0 0 calc(var(--u)*2.4) color-mix(in srgb,var(--c) 60%,transparent)}
+.code{width:min(100%,calc(var(--u)*140));border-radius:calc(var(--u)*2.4);overflow:hidden;text-align:left;background:var(--surface);border:1px solid color-mix(in srgb,var(--text) 10%,transparent)}
+.code-bar{display:flex;gap:calc(var(--u)*1);align-items:center;padding:calc(var(--u)*1.6) calc(var(--u)*2.4);background:color-mix(in srgb,var(--text) 5%,transparent)}
+.code-bar i{width:calc(var(--u)*1.4);height:calc(var(--u)*1.4);border-radius:50%;background:var(--p1)}
+.code-bar i:nth-child(2){background:var(--p3)}.code-bar i:nth-child(3){background:var(--p5,var(--p2))}
+.code-bar span{margin-left:auto;font-family:var(--mono);font-size:calc(var(--u)*2);color:var(--muted)}
+.code pre{padding:calc(var(--u)*2.4) 0;font-family:var(--mono);font-size:calc(var(--u)*2.7);line-height:1.6}
+.ln{display:block;padding:0 calc(var(--u)*3) 0 calc(var(--u)*2);white-space:pre}
+.ln b{display:inline-block;width:calc(var(--u)*5);font-weight:400;color:color-mix(in srgb,var(--muted) 60%,transparent);text-align:right;margin-right:calc(var(--u)*3)}
+.ln.hl{background:color-mix(in srgb,var(--accent) 14%,transparent);box-shadow:inset calc(var(--u)*.5) 0 var(--accent)}
+.quote-mark{font-family:var(--heading);font-weight:700;font-size:calc(var(--u)*22);line-height:.6;color:var(--c);height:calc(var(--u)*10)}
+.quote{font-family:var(--heading);font-weight:600;font-size:calc(var(--u)*5.6);line-height:1.2;letter-spacing:-.015em;text-wrap:balance}
+.cta{display:inline-block;padding:calc(var(--u)*1.6) calc(var(--u)*4);border-radius:99px;font-weight:600;font-size:calc(var(--u)*3);color:var(--bg);background:var(--accent)}
+.url{font-family:var(--mono);font-size:calc(var(--u)*2.6);color:var(--muted)}
+.caption{position:absolute;left:50%;bottom:calc(var(--safe)*.55);transform:translateX(-50%);max-width:76%;text-align:center;opacity:0}
+.caption span{display:inline;padding:calc(var(--u)*.5) calc(var(--u)*1.6);border-radius:calc(var(--u)*1);font-weight:600;font-size:calc(var(--u)*2.8);line-height:1.6;
+  background:rgb(0 0 0/.62);box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.progress{position:absolute;left:0;top:0;height:calc(var(--u)*.45);width:0;background:linear-gradient(90deg,var(--p0),var(--p1),var(--p3))}
+`;
+}
+
+/**
+ * Charts are drawn at this size, then zoomed to fill the frame, so their text
+ * scales with them and stays readable on video.
+ */
+const CHART_WIDTH = 620;
+const CHART_HEIGHT = 250;
+/** Round charts look best on a narrower canvas, with the legend close by. */
+const ROUND_CHARTS = new Set(["donut", "ring", "gauge"]);
+
+/** Everything the runtime needs to seek, sent to the page as JSON. */
+export function runtimeData(film: Film, style: Style, timeline: Timeline) {
+  return {
+    duration: timeline.duration,
+    transitionSeconds: style.motion.transitionMs / 1000,
+    endFadeSeconds: 0.6,
+    captions: film.captions,
+    scenes: timeline.scenes.map((timed) => ({
+      start: timed.start,
+      end: timed.end,
+      transition: timed.scene.transition ?? style.motion.transition,
+    })),
+    lines: timeline.scenes.flatMap((timed) => timed.lines.map((line) => ({ ...line, scene: timed.index }))),
+    charts: timeline.scenes
+      .filter((timed) => timed.scene.type === "chart")
+      .map((timed) => {
+        const { chart } = timed.scene as Extract<Scene, { type: "chart" }>;
+        return {
+          scene: timed.index,
+          type: chart.type,
+          data: {
+            ...chart.options,
+            values: chart.values,
+            labels: chart.labels,
+            series: chart.series,
+            prefix: chart.prefix,
+            suffix: chart.suffix,
+          },
+          attributes: {
+            theme: "dark",
+            frame: "none",
+            background: "transparent",
+            color: style.colours.palette.join(","),
+            compact: "",
+            "no-tooltips": "",
+            "show-values": "",
+            width: String(ROUND_CHARTS.has(chart.type) ? CHART_WIDTH * 0.8 : CHART_WIDTH),
+            height: String(CHART_HEIGHT),
+          },
+        };
+      }),
+  };
+}
+
+export function buildPage(film: Film, style: Style, timeline: Timeline): string {
+  const scenes = timeline.scenes
+    .map((timed) => {
+      const colour = `var(--p${timed.index % style.colours.palette.length})`;
+      return `<section class="scene scene-${timed.scene.type}" data-index="${timed.index}" style="--c:${colour}">${sceneBody(timed, style)}</section>`;
+    })
+    .join("\n");
+
+  return `<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<title>${escapeHtml(film.title)}</title>
+<style>${css(style)}</style>
+</head>
+<body>
+<div class="backdrop"></div>
+<div class="grain"></div>
+<main id="stage">
+${scenes}
+</main>
+<div class="caption"><span></span></div>
+<div class="progress"></div>
+<script>window.__BEZEL_DATA__ = ${safeJson(runtimeData(film, style, timeline))};</script>
+<script src="/bezel-charts.js"></script>
+<script src="/runtime.js"></script>
+</body>
+</html>`;
+}

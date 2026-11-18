@@ -13,14 +13,16 @@ npm install
 npm run check
 ```
 
-`npm run check` runs everything CI runs: type checks, tests, the generated-file checks and the example film.
+`npm run check` runs the type checks, tests, generated-file checks and the example film. `npm run smoke` renders a short test film end to end, as CI does.
+
+To render the example film: `npx tsx src/cli.ts render examples/northside-coffee/film.json`.
 
 ## How the project fits together
 
 | Folder | What lives there |
 | --- | --- |
 | `src/spec/` | The film spec (`schema.ts`) and validation. This is the source of truth for the film file. |
-| `src/render/` | The renderer: voice, canvas frames and ffmpeg. |
+| `src/render/` | The renderer: voice (`voice.ts`), timing (`timeline.ts`), the scene page (`page.ts`, `runtime.ts`), frame capture and ffmpeg (`index.ts`). |
 | `src/cli.ts` | The `bezel-film` command. |
 | `styles/` | One folder per style: colours, fonts and motion. |
 | `agents/instructions.md` | The single source for every agent's instructions. |

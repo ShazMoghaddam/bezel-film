@@ -12,6 +12,7 @@ Include what you found, how to reproduce it and what impact you think it has. Yo
 
 ## Things to know
 
-- Bezel Film runs locally and sends nothing over the network by default.
+- Bezel Film runs locally. The only network use is the one-time download of the voice model and headless browser. While rendering, the browser is blocked from opening any connection.
+- Text from a film file is escaped before it's drawn, and chart data is passed as data, so a film file can't run code (except `custom` scenes, once they exist).
 - `custom` scenes run your own code in a headless browser. Only render film files you trust, just as you would only run scripts you trust.
 - Optional paid voice services, when added, will read keys from environment variables only. Never put keys in a film file.
