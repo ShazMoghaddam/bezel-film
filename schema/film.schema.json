@@ -76,8 +76,17 @@
             "none"
           ]
         },
+        "gender": {
+          "default": "female",
+          "description": "A female or male voice. Picks the best-sounding voice of that kind.",
+          "type": "string",
+          "enum": [
+            "female",
+            "male"
+          ]
+        },
         "voice": {
-          "description": "Voice name for the chosen engine. Leave out for the default.",
+          "description": "A specific voice name for the engine, e.g. \"bf_emma\". Overrides gender.",
           "type": "string",
           "minLength": 1,
           "maxLength": 60

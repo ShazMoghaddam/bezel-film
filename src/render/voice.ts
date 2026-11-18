@@ -18,7 +18,14 @@ export interface Voice {
   dispose?(): Promise<void>;
 }
 
-export const DEFAULT_KOKORO_VOICE = "af_heart";
+/** The best-sounding Kokoro voice of each kind, by Kokoro's own quality grades. */
+export const KOKORO_VOICES = { female: "af_heart", male: "am_michael" } as const;
+export const DEFAULT_KOKORO_VOICE = KOKORO_VOICES.female;
+
+/** The Kokoro voice a film asks for: a named voice if it gives one, otherwise the best for its gender. */
+export function kokoroVoiceName(film: Film): string {
+  return film.voice.voice ?? KOKORO_VOICES[film.voice.gender];
+}
 const KOKORO_MODEL = "onnx-community/Kokoro-82M-v1.0-ONNX";
 
 /** Where downloaded models live, outside node_modules so a reinstall keeps them. */
@@ -72,7 +79,7 @@ export async function voiceForFilm(film: Film, onProgress?: Progress): Promise<V
     case "none":
       return null;
     case "kokoro":
-      return kokoroVoice({ voice: film.voice.voice, speed: film.voice.speed, onProgress });
+      return kokoroVoice({ voice: kokoroVoiceName(film), speed: film.voice.speed, onProgress });
     case "piper":
       throw new Error('The Piper voice isn\'t built yet. Use "kokoro" for now, or "none" for no voiceover.');
   }

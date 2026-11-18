@@ -108,7 +108,8 @@ Every scene can also take `narration`, `duration`, `transition` and `id`.
 | `format.resolution` | `1080p`, `4k` | `1080p` |
 | `format.fps` | `24`, `30`, `60` | `30` |
 | `voice.engine` | `kokoro`, `none` (`piper` is planned) | `kokoro` |
-| `voice.voice` | any [Kokoro voice](https://huggingface.co/hexgrad/Kokoro-82M/blob/main/VOICES.md), e.g. `af_heart`, `bf_emma`, `bm_george` | `af_heart` |
+| `voice.gender` | `female`, `male` | `female` |
+| `voice.voice` | a specific [Kokoro voice](https://huggingface.co/hexgrad/Kokoro-82M/blob/main/VOICES.md), e.g. `af_heart`, `bf_emma`, `bm_george` | `af_heart` |
 | `voice.speed` | `0.5` to `2` | `1` |
 | `music.source` | `generated`, `file`, `none` (music is coming soon) | `generated` |
 | `captions` | `true`, `false` | `true` |

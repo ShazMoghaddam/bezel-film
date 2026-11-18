@@ -15,6 +15,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Rendering runs fully offline after setup: the browser is blocked from opening any network connection.
 - ffmpeg is found automatically, or fetched on install, so there's nothing extra to install.
 - Render smoke test in CI.
+- Choose a female or male voice with `voice.gender`. Each picks the best-sounding Kokoro voice of that kind.
+- The agent instructions now ask about voice (female, male or none) and captions (on or off) in the opening round.
 
 ### Fixed
 
