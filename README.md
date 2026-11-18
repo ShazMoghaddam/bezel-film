@@ -49,6 +49,12 @@ npx bezel-film setup
 
 You don't need to install ffmpeg. Bezel Film uses yours if you have it, and otherwise fetches a copy when you install.
 
+On Linux, the voice engine also tries to download large GPU files it doesn't need. Skip them with:
+
+```bash
+ONNXRUNTIME_NODE_INSTALL_CUDA=skip npm install --save-dev bezel-film
+```
+
 ## The film file
 
 A film is a few settings plus a list of scenes. Only `spec`, `title`, `style` and `scenes` are required.

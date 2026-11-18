@@ -16,6 +16,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - ffmpeg is found automatically, or fetched on install, so there's nothing extra to install.
 - Render smoke test in CI.
 
+### Fixed
+
+- No more "mutex lock failed" crash on a Mac after a render finishes. The voice engine now shuts down cleanly.
+- No more "Unknown project config" warning from npm. The setting moved out of `.npmrc`.
+
 - Film spec (version 1): film-wide settings for style, format, voice, music and captions, plus a list of scenes.
 - Eight scene types: `title`, `stat`, `chart`, `points`, `code`, `quote`, `outro` and `custom`.
 - Chart scenes that map directly onto Bezel Charts chart types.

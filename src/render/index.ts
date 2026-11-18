@@ -177,8 +177,15 @@ export async function renderFilm(film: Film, options: RenderOptions): Promise<Re
   const ffmpeg = findFfmpeg();
   if (film.music.source !== "none") onWarning?.("Music isn't built yet, so this film has no music. It arrives in a later version.");
 
-  const voice = options.voice !== undefined ? options.voice : await voiceForFilm(film, onProgress);
-  const speech = await speakFilm(film, voice, onProgress);
+  // A voice passed in belongs to the caller; one we load ourselves, we also clean up.
+  const ownVoice = options.voice === undefined;
+  const voice = ownVoice ? await voiceForFilm(film, onProgress) : (options.voice ?? null);
+  let speech: Awaited<ReturnType<typeof speakFilm>>;
+  try {
+    speech = await speakFilm(film, voice, onProgress);
+  } finally {
+    if (ownVoice) await voice?.dispose?.();
+  }
   const timeline = buildTimeline(film, speech.seconds);
   for (const warning of overlongNarration(film, timeline)) onWarning?.(warning);
 

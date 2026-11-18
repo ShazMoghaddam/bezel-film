@@ -115,7 +115,8 @@ async function setup(): Promise<number> {
   await installBrowser(status.update);
   status.done();
   console.log("  ✓ Headless browser");
-  await kokoroVoice({ onProgress: status.update });
+  const voice = await kokoroVoice({ onProgress: status.update });
+  await voice.dispose?.();
   status.done();
   console.log(`  ✓ Voice model (saved in ${cacheDir()})`);
   findFfmpeg();
@@ -162,10 +163,14 @@ async function main(argv: string[]): Promise<number> {
   }
 }
 
+// Set the exit code and let Node finish by itself, rather than calling process.exit(),
+// so native code (the voice engine) shuts down cleanly first.
 main(process.argv.slice(2)).then(
-  (code) => process.exit(code),
+  (code) => {
+    process.exitCode = code;
+  },
   (error: unknown) => {
     console.error(error instanceof Error ? error.message : String(error));
-    process.exit(error instanceof UsageError ? 2 : 1);
+    process.exitCode = error instanceof UsageError ? 2 : 1;
   },
 );

@@ -13,6 +13,8 @@ npm install
 npm run check
 ```
 
+On Linux, run `export ONNXRUNTIME_NODE_INSTALL_CUDA=skip` before `npm install` to skip large GPU files the voice engine doesn't need.
+
 `npm run check` runs the type checks, tests, generated-file checks and the example film. `npm run smoke` renders a short test film end to end, as CI does.
 
 To render the example film: `npx tsx src/cli.ts render examples/northside-coffee/film.json`.
