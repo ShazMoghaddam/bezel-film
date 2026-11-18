@@ -1,6 +1,6 @@
 {
   "name": "bezel-film",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Make short narrated films in code from a repo, README or dataset. Offline, no API keys, built for coding agents.",
   "keywords": [
     "video",
@@ -63,7 +63,8 @@
     "check": "npm run typecheck && npm test && npm run schema:check && npm run agents:check && npm run example",
     "prepublishOnly": "npm run check && npm run build",
     "smoke": "tsx scripts/smoke-render.ts",
-    "instruments": "tsx scripts/build-instruments.ts"
+    "instruments": "tsx scripts/build-instruments.ts",
+    "banner": "tsx scripts/build-banner.ts"
   },
   "dependencies": {
     "@fontsource/inter": "^5.3.0",
