@@ -7,6 +7,7 @@ import type { Film } from "../spec/schema.js";
 import { clipSeconds, encodeStereoWav, mixToWav } from "./audio.js";
 import { MUSIC_SAMPLE_RATE } from "./music.js";
 import { buildMusic } from "./soundtrack.js";
+import { buildSoundEffects, mixInto } from "./sfx.js";
 import type { Browser, Page } from "playwright-core";
 import { launchBrowser } from "./browser.js";
 import { findFfmpeg, startEncoder } from "./ffmpeg.js";
@@ -253,7 +254,10 @@ export async function renderFilm(film: Film, options: RenderOptions): Promise<Re
       await writeFile(narration, mixToWav(placed, timeline.duration));
     }
     let music: string | undefined;
-    const track = await buildMusic({ film, timeline, ffmpeg, baseDir: options.baseDir ?? process.cwd(), onProgress, onWarning });
+    const track = mixInto(
+      await buildMusic({ film, timeline, ffmpeg, baseDir: options.baseDir ?? process.cwd(), onProgress, onWarning }),
+      buildSoundEffects(film, style, timeline),
+    );
     if (track) {
       music = join(work, "music.wav");
       await writeFile(music, encodeStereoWav(track.left, track.right, MUSIC_SAMPLE_RATE));

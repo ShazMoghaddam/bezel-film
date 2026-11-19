@@ -56,7 +56,7 @@ export interface EncoderOptions {
   fps: number;
   /** Narration track, if the film has a voiceover. */
   narration?: string;
-  /** Music track, if the film has music. */
+  /** Music and sound effects, already mixed into one stereo track, if the film has either. */
   music?: string;
   output: string;
   /** Keep the file under this size (megabytes) for a film this long (seconds), e.g. for WhatsApp. */

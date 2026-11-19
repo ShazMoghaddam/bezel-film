@@ -169,6 +169,19 @@
         }
       }
     },
+    "sfx": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "volume": {
+          "default": 0.5,
+          "description": "How loud the sound effects are: whooshes between scenes, pops as things appear, ticks as numbers count. 0 turns them off.",
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
     "captions": {
       "default": true,
       "type": "boolean"

@@ -223,6 +223,15 @@ const musicSchema = z
     }
   });
 
+const sfxSchema = z.object({
+  volume: z
+    .number()
+    .min(0)
+    .max(1)
+    .default(0.5)
+    .describe("How loud the sound effects are: whooshes between scenes, pops as things appear, ticks as numbers count. 0 turns them off."),
+});
+
 export const filmSchema = z
   .object({
     $schema: z.string().optional(),
@@ -232,6 +241,7 @@ export const filmSchema = z
     format: formatSchema.prefault({}),
     voice: voiceSchema.prefault({}),
     music: musicSchema.prefault({}),
+    sfx: sfxSchema.prefault({}),
     captions: z.boolean().default(true),
     motion: z
       .enum(MOTION_LEVELS)

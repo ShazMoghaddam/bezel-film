@@ -1,3 +1,5 @@
+import { COUNT_PATTERN } from "./motion.js";
+
 /**
  * The script that runs inside the film page. It exposes `__bezel.seek(seconds)`,
  * which puts the whole page into the exact state for that moment: which scene is
@@ -19,10 +21,7 @@ export const RUNTIME_JS = String.raw`
   const backdrop = document.querySelector(".backdrop");
   const stage = document.getElementById("stage");
   const CHART_DELAY_MS = 350;
-  // Big numbers start counting a moment after their scene starts, and pulse as they land.
-  // With a quart curve the number is all but there at 70% of the count, so the pulse starts then.
-  const COUNT_DELAY = 0.25;
-  const PULSE_AT = 0.7;
+  // Big numbers pulse as they land. When they count and land comes from each scene's data.
   const PULSE_SECONDS = 0.5;
   const PULSE_SIZE = 0.07;
 
@@ -47,7 +46,7 @@ export const RUNTIME_JS = String.raw`
   // Big numbers count up. Keeps the text around the number, e.g. "£" and "M".
   const counters = [...document.querySelectorAll("[data-count]")].map((el) => {
     const raw = el.dataset.count;
-    const match = raw.match(/^(\D*?)(\d[\d,]*(?:\.\d+)?)(.*)$/);
+    const match = raw.match(new RegExp(${JSON.stringify(COUNT_PATTERN)}));
     if (!match) return null;
     const [, before, number, after] = match;
     const decimals = (number.split(".")[1] || "").length;
@@ -120,11 +119,11 @@ export const RUNTIME_JS = String.raw`
 
     for (const c of counters) {
       const scene = scenes[Number(c.el.closest(".scene").dataset.index)];
-      const { seconds, curve, pulse } = scene.count;
-      const x = clamp((t - scene.start - COUNT_DELAY) / seconds);
+      const { delay, seconds, curve, landsAt, pulse } = scene.count;
+      const x = clamp((t - scene.start - delay) / seconds);
       c.el.textContent = formatCount(c, c.target * (curve === "quart" ? easeOutQuart(x) : easeOut(x)));
       // A small swell as the number lands, so the eye knows it has arrived.
-      const u = clamp((t - scene.start - COUNT_DELAY - seconds * PULSE_AT) / PULSE_SECONDS);
+      const u = clamp((t - scene.start - delay - seconds * landsAt) / PULSE_SECONDS);
       c.el.style.scale = pulse && u > 0 && u < 1 ? String(1 + PULSE_SIZE * Math.sin(Math.PI * u) * (1 - u)) : "";
     }
 

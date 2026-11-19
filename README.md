@@ -136,6 +136,7 @@ Every scene can also take `narration`, `duration`, `transition`, `motion` and `i
 | `music.nature` | `rain`, `waves`, `stream`, `wind` (ambient only) | picked from the title |
 | `music.volume` | `0` to `1` | `0.2` |
 | `music.file` | path to your own track, relative to the film file | none |
+| `sfx.volume` | `0` to `1`, where `0` turns them off. See [Sound effects](#sound-effects) | `0.5` |
 | `captions` | `true`, `false` | `true` |
 | `motion` | `calm`, `lively`, `punchy`, see [Motion](#motion) | the style's choice (`lively`) |
 
@@ -150,6 +151,12 @@ Everything moves on springs, so it settles into place with a little life rather 
 | `punchy` | Bigger and bouncier. Made for short social films |
 
 Every frame is still exact: the same film always renders the same video.
+
+### Sound effects
+
+Sounds land with the movement: a whoosh between scenes, a soft pop as numbers and cards appear, a swish for each point, and ticks as a number counts up, ending in a small bell. They're made in code like the music, so there's nothing extra to download, and they play more quietly while someone is speaking.
+
+They're on by default and kept subtle. Set `"sfx": { "volume": 0 }` to turn them off, or raise the volume up to `1`.
 
 ### Platforms
 
@@ -246,7 +253,7 @@ On Linux, the voice engine also tries to download large GPU files it doesn't nee
 - **v0.2.0 (released):** `init`, so anyone can start in one command, and an agent-first README
 - **v0.3.0 (released):** made for social: presets for TikTok, Reels, Shorts, Instagram, LinkedIn, X, WhatsApp and YouTube, with safe zones, vertical layouts, every version from one film, and cover images
 - **v0.4.0 (released):** spring motion: `calm`, `lively` and `punchy` levels, word-by-word headings and livelier entrances
-- **v0.4.1:** sound effects that land with the movement
+- **v0.4.1 (in progress):** sound effects that land with the movement
 - **v0.4.2:** motion blur
 - **v0.5.0:** product stories: map, timeline and roadmap scenes, and a draft film from a repo or README
 - **v0.6.0 onwards:** more looks, including product launch, whiteboard and sketch, cinematic, playful and minimal
