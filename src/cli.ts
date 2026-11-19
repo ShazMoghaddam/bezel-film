@@ -1,7 +1,8 @@
 #!/usr/bin/env node
-import { readFile } from "node:fs/promises";
+import { mkdir, readFile } from "node:fs/promises";
 import { parseArgs } from "node:util";
 import { basename, dirname, extname, join } from "node:path";
+import { lengthNotes, PLATFORMS, PRESETS, readPresetList, type PresetName } from "./spec/formats.js";
 import { estimateFilmSeconds, validateFilm } from "./spec/validate.js";
 
 const HELP = `Bezel Film: make short films in code.
@@ -10,6 +11,7 @@ Usage
   bezel-film init                   Set up this folder: install, agent instructions, a welcome film
   bezel-film validate <film.json>   Check a film file and show a summary
   bezel-film render <film.json>     Render the film to an MP4
+  bezel-film formats                List the platform presets, e.g. tiktok, linkedin-mobile
   bezel-film voices                 Hear a short line in each recommended voice
   bezel-film setup                  Do the one-time downloads now (voice and browser)
   bezel-film schema                 Print the film file's JSON Schema
@@ -17,6 +19,10 @@ Usage
 Options
   -o, --output <path>   Where render saves the video (default: next to the film file),
                         or where voices saves its samples (default: voice-samples)
+  --for <list>          render: make a version for each platform, e.g. tiktok,reels,x
+                        (or "all"). -o is then a folder.
+  --show-safe-zones     render: shade the parts each platform's app covers
+  --no-cover            render: don't save a cover image
   -y, --yes             init: skip the questions and use the defaults
   --agents <list>       init: agents to add instructions for, e.g. claude,cursor
                         (claude, codex, gemini, cursor, copilot, windsurf)
@@ -57,9 +63,12 @@ async function validate(path: string | undefined): Promise<number> {
   }
   const { film } = result;
   console.log(`✓ ${path} is a valid film`);
-  console.log(`  "${film.title}" · ${film.style} · ${film.format.aspect} ${film.format.resolution} ${film.format.fps}fps`);
+  const preset = film.format.preset ? ` · for ${PLATFORMS[film.format.preset].label}` : "";
+  console.log(`  "${film.title}" · ${film.style} · ${film.format.aspect} ${film.format.resolution} ${film.format.fps}fps${preset}`);
   const scenes = film.scenes.length;
-  console.log(`  ${scenes} scene${scenes === 1 ? "" : "s"} · about ${formatSeconds(estimateFilmSeconds(film))}`);
+  const seconds = estimateFilmSeconds(film);
+  console.log(`  ${scenes} scene${scenes === 1 ? "" : "s"} · about ${formatSeconds(seconds)}`);
+  if (film.format.preset) for (const note of lengthNotes(film.format.preset, seconds)) console.log(`  ! ${note}`);
   return 0;
 }
 
@@ -85,13 +94,42 @@ function statusLine() {
   };
 }
 
-async function render(path: string | undefined, output: string | undefined): Promise<number> {
+function parsePresets(list: string): PresetName[] {
+  const { presets, unknown } = readPresetList(list);
+  if (unknown) throw new UsageError(`Unknown platform "${unknown}". Choose from: ${PRESETS.join(", ")}, or all`);
+  return presets;
+}
+
+interface RenderFlags {
+  output?: string;
+  for?: string;
+  showSafeZones: boolean;
+  cover: boolean;
+}
+
+function formats(): number {
+  console.log("Platform presets. Put one in your film file (\"format\": { \"preset\": \"tiktok\" })");
+  console.log("or make several at once with: bezel-film render film.json --for tiktok,linkedin-mobile\n");
+  const width = Math.max(...PRESETS.map((name) => name.length));
+  for (const name of PRESETS) {
+    const { label, aspect, why } = PLATFORMS[name];
+    console.log(`  ${name.padEnd(width)}  ${aspect.padEnd(4)}  ${label}: ${why}`);
+  }
+  return 0;
+}
+
+async function render(path: string | undefined, flags: RenderFlags): Promise<number> {
   const result = validateFilm(await loadFilmFile(path));
   if (!result.ok) {
     console.error(`✗ ${path} has ${result.errors.length} problem${result.errors.length === 1 ? "" : "s"}. Run bezel-film validate ${path} to see them.`);
     return 1;
   }
-  const target = output ?? join(dirname(path!), `${basename(path!, extname(path!))}.mp4`);
+  const name = basename(path!, extname(path!));
+  const presets = flags.for ? parsePresets(flags.for) : [];
+  const folder = flags.output ?? dirname(path!);
+  if (presets.length) await mkdir(folder, { recursive: true });
+  const targets = presets.map((preset) => ({ preset, output: join(folder, `${name}-${preset}.mp4`) }));
+  const target = flags.output && !presets.length ? flags.output : join(dirname(path!), `${name}.mp4`);
   const status = statusLine();
   const started = Date.now();
   console.log(`Rendering "${result.film.title}"`);
@@ -99,6 +137,9 @@ async function render(path: string | undefined, output: string | undefined): Pro
   try {
     const done = await renderFilm(result.film, {
       output: target,
+      targets,
+      cover: flags.cover,
+      showSafeZones: flags.showSafeZones,
       baseDir: dirname(path!),
       onProgress: status.update,
       onWarning: (message) => {
@@ -107,7 +148,11 @@ async function render(path: string | undefined, output: string | undefined): Pro
       },
     });
     status.done();
-    console.log(`✓ Saved ${done.output} · ${formatSeconds(done.seconds)} · rendered in ${formatSeconds((Date.now() - started) / 1000)}`);
+    for (const video of done.videos) {
+      const platform = video.preset && presets.length ? `${PLATFORMS[video.preset].label}: ` : "";
+      console.log(`✓ ${platform}${video.output}${video.cover ? ` (cover: ${basename(video.cover)})` : ""}`);
+    }
+    console.log(`  ${formatSeconds(done.seconds)} long · rendered in ${formatSeconds((Date.now() - started) / 1000)}`);
     return 0;
   } catch (error) {
     status.done();
@@ -167,6 +212,9 @@ async function main(argv: string[]): Promise<number> {
       yes: { type: "boolean", short: "y" },
       agents: { type: "string" },
       "no-sample": { type: "boolean" },
+      for: { type: "string" },
+      "show-safe-zones": { type: "boolean" },
+      "no-cover": { type: "boolean" },
       "no-install": { type: "boolean" },
       "no-downloads": { type: "boolean" },
     },
@@ -188,7 +236,14 @@ async function main(argv: string[]): Promise<number> {
     case "validate":
       return validate(file);
     case "render":
-      return render(file, values.output);
+      return render(file, {
+        output: values.output,
+        for: values.for,
+        showSafeZones: !!values["show-safe-zones"],
+        cover: !values["no-cover"],
+      });
+    case "formats":
+      return formats();
     case "init": {
       const { init } = await import("./init.js");
       const { AGENT_IDS } = await import("./agents.js");

@@ -86,7 +86,8 @@ export const RUNTIME_JS = String.raw`
     section.style.zIndex = opacity > 0 ? "1" : "0";
   }
 
-  function seek(t) {
+  // still: a single picture (the cover), so no captions or progress bar.
+  function seek(t, still = false) {
     const scenes = data.scenes;
     let index = 0;
     for (let i = 0; i < scenes.length; i++) if (t >= scenes[i].start) index = i;
@@ -141,7 +142,49 @@ export const RUNTIME_JS = String.raw`
     caption.style.opacity = String(Number(caption.style.opacity) * end);
     progress.style.width = (clamp(t / (data.duration - data.endFadeSeconds)) * 100) + "%";
     progress.style.opacity = String(end);
+    if (still) {
+      caption.style.opacity = "0";
+      progress.style.opacity = "0";
+    }
     backdrop.style.transform = "translate(" + Math.sin(t / 9) * 2 + "%," + Math.cos(t / 11) * 2 + "%) scale(" + (1.02 + Math.sin(t / 13) * 0.02) + ")";
+  }
+
+  // The space inside a scene's padding: where its content may go.
+  function contentBox(scene) {
+    const cs = getComputedStyle(scene);
+    return {
+      width: scene.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight),
+      height: scene.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom),
+    };
+  }
+
+  // Big text that doesn't fit (a long number, a long word, a web address) is made
+  // smaller until it does, rather than running off the frame. Code gets a little
+  // smaller, then wraps its long lines, so it stays readable.
+  function fitText() {
+    for (const el of document.querySelectorAll(".display, .heading, .stat-value, .quote, .url, .code pre")) {
+      const code = el.matches(".code pre");
+      const room = () => Math.min(el.clientWidth, contentBox(el.closest(".scene")).width);
+      let size = parseFloat(getComputedStyle(el).fontSize);
+      const smallest = size * (code ? 0.8 : 0.3);
+      while (el.scrollWidth > room() + 1 && size > smallest) {
+        size *= 0.95;
+        el.style.fontSize = size + "px";
+      }
+      if (code && el.scrollWidth > room() + 1) el.classList.add("wrap");
+    }
+  }
+
+  // A scene whose content is taller than the room it has (say, a long list on a phone
+  // frame) is scaled down as a whole, so nothing hides behind the platform's buttons.
+  function fitScenes() {
+    for (const scene of sections) {
+      const block = scene.firstElementChild;
+      if (!block) continue;
+      const box = contentBox(scene);
+      const scale = Math.min(1, box.height / block.offsetHeight, box.width / block.offsetWidth);
+      if (scale < 0.995) block.style.transform = "scale(" + scale + ")";
+    }
   }
 
   async function ready() {
@@ -159,15 +202,31 @@ export const RUNTIME_JS = String.raw`
       const width = el.offsetWidth;
       const height = el.offsetHeight;
       if (!width || !height) throw new Error("A chart drew with no size");
-      const heading = el.closest(".scene").querySelector(".heading");
-      // Leave room at the bottom for captions, so they never cover the chart's labels.
-      const room = innerHeight * (data.captions ? 0.56 : 0.66) - (heading ? heading.getBoundingClientRect().height : 0);
-      const scale = Math.min((innerWidth * 0.8) / width, room / height);
+      const scene = el.closest(".scene");
+      const heading = scene.querySelector(".heading");
+      const headingHeight = heading ? heading.getBoundingClientRect().height : 0;
+      let scale;
+      if (data.zoned) {
+        // The scene's padding already keeps clear of the platform's buttons and our captions.
+        const box = contentBox(scene);
+        const card = el.closest(".card");
+        const cs = getComputedStyle(card);
+        const padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
+        const padY = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+        const gap = heading ? parseFloat(getComputedStyle(heading.parentElement).rowGap) || 0 : 0;
+        scale = Math.min((box.width - padX) / width, (box.height - headingHeight - gap - padY) / height);
+      } else {
+        // Leave room at the bottom for captions, so they never cover the chart's labels.
+        const room = innerHeight * (data.captions ? 0.56 : 0.66) - headingHeight;
+        scale = Math.min((innerWidth * 0.8) / width, room / height);
+      }
       const frame = el.parentElement;
       frame.style.width = width * scale + "px";
       frame.style.height = height * scale + "px";
       el.style.transform = "scale(" + scale + ")";
     }
+    fitText();
+    fitScenes();
     await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
     seek(0);
   }

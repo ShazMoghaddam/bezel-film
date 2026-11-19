@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { validateFilm, type Film } from "../src/index.js";
 import { encodeWav, mixToWav } from "../src/render/audio.js";
 import { buildPage, escapeHtml } from "../src/render/page.js";
+import { layoutFor } from "../src/render/layout.js";
 import { loadStyle } from "../src/render/style.js";
 import {
   LEAD_SECONDS,
@@ -103,7 +104,7 @@ describe("buildPage", async () => {
   it("escapes text from the film file", () => {
     expect(escapeHtml(`<b>"Tom" & 'Jerry'</b>`)).toBe("&lt;b&gt;&quot;Tom&quot; &amp; &#39;Jerry&#39;&lt;/b&gt;");
     const f = film([{ type: "title", title: "<script>alert(1)</script>", narration: "</script><script>alert(2)</script>" }]);
-    const html = buildPage(f, style, buildTimeline(f));
+    const html = buildPage(f, style, buildTimeline(f), layoutFor(f));
     expect(html).not.toContain("<script>alert");
     expect(html).toContain("&lt;script&gt;alert(1)");
   });
@@ -118,13 +119,13 @@ describe("buildPage", async () => {
       { type: "quote", quote: "Q", attribution: "A", duration: 2 },
       { type: "outro", title: "O", url: "https://example.com", cta: "Go", duration: 2 },
     ]);
-    const html = buildPage(f, style, buildTimeline(f));
+    const html = buildPage(f, style, buildTimeline(f), layoutFor(f));
     for (const type of ["title", "stat", "chart", "points", "code", "quote", "outro"]) expect(html).toContain(`scene-${type}`);
   });
 
   it("says clearly that custom scenes aren't supported yet", () => {
     const f = film([{ type: "custom", module: "./my-scene.js", duration: 2 }]);
-    expect(() => buildPage(f, style, buildTimeline(f))).toThrow(/Custom scenes aren't supported/);
+    expect(() => buildPage(f, style, buildTimeline(f), layoutFor(f))).toThrow(/Custom scenes aren't supported/);
   });
 });
 

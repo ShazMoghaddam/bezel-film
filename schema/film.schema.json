@@ -27,19 +27,37 @@
       "default": {},
       "type": "object",
       "properties": {
+        "preset": {
+          "description": "The platform the film is for. Sets the shape and keeps text clear of that app's buttons and captions.",
+          "type": "string",
+          "enum": [
+            "tiktok",
+            "reels",
+            "shorts",
+            "instagram",
+            "linkedin-mobile",
+            "linkedin-desktop",
+            "linkedin-square",
+            "x",
+            "whatsapp",
+            "youtube"
+          ]
+        },
         "aspect": {
-          "default": "16:9",
+          "description": "The shape of the frame. Set by the preset if there is one, otherwise 16:9.",
           "type": "string",
           "enum": [
             "16:9",
             "9:16",
+            "4:5",
             "1:1"
           ]
         },
         "resolution": {
-          "default": "1080p",
+          "description": "Set by the preset if there is one, otherwise 1080p.",
           "type": "string",
           "enum": [
+            "720p",
             "1080p",
             "4k"
           ]

@@ -1,4 +1,7 @@
 import { z } from "zod";
+import { ASPECTS, PLATFORMS, PRESETS, RESOLUTIONS, type Aspect, type Resolution } from "./formats.js";
+
+export { ASPECTS, PRESETS, RESOLUTIONS } from "./formats.js";
 
 /**
  * The film spec: one JSON file that describes a whole film.
@@ -12,8 +15,6 @@ import { z } from "zod";
 export const SPEC_VERSION = 1;
 
 export const STYLES = ["data-story", "product-launch", "whiteboard"] as const;
-export const ASPECTS = ["16:9", "9:16", "1:1"] as const;
-export const RESOLUTIONS = ["1080p", "4k"] as const;
 export const FRAME_RATES = [24, 30, 60] as const;
 export const TRANSITIONS = ["cut", "fade", "slide", "wipe"] as const;
 export const VOICE_ENGINES = ["kokoro", "piper", "none"] as const;
@@ -168,11 +169,30 @@ export const sceneSchema = z.discriminatedUnion("type", [
 
 export const SCENE_TYPES = sceneSchema.options.map((option) => option.shape.type.value);
 
-const formatSchema = z.object({
-  aspect: z.enum(ASPECTS).default("16:9"),
-  resolution: z.enum(RESOLUTIONS).default("1080p"),
-  fps: z.union(FRAME_RATES.map((rate) => z.literal(rate))).default(30),
-});
+const formatSchema = z
+  .object({
+    preset: z
+      .enum(PRESETS)
+      .optional()
+      .describe("The platform the film is for. Sets the shape and keeps text clear of that app's buttons and captions."),
+    aspect: z.enum(ASPECTS).optional().describe("The shape of the frame. Set by the preset if there is one, otherwise 16:9."),
+    resolution: z.enum(RESOLUTIONS).optional().describe("Set by the preset if there is one, otherwise 1080p."),
+    fps: z.union(FRAME_RATES.map((rate) => z.literal(rate))).default(30),
+  })
+  .superRefine((format, ctx) => {
+    if (format.preset && format.aspect && format.aspect !== PLATFORMS[format.preset].aspect) {
+      const { label, aspect } = PLATFORMS[format.preset];
+      ctx.addIssue({ code: "custom", path: ["aspect"], message: `${label} films are ${aspect}. Leave aspect out, or choose another preset` });
+    }
+  })
+  .transform((format) => {
+    const preset: Partial<{ aspect: Aspect; resolution: Resolution }> = format.preset ? PLATFORMS[format.preset] : {};
+    return {
+      ...format,
+      aspect: format.aspect ?? preset.aspect ?? "16:9",
+      resolution: format.resolution ?? preset.resolution ?? "1080p",
+    };
+  });
 
 const voiceSchema = z.object({
   engine: z.enum(VOICE_ENGINES).default("kokoro"),

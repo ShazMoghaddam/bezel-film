@@ -10,21 +10,21 @@ If the project has no `node_modules/bezel-film` folder, set it up first. Use the
 npx bezel-film init --yes --agents claude --no-sample
 ```
 
-It installs Bezel Film, adds these instructions and does the one-time downloads (about 200 MB, so tell the user it takes a few minutes).
+It installs Bezel Film, adds these instructions and does the one-time downloads (about 200 MB, so it takes a few minutes).
 
 ## How to direct a film
 
 1. **Ask one short round of questions** before writing anything. Keep it to these, and skip any the user has already answered:
    - What is the film about, and who is it for?
    - How long should it be? (default 45 to 60 seconds)
-   - Which shape: 16:9 (YouTube, slides), 9:16 (Reels, Shorts, TikTok) or 1:1 (LinkedIn, X)? (default 16:9, the most polished for now)
+   - Where will it be posted? TikTok, Reels, Shorts, LinkedIn, X, WhatsApp, YouTube or somewhere else? (default: no platform, a 16:9 film for anywhere)
    - Voiceover: a female voice, a male voice, or none? (default female)
    - Captions on or off? (default on)
    - Music: calm, upbeat, dramatic, epic, ambient, reflective, or none? (default calm)
 2. **Gather the material.** Read the README, the code or the dataset. Only use facts and numbers that come from the material or from the user. Never invent figures.
 3. **Write the film file** at `films/<short-name>/film.json` (for example `films/sales-2026/film.json`), following the rules below. Start it with `"$schema": "../../node_modules/bezel-film/schema/film.schema.json"` so editors can check it. `films/welcome/film.json` is a working example.
 4. **Check it** with `npx bezel-film validate films/<short-name>/film.json` and fix every problem it reports.
-5. **Render** with `npx bezel-film render films/<short-name>/film.json`. The video is saved next to the film file as `film.mp4`. Tell the user where it is.
+5. **Render** with `npx bezel-film render films/<short-name>/film.json`. The video is saved next to the film file as `film.mp4`, with a cover image as `film-cover.png`. Tell the user where they are.
 
 ## The film file
 
@@ -33,7 +33,7 @@ It installs Bezel Film, adds these instructions and does the one-time downloads 
   "spec": 1,
   "title": "Northside Coffee: a year in numbers",
   "style": "data-story",
-  "format": { "aspect": "16:9", "resolution": "1080p", "fps": 30 },
+  "format": { "preset": "linkedin-mobile" },
   "voice": { "engine": "kokoro", "gender": "female" },
   "captions": true,
   "music": { "source": "generated", "mood": "calm" },
@@ -47,6 +47,20 @@ It installs Bezel Film, adds these instructions and does the one-time downloads 
 Only `spec`, `title`, `style` and `scenes` are required. Everything else has a sensible default.
 
 Map the user's answers to settings: a male voice is `"voice": { "gender": "male" }`, no voiceover is `"voice": { "engine": "none" }`, no captions is `"captions": false`, a music mood is `"music": { "mood": "upbeat" }`, and no music is `"music": { "source": "none" }`.
+
+## Platforms
+
+Set `format.preset` to the platform. It sets the shape and keeps text clear of the app's buttons and captions:
+
+| Preset | Shape | For |
+| --- | --- | --- |
+| `tiktok`, `reels`, `shorts` | 9:16 | TikTok, Instagram Reels, YouTube Shorts |
+| `instagram`, `linkedin-mobile` | 4:5 | Instagram and LinkedIn feed posts, seen on phones |
+| `linkedin-desktop`, `x`, `youtube` | 16:9 | LinkedIn on desktop, X, YouTube |
+| `linkedin-square` | 1:1 | LinkedIn, for phones and desktops alike |
+| `whatsapp` | 9:16, 720p | WhatsApp, kept small to send |
+
+Posting in several places? Write one film and make every version at once: `npx bezel-film render films/<short-name>/film.json --for tiktok,linkedin-mobile,x`. Each video is saved as `film-<preset>.mp4`. `validate` warns when a film is too long for its preset.
 
 Pick a mood that suits the story if the user has no preference: `calm` for most data stories, `upbeat` for launches and good news, `dramatic` or `epic` for a big reveal, `ambient` for a quiet, natural feel, and `reflective` for something personal or looking back. If the user wants to hear voices first, run `npx bezel-film voices`.
 
@@ -72,5 +86,5 @@ Every scene can also have `id`, `narration`, `duration` (seconds) and `transitio
 - **Open with the hook,** close with an `outro` that says what to do next.
 - **Keep charts simple:** seven bars or fewer, short labels, one point per chart. Say the takeaway in the narration and in `chart.heading`.
 - **Keep on-screen text short.** Points under about ten words each. Code snippets under fifteen lines.
-- **Use the style's defaults** for colour, type and motion. Don't fight them.
+- **Use the style's defaults** for colour, type and motion.
 - **Only the `data-story` style renders today.** `product-launch`, `whiteboard` and `custom` scenes are coming, so don't use them yet.
