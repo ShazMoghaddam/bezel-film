@@ -253,7 +253,7 @@ On Linux, the voice engine also tries to download large GPU files it doesn't nee
 - **v0.2.0 (released):** `init`, so anyone can start in one command, and an agent-first README
 - **v0.3.0 (released):** made for social: presets for TikTok, Reels, Shorts, Instagram, LinkedIn, X, WhatsApp and YouTube, with safe zones, vertical layouts, every version from one film, and cover images
 - **v0.4.0 (released):** spring motion: `calm`, `lively` and `punchy` levels, word-by-word headings and livelier entrances
-- **v0.4.1 (in progress):** sound effects that land with the movement
+- **v0.4.1 (released):** sound effects: real CC0 recordings that land with the movement
 - **v0.4.2:** motion blur
 - **v0.5.0:** product stories: map, timeline and roadmap scenes, and a draft film from a repo or README
 - **v0.6.0 onwards:** more looks, including product launch, whiteboard and sketch, cinematic, playful and minimal

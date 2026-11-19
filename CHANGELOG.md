@@ -5,6 +5,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-11-19
+
+Sound effects: real recordings that land with the movement, and step back while someone is speaking.
+
 ### Added
 
 - Sound effects that land with the movement: a whoosh or sweep between scenes, a tap as a big number, chart or code appears, a pop for chips and buttons, a click for quote marks and web addresses, a swish for each point, and ticks while a number counts up, ending in a small chime as it lands.
@@ -16,7 +20,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 ### Changed
 
 - Films now have sound effects by default. Set `"sfx": { "volume": 0 }` for the v0.4.0 sound.
-- Count-up timings now live in one place, shared by the picture and the sound, so ticks and the landing bell always match the number on screen.
+- Count-up timings now live in one place, shared by the picture and the sound, so ticks and the landing chime always match the number on screen.
 
 ## [0.4.0] - 2026-11-19
 
@@ -121,7 +125,8 @@ The first release: describe a film in one JSON file, and Bezel Film renders it t
 
 - CI checks on every push and pull request, including a render smoke test, plus Dependabot.
 
-[Unreleased]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.4.1...HEAD
+[0.4.1]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.1.0...v0.2.0
