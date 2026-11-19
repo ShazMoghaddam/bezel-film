@@ -5,6 +5,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-11-19
+
+Spring motion: things settle into place with a little life, and every frame is still exact.
+
 ### Added
 
 - Spring motion. Things settle into place with a small, natural overshoot, worked out as real spring maths and drawn with CSS, so every frame is still exact.
@@ -104,7 +108,8 @@ The first release: describe a film in one JSON file, and Bezel Film renders it t
 
 - CI checks on every push and pull request, including a render smoke test, plus Dependabot.
 
-[Unreleased]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/ShazMoghaddam/bezel-film/releases/tag/v0.1.0
