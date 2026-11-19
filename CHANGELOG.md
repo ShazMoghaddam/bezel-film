@@ -7,10 +7,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ### Added
 
-- Sound effects that land with the movement: a whoosh between scenes, pops as numbers, cards, chips and buttons appear, a swish for each point, and ticks while a number counts up, ending in a small bell as it lands.
+- Sound effects that land with the movement: a whoosh or sweep between scenes, a tap as a big number, chart or code appears, a pop for chips and buttons, a click for quote marks and web addresses, a swish for each point, and ticks while a number counts up, ending in a small chime as it lands.
 - `sfx.volume` setting, from `0` (off) to `1`. Defaults to `0.5`, which keeps them subtle.
 - Sound effects play more quietly while someone is speaking.
-- Sounds are made in code, like the music: nothing to download or license, and the same film always sounds the same.
+- Every sound is a real recording from CC0 (public domain) packs by Kenney, Sparklin Labs and artisticdude, shipped in the package as lossless FLAC (272 KB in all). See `sounds/CREDITS.md`.
+- `npm run sounds` rebuilds them from their sources, each pinned to a commit and checked against its fingerprint.
 
 ### Changed
 

@@ -1,27 +1,31 @@
 /**
  * Sound effects that land with the movement.
  *
- * Every sound is made in code, like the music: no audio files, nothing to license,
- * nothing extra to install. Cues come from the same code that times each entrance
- * (see `sceneCues` in page.ts), so a pop always lands on the frame its element does.
- *
- * Noise comes from a seeded random generator, so the same film always sounds the same.
+ * Every sound is a CC0 recording from a well-known sound pack (see sounds/CREDITS.md),
+ * shipped inside the package as a small lossless FLAC file and read with ffmpeg.
+ * Cues come from the same code that times each entrance (see `sceneCues` in page.ts),
+ * so a tap always lands on the frame its element does.
  */
+import { fileURLToPath } from "node:url";
 import type { Film } from "../spec/schema.js";
+import { decodeAudio } from "./ffmpeg.js";
 import { COUNT_PATTERN, MOTION_FEELS, countFor } from "./motion.js";
-import { MUSIC_SAMPLE_RATE, seededRandom } from "./music.js";
+import { MUSIC_SAMPLE_RATE } from "./music.js";
 import { motionLevel, sceneCues } from "./page.js";
-import type { Style } from "./style.js";
+import { packageRoot, type Style } from "./style.js";
 import type { Line, Timeline } from "./timeline.js";
 
 /**
- * whoosh: a sweep of air as one scene gives way to the next.
- * swish: a lighter, shorter whoosh, for things that slide in.
- * pop: a soft, tuned blip, for things that grow in.
+ * whoosh: soft air as one scene fades into the next.
+ * sweep: a fuller pass of air as one scene slides or wipes in.
+ * swish: a quick swish for each point sliding in, and a title's line growing.
+ * tap: a soft, tuned tap for the main reveal: a big number, a chart, code.
+ * pop: a round drop for small extras: chips and buttons.
+ * click: a gentle click for quiet touches like a quote mark or a web address.
  * tick: a tiny click, many of them, while a number counts up.
- * ding: a small bell as a number lands.
+ * ding: a small chime as a number lands.
  */
-export const SOUNDS = ["whoosh", "swish", "pop", "tick", "ding"] as const;
+export const SOUNDS = ["whoosh", "sweep", "swish", "tap", "pop", "click", "tick", "ding"] as const;
 export type SoundName = (typeof SOUNDS)[number];
 
 /** A sound an entrance makes, `ms` into its scene. */
@@ -51,6 +55,21 @@ const TICKS = 12;
 /** `volume` 0.5 is the level each sound was tuned at. */
 const TUNED_VOLUME = 0.5;
 
+/**
+ * How loud each sound peaks at the tuned volume, in decibels below full scale. Set by
+ * ear against the calm music at its default volume: quieter for sounds that repeat.
+ */
+export const PEAK_DB: Record<SoundName, number> = {
+  whoosh: -20,
+  sweep: -20,
+  swish: -24,
+  tap: -19,
+  pop: -20,
+  click: -22,
+  tick: -28,
+  ding: -22,
+};
+
 /** Every sound in the film, in time order. */
 export function filmCues(film: Film, style: Style, timeline: Timeline): Cue[] {
   const cues: Cue[] = [];
@@ -58,9 +77,9 @@ export function filmCues(film: Film, style: Style, timeline: Timeline): Cue[] {
     const scene = timed.scene;
     const transition = scene.transition ?? style.motion.transition;
 
-    // The move between scenes. Fades are quieter than slides and wipes.
+    // The move between scenes: soft air for a fade, a fuller pass for a slide or wipe.
     if (timed.index > 0 && transition !== "cut") {
-      cues.push({ at: timed.start, sound: "whoosh", gain: transition === "fade" ? 0.55 : 1, pan: transition === "fade" ? 0 : 0.3 });
+      cues.push({ at: timed.start, sound: transition === "fade" ? "whoosh" : "sweep" });
     }
 
     for (const cue of sceneCues(film, timed, style)) {
@@ -84,32 +103,71 @@ export function filmCues(film: Film, style: Style, timeline: Timeline): Cue[] {
   return cues.filter((cue) => cue.at < timeline.duration).sort((a, b) => a.at - b.at);
 }
 
+/** A recording, in stereo. */
+export type Stereo = { left: Float32Array; right: Float32Array };
+
+/** Reads the recordings a film needs from the package's sounds/ folder. */
+export async function loadSounds(ffmpeg: string, names: Iterable<SoundName> = SOUNDS): Promise<Map<SoundName, Stereo>> {
+  const sounds = new Map<SoundName, Stereo>();
+  await Promise.all(
+    [...new Set(names)].map(async (name) => {
+      const file = fileURLToPath(new URL(`sounds/${name}.flac`, packageRoot));
+      sounds.set(name, await decodeAudio(ffmpeg, file, SR));
+    }),
+  );
+  return sounds;
+}
+
+/** Plays a recording faster or slower to move its pitch, the way a tape does. */
+export function repitch(sound: Stereo, semitones: number): Stereo {
+  if (!semitones) return sound;
+  const rate = 2 ** (semitones / 12);
+  const length = Math.floor((sound.left.length - 1) / rate);
+  const shift = (channel: Float32Array) => {
+    const out = new Float32Array(length);
+    for (let i = 0; i < length; i++) {
+      const at = i * rate;
+      const j = Math.floor(at);
+      out[i] = channel[j]! + (channel[j + 1]! - channel[j]!) * (at - j);
+    }
+    return out;
+  };
+  return { left: shift(sound.left), right: shift(sound.right) };
+}
+
 /**
  * The film's sound effects as one stereo track, quieter under every spoken line.
  * Returns null when they're switched off.
  */
-export function buildSoundEffects(film: Film, style: Style, timeline: Timeline): { left: Float32Array; right: Float32Array } | null {
+export async function buildSoundEffects(film: Film, style: Style, timeline: Timeline, ffmpeg: string): Promise<Stereo | null> {
   if (film.sfx.volume === 0) return null;
-  const length = Math.ceil(timeline.duration * SR);
+  const cues = filmCues(film, style, timeline);
+  const sounds = await loadSounds(ffmpeg, cues.map((cue) => cue.sound));
+  return mixCues(cues, sounds, { seconds: timeline.duration, lines: timeline.scenes.flatMap((scene) => scene.lines), volume: film.sfx.volume });
+}
+
+/** Lays each cue's recording on one track at its level, pitch and place in the stereo field. */
+export function mixCues(cues: Cue[], sounds: Map<SoundName, Stereo>, o: { seconds: number; lines: Line[]; volume: number }): Stereo {
+  const length = Math.ceil(o.seconds * SR);
   const left = new Float32Array(length);
   const right = new Float32Array(length);
-  const lines = timeline.scenes.flatMap((scene) => scene.lines);
-  const volume = film.sfx.volume / TUNED_VOLUME;
+  const volume = o.volume / TUNED_VOLUME;
+  // Each recording peaks just under full scale, so this sets it to its own level.
+  const peakGain = (name: SoundName) => 10 ** (PEAK_DB[name] / 20) / 0.89;
 
-  filmCues(film, style, timeline).forEach((cue, n) => {
-    const random = seededRandom(`${film.title}:sfx:${n}`);
-    const samples = SYNTHS[cue.sound](2 ** ((cue.pitch ?? 0) / 12), random);
-    const gain = (cue.gain ?? 1) * volume * (speaking(lines, cue.at) ? UNDER_VOICE : 1);
+  for (const cue of cues) {
+    const sound = repitch(sounds.get(cue.sound)!, cue.pitch ?? 0);
+    const gain = peakGain(cue.sound) * (cue.gain ?? 1) * volume * (speaking(o.lines, cue.at) ? UNDER_VOICE : 1);
     const start = Math.round(cue.at * SR);
-    const pan = cue.pan ?? 0;
-    for (let i = 0; i < samples.length && start + i < length; i++) {
-      // Whooshes travel across the stereo field; everything else stays put.
-      const p = cue.sound === "whoosh" ? pan * (1 - (2 * i) / samples.length) : pan;
-      const angle = ((p + 1) * Math.PI) / 4;
-      left[start + i]! += samples[i]! * gain * Math.cos(angle);
-      right[start + i]! += samples[i]! * gain * Math.sin(angle);
+    // Panning turns one side down; the centre stays at full level.
+    const angle = (((cue.pan ?? 0) + 1) * Math.PI) / 4;
+    const toLeft = Math.min(1, Math.cos(angle) * Math.SQRT2);
+    const toRight = Math.min(1, Math.sin(angle) * Math.SQRT2);
+    for (let i = 0; i < sound.left.length && start + i < length; i++) {
+      left[start + i]! += sound.left[i]! * gain * toLeft;
+      right[start + i]! += sound.right[i]! * gain * toRight;
     }
-  });
+  }
   return { left, right };
 }
 
@@ -117,92 +175,6 @@ export function buildSoundEffects(film: Film, style: Style, timeline: Timeline):
 export function speaking(lines: Line[], at: number): boolean {
   return lines.some((line) => at >= line.start - 0.25 && at <= line.end);
 }
-
-// --- The sounds ---------------------------------------------------------------
-
-type Synth = (pitch: number, random: () => number) => Float32Array;
-
-const buffer = (seconds: number) => new Float32Array(Math.round(seconds * SR));
-
-/** Noise through a band-pass filter whose centre glides from `from` to `to` Hz. */
-function sweep(seconds: number, from: number, to: number, q: number, level: number, random: () => number): Float32Array {
-  const out = buffer(seconds);
-  let low = 0;
-  let band = 0;
-  for (let i = 0; i < out.length; i++) {
-    const u = i / out.length;
-    const centre = from * (to / from) ** u;
-    const f = 2 * Math.sin((Math.PI * centre) / SR);
-    // A state-variable filter: cheap, stable at these settings, and smooth to sweep.
-    const high = random() * 2 - 1 - low - q * band;
-    band += f * high;
-    low += f * band;
-    // Swells in quickly, fades out slowly.
-    const envelope = Math.sin(Math.PI * u ** 0.6) ** 2;
-    out[i] = band * envelope * level;
-  }
-  return out;
-}
-
-/** Fades the last few milliseconds to silence, so no sound ends with a click. */
-function softEnd(out: Float32Array): Float32Array {
-  const fade = Math.min(out.length, Math.round(0.015 * SR));
-  for (let i = 0; i < fade; i++) out[out.length - 1 - i]! *= Math.sin((Math.PI / 2) * (i / fade));
-  return out;
-}
-
-export const SYNTHS: Record<SoundName, Synth> = {
-  whoosh: (pitch, random) => sweep(0.45, 320 * pitch, 2400 * pitch, 0.9, 0.16, random),
-
-  swish: (pitch, random) => sweep(0.2, 1400 * pitch, 4200 * pitch, 1.1, 0.09, random),
-
-  // A sine that drops quickly into its note, like a bubble, with a soft second harmonic.
-  pop: (pitch) => {
-    const out = buffer(0.3);
-    const note = 587.33 * pitch; // D5
-    let phase = 0;
-    for (let i = 0; i < out.length; i++) {
-      const t = i / SR;
-      phase += (2 * Math.PI * note * (1 + 0.6 * Math.exp(-t / 0.012))) / SR;
-      const envelope = (1 - Math.exp(-t / 0.002)) * Math.exp(-t / 0.045);
-      out[i] = (Math.sin(phase) + 0.2 * Math.sin(2 * phase)) * envelope * 0.13;
-    }
-    return softEnd(out);
-  },
-
-  tick: (pitch, random) => {
-    const out = buffer(0.025);
-    const f = 2 * Math.sin((Math.PI * 3200 * pitch) / SR);
-    let low = 0;
-    let band = 0;
-    for (let i = 0; i < out.length; i++) {
-      const high = random() * 2 - 1 - low - 0.5 * band;
-      band += f * high;
-      low += f * band;
-      const t = i / SR;
-      out[i] = band * (1 - Math.exp(-t / 0.0004)) * Math.exp(-t / 0.004) * 0.05;
-    }
-    return softEnd(out);
-  },
-
-  // A small bell: a few overtones, each fading at its own rate.
-  ding: (pitch) => {
-    const out = buffer(2.2);
-    const note = 1174.66 * pitch; // D6
-    const partials = [
-      [1, 1, 0.5],
-      [2.4, 0.3, 0.22],
-      [3.9, 0.12, 0.1],
-    ] as const;
-    for (let i = 0; i < out.length; i++) {
-      const t = i / SR;
-      let v = 0;
-      for (const [ratio, amp, decay] of partials) v += amp * Math.sin(2 * Math.PI * note * ratio * t) * Math.exp(-t / decay);
-      out[i] = v * (1 - Math.exp(-t / 0.003)) * 0.06;
-    }
-    return softEnd(out);
-  },
-};
 
 /** Adds the sound effects into the music, or returns them alone if there's no music. */
 export function mixInto(

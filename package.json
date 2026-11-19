@@ -46,7 +46,8 @@
     "schema",
     "styles",
     "agents/generated",
-    "instruments"
+    "instruments",
+    "sounds"
   ],
   "engines": {
     "node": ">=22"
@@ -64,6 +65,7 @@
     "prepublishOnly": "npm run check",
     "smoke": "tsx scripts/smoke-render.ts",
     "instruments": "tsx scripts/build-instruments.ts",
+    "sounds": "tsx scripts/build-sounds.ts",
     "banner": "tsx scripts/build-banner.ts",
     "demo": "tsx scripts/build-demo.ts",
     "prepack": "npm run build",
