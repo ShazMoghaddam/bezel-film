@@ -116,7 +116,7 @@ Each scene lasts as long as its narration, so the voice and visuals always line 
 | `outro` | Closing card and call to action | `title`, `url`, `cta` |
 | `custom` | Your own canvas scene | `module`, `props` |
 
-Every scene can also take `narration`, `duration`, `transition` and `id`.
+Every scene can also take `narration`, `duration`, `transition`, `motion` and `id`.
 
 #### Settings
 
@@ -137,6 +137,19 @@ Every scene can also take `narration`, `duration`, `transition` and `id`.
 | `music.volume` | `0` to `1` | `0.2` |
 | `music.file` | path to your own track, relative to the film file | none |
 | `captions` | `true`, `false` | `true` |
+| `motion` | `calm`, `lively`, `punchy`, see [Motion](#motion) | the style's choice (`lively`) |
+
+### Motion
+
+Everything moves on springs, so it settles into place with a little life rather than sliding to a stop. Set `motion` for the whole film, or on a single scene:
+
+| Level | Feel |
+| --- | --- |
+| `calm` | Smooth and simple. The look from v0.3.0 and earlier |
+| `lively` | Springy, with headings that appear word by word and numbers that pulse as they land. The default |
+| `punchy` | Bigger and bouncier. Made for short social films |
+
+Every frame is still exact: the same film always renders the same video.
 
 ### Platforms
 
@@ -232,7 +245,7 @@ On Linux, the voice engine also tries to download large GPU files it doesn't nee
 - **v0.1.0 (released):** the `data-story` style, voiceover, captions and music
 - **v0.2.0 (released):** `init`, so anyone can start in one command, and an agent-first README
 - **v0.3.0 (released):** made for social: presets for TikTok, Reels, Shorts, Instagram, LinkedIn, X, WhatsApp and YouTube, with safe zones, vertical layouts, every version from one film, and cover images
-- **v0.4.0:** premium motion: spring easing, staggered entrances and sound effects that land with the movement
+- **v0.4.0 (in progress):** premium motion: spring easing, livelier entrances and sound effects that land with the movement
 - **v0.5.0:** product stories: map, timeline and roadmap scenes, and a draft film from a repo or README
 - **v0.6.0 onwards:** more looks, including product launch, whiteboard and sketch, cinematic, playful and minimal
 

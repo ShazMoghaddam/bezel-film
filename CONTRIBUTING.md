@@ -55,6 +55,16 @@ npm run stills -- examples/northside-coffee/film.json all --safe-zones
 
 The stills go in `stills/` (ignored by git). Name a few presets instead of `all` to check just those, and leave out `--safe-zones` to see a film as viewers will.
 
+## Checking motion
+
+Changed how things move? Save a strip of frames across every scene's entrance, for each motion level:
+
+```bash
+npm run motion -- examples/northside-coffee/film.json youtube
+```
+
+The strips go in `motion/` (ignored by git). Add `lively,punchy` to check just those levels. It also checks every frame is exact, by seeking to the same moments again on a fresh page, and fails if any picture differs.
+
 ## Keeping CI quick
 
 The render smoke test runs in Microsoft's Playwright container (`mcr.microsoft.com/playwright`), which already has the browser's system libraries. When Dependabot bumps `playwright-core`, bump the container's version in `.github/workflows/check.yml` to match. It still works if you forget, just a little slower.

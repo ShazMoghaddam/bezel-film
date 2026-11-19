@@ -173,6 +173,15 @@
       "default": true,
       "type": "boolean"
     },
+    "motion": {
+      "description": "How things move. calm: smooth and simple. lively: springy, headings appear word by word. punchy: bigger and bouncier, for short social films. Defaults to the style's choice.",
+      "type": "string",
+      "enum": [
+        "calm",
+        "lively",
+        "punchy"
+      ]
+    },
     "scenes": {
       "minItems": 1,
       "maxItems": 40,
@@ -207,6 +216,15 @@
                   "fade",
                   "slide",
                   "wipe"
+                ]
+              },
+              "motion": {
+                "description": "How this scene moves, overriding the film's motion.",
+                "type": "string",
+                "enum": [
+                  "calm",
+                  "lively",
+                  "punchy"
                 ]
               },
               "type": {
@@ -257,6 +275,15 @@
                   "fade",
                   "slide",
                   "wipe"
+                ]
+              },
+              "motion": {
+                "description": "How this scene moves, overriding the film's motion.",
+                "type": "string",
+                "enum": [
+                  "calm",
+                  "lively",
+                  "punchy"
                 ]
               },
               "type": {
@@ -322,6 +349,15 @@
                   "fade",
                   "slide",
                   "wipe"
+                ]
+              },
+              "motion": {
+                "description": "How this scene moves, overriding the film's motion.",
+                "type": "string",
+                "enum": [
+                  "calm",
+                  "lively",
+                  "punchy"
                 ]
               },
               "type": {
@@ -460,6 +496,15 @@
                   "wipe"
                 ]
               },
+              "motion": {
+                "description": "How this scene moves, overriding the film's motion.",
+                "type": "string",
+                "enum": [
+                  "calm",
+                  "lively",
+                  "punchy"
+                ]
+              },
               "type": {
                 "type": "string",
                 "const": "points"
@@ -513,6 +558,15 @@
                   "fade",
                   "slide",
                   "wipe"
+                ]
+              },
+              "motion": {
+                "description": "How this scene moves, overriding the film's motion.",
+                "type": "string",
+                "enum": [
+                  "calm",
+                  "lively",
+                  "punchy"
                 ]
               },
               "type": {
@@ -580,6 +634,15 @@
                   "wipe"
                 ]
               },
+              "motion": {
+                "description": "How this scene moves, overriding the film's motion.",
+                "type": "string",
+                "enum": [
+                  "calm",
+                  "lively",
+                  "punchy"
+                ]
+              },
               "type": {
                 "type": "string",
                 "const": "quote"
@@ -628,6 +691,15 @@
                   "fade",
                   "slide",
                   "wipe"
+                ]
+              },
+              "motion": {
+                "description": "How this scene moves, overriding the film's motion.",
+                "type": "string",
+                "enum": [
+                  "calm",
+                  "lively",
+                  "punchy"
                 ]
               },
               "type": {
@@ -683,6 +755,15 @@
                   "fade",
                   "slide",
                   "wipe"
+                ]
+              },
+              "motion": {
+                "description": "How this scene moves, overriding the film's motion.",
+                "type": "string",
+                "enum": [
+                  "calm",
+                  "lively",
+                  "punchy"
                 ]
               },
               "type": {

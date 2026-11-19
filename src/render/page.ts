@@ -1,4 +1,5 @@
-import type { Film, Scene } from "../spec/schema.js";
+import type { Film, MotionLevel, Scene } from "../spec/schema.js";
+import { MOTION_FEELS, motionVars, wordStagger, type MotionFeel } from "./motion.js";
 import type { Style } from "./style.js";
 import type { Layout } from "./layout.js";
 import type { Timeline, TimedScene } from "./timeline.js";
@@ -19,6 +20,23 @@ const safeJson = (value: unknown) => JSON.stringify(value).replace(/</g, "\\u003
 /** Delay (ms) before an element's entrance, measured from the start of its scene. */
 const delay = (ms: number, extra = "") => `style="--d:${Math.round(ms)}ms${extra ? `;${extra}` : ""}"`;
 
+/** The motion level a scene uses: its own, then the film's, then the style's. */
+export function motionLevel(film: Film, scene: Scene, style: Style): MotionLevel {
+  return scene.motion ?? film.motion ?? style.motion.level;
+}
+
+/**
+ * Big text that appears word by word in the livelier motion levels. The words keep
+ * the spaces between them, so the heading wraps and balances as before.
+ */
+function words(text: string, tag: string, classes: string, startMs: number, feel: MotionFeel): string {
+  if (!feel.words) return `<${tag} class="rise ${classes}" ${delay(startMs)}>${escapeHtml(text)}</${tag}>`;
+  const parts = text.split(/\s+/).filter(Boolean);
+  const gap = wordStagger(feel, parts.length);
+  const spans = parts.map((word, i) => `<span class="word" ${delay(startMs + i * gap)}>${escapeHtml(word)}</span>`).join(" ");
+  return `<${tag} class="${classes}">${spans}</${tag}>`;
+}
+
 /** How far into the scene the voice starts, so list items can appear as they're spoken. */
 function speechWindow(timed: TimedScene): { from: number; to: number } {
   const first = timed.lines[0];
@@ -27,38 +45,38 @@ function speechWindow(timed: TimedScene): { from: number; to: number } {
   return { from: (first.start - timed.start) * 1000, to: (last.end - timed.start) * 1000 };
 }
 
-function sceneBody(timed: TimedScene, style: Style): string {
+function sceneBody(timed: TimedScene, style: Style, feel: MotionFeel): string {
   const scene: Scene = timed.scene;
-  const stagger = style.motion.staggerMs;
+  const stagger = style.motion.staggerMs * feel.staggerScale;
   switch (scene.type) {
     case "title":
       return `<div class="center">
-        <h1 class="rise display" ${delay(0)}>${escapeHtml(scene.title)}</h1>
+        ${words(scene.title, "h1", "display", 0, feel)}
         <div class="rule grow" ${delay(stagger * 3)}></div>
         ${scene.subtitle ? `<p class="rise lead muted" ${delay(stagger * 5)}>${escapeHtml(scene.subtitle)}</p>` : ""}
       </div>`;
 
     case "stat":
       return `<div class="center">
-        <div class="rise stat-value" ${delay(0)} data-count="${escapeHtml(String(scene.value))}">${escapeHtml(String(scene.value))}</div>
+        <div class="pop stat-value" ${delay(0)} data-count="${escapeHtml(String(scene.value))}">${escapeHtml(String(scene.value))}</div>
         <div class="rise stat-label" ${delay(stagger * 3)}>${escapeHtml(scene.label)}</div>
-        ${scene.context ? `<div class="rise" ${delay(stagger * 6)}><span class="chip">${escapeHtml(scene.context)}</span></div>` : ""}
+        ${scene.context ? `<div class="pop" ${delay(stagger * 6)}><span class="chip">${escapeHtml(scene.context)}</span></div>` : ""}
       </div>`;
 
     case "chart":
       return `<div class="center wide">
-        ${scene.chart.heading ? `<h2 class="rise heading" ${delay(0)}>${escapeHtml(scene.chart.heading)}</h2>` : ""}
-        <div class="card rise" ${delay(stagger * 2)}><div class="chart-frame" data-chart="${timed.index}"></div></div>
+        ${scene.chart.heading ? words(scene.chart.heading, "h2", "heading", 0, feel) : ""}
+        <div class="card pop" ${delay(stagger * 2)}><div class="chart-frame" data-chart="${timed.index}"></div></div>
       </div>`;
 
     case "points": {
       const { from, to } = speechWindow(timed);
       const step = scene.points.length > 1 ? (to - from) / scene.points.length : 0;
       const items = scene.points
-        .map((point, i) => `<li class="rise" ${delay(from + i * step, `--c:var(--p${i % style.colours.palette.length})`)}><span class="dot"></span><span>${escapeHtml(point)}</span></li>`)
+        .map((point, i) => `<li class="slide" ${delay(from + i * step, `--c:var(--p${i % style.colours.palette.length})`)}><span class="dot"></span><span>${escapeHtml(point)}</span></li>`)
         .join("");
       return `<div class="column">
-        ${scene.heading ? `<h2 class="rise heading" ${delay(0)}>${escapeHtml(scene.heading)}</h2>` : ""}
+        ${scene.heading ? words(scene.heading, "h2", "heading", 0, feel) : ""}
         <ul class="points">${items}</ul>
       </div>`;
     }
@@ -71,7 +89,7 @@ function sceneBody(timed: TimedScene, style: Style): string {
         .map((line, i) => `<span class="ln${highlight.has(i + 1) ? " hl" : ""}"><b>${i + 1}</b>${escapeHtml(line) || " "}</span>`)
         .join("");
       return `<div class="center wide">
-        <figure class="code rise" ${delay(0)}>
+        <figure class="code pop" ${delay(0)}>
           <div class="code-bar"><i></i><i></i><i></i><span>${escapeHtml(scene.language)}</span></div>
           <pre><code>${lines}</code></pre>
         </figure>
@@ -81,15 +99,15 @@ function sceneBody(timed: TimedScene, style: Style): string {
 
     case "quote":
       return `<div class="column narrow">
-        <div class="rise quote-mark" ${delay(0)}>“</div>
+        <div class="pop quote-mark" ${delay(0)}>“</div>
         <blockquote class="rise quote" ${delay(stagger * 2)}>${escapeHtml(scene.quote)}</blockquote>
         ${scene.attribution ? `<p class="rise muted lead" ${delay(stagger * 5)}>${escapeHtml(scene.attribution)}</p>` : ""}
       </div>`;
 
     case "outro":
       return `<div class="center">
-        <h1 class="rise display" ${delay(0)}>${escapeHtml(scene.title)}</h1>
-        ${scene.cta ? `<div class="rise" ${delay(stagger * 4)}><span class="cta">${escapeHtml(scene.cta)}</span></div>` : ""}
+        ${words(scene.title, "h1", "display", 0, feel)}
+        ${scene.cta ? `<div class="pop" ${delay(stagger * 4)}><span class="cta">${escapeHtml(scene.cta)}</span></div>` : ""}
         ${scene.url ? `<p class="rise url" ${delay(stagger * 6)}>${escapeHtml(scene.url.replace(/^https?:\/\//, ""))}</p>` : ""}
       </div>`;
 
@@ -169,7 +187,12 @@ ${safe.column ? box(`right:0;top:${pct(safe.column.from, "vh")};bottom:${pct(saf
 </div>`;
 }
 
-function css(style: Style, frame: Layout, captions: boolean): string {
+/** One block of motion variables for each level the film uses. */
+function motionCss(style: Style, levels: Set<MotionLevel>): string {
+  return [...levels].map((level) => `.m-${level}{${motionVars(level, style.motion)}}`).join("\n");
+}
+
+function css(style: Style, frame: Layout, captions: boolean, levels: Set<MotionLevel>): string {
   const { colours, fonts, motion, layout } = style;
   const palette = colours.palette.map((colour, i) => `--p${i}:${colour};`).join("");
   return `
@@ -195,10 +218,20 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .center.wide{width:100%;max-width:100%}
 .column{display:flex;flex-direction:column;gap:calc(var(--u)*3.4);width:fit-content;max-width:min(100%,calc(var(--u)*150))}
 .column.narrow{max-width:min(100%,calc(var(--u)*120))}
-.rise{animation:rise var(--enter) var(--ease) var(--d,0ms) both}
-.grow{animation:grow calc(var(--enter)*1.6) var(--ease) var(--d,0ms) both}
-@keyframes rise{from{opacity:0;transform:translateY(calc(var(--u)*3))}to{opacity:1;transform:none}}
+/* Entrances. Each motion level (.m-calm, .m-lively, .m-punchy) sets the easing, length and distances.
+   Opacity has its own short ease-out, so a spring's overshoot moves things without flickering them. */
+.rise,.pop,.slide,.word{animation:var(--kf) var(--move-ms) var(--move-ease) var(--d,0ms) both,fade-in var(--enter) var(--ease) var(--d,0ms) both}
+.rise{--kf:rise}.slide{--kf:slide}
+.pop{--kf:pop;animation-duration:var(--pop-ms),var(--enter);animation-timing-function:var(--pop-ease),var(--ease)}
+.word{--kf:word;display:inline-block}
+.grow{animation:grow var(--rule-ms) var(--move-ease) var(--d,0ms) both}
+@keyframes fade-in{from{opacity:0}to{opacity:1}}
+@keyframes rise{from{transform:translateY(var(--rise-y))}to{transform:none}}
+@keyframes pop{from{transform:translateY(var(--grow-y)) scale(var(--grow-from))}to{transform:none}}
+@keyframes slide{from{transform:translate(var(--slide-x),var(--slide-y))}to{transform:none}}
+@keyframes word{from{transform:translateY(var(--word-y))}to{transform:none}}
 @keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+${motionCss(style, levels)}
 .display{font-family:var(--heading);font-weight:700;font-size:calc(var(--u)*10);line-height:1.02;letter-spacing:-.025em;text-wrap:balance}
 .heading{font-family:var(--heading);font-weight:700;font-size:calc(var(--u)*6);letter-spacing:-.02em;line-height:1.05}
 .lead{font-size:calc(var(--u)*3.2);line-height:1.35;text-wrap:balance}
@@ -248,6 +281,9 @@ const CHART_SIZES: Record<Layout["shape"], [number, number]> = { wide: [620, 250
 /** Round charts look best on a narrower canvas, with the legend close by. */
 const ROUND_CHARTS = new Set(["donut", "ring", "gauge"]);
 
+/** How a scene's big number counts up. */
+const countFor = (feel: MotionFeel) => ({ seconds: feel.countMs / 1000, curve: feel.countCurve, pulse: feel.pulse });
+
 /** Everything the runtime needs to seek, sent to the page as JSON. */
 export function runtimeData(film: Film, style: Style, timeline: Timeline, frame: Layout) {
   const [chartWidth, chartHeight] = CHART_SIZES[frame.shape];
@@ -261,6 +297,7 @@ export function runtimeData(film: Film, style: Style, timeline: Timeline, frame:
       start: timed.start,
       end: timed.end,
       transition: timed.scene.transition ?? style.motion.transition,
+      count: countFor(MOTION_FEELS[motionLevel(film, timed.scene, style)]),
     })),
     lines: timeline.scenes.flatMap((timed) => timed.lines.map((line) => ({ ...line, scene: timed.index }))),
     charts: timeline.scenes
@@ -302,10 +339,13 @@ export interface PageOptions {
 }
 
 export function buildPage(film: Film, style: Style, timeline: Timeline, frame: Layout, options: PageOptions = {}): string {
+  const levels = new Set<MotionLevel>();
   const scenes = timeline.scenes
     .map((timed) => {
       const colour = `var(--p${timed.index % style.colours.palette.length})`;
-      return `<section class="scene scene-${timed.scene.type}" data-index="${timed.index}" style="--c:${colour}">${sceneBody(timed, style)}</section>`;
+      const level = motionLevel(film, timed.scene, style);
+      levels.add(level);
+      return `<section class="scene scene-${timed.scene.type} m-${level}" data-index="${timed.index}" style="--c:${colour}">${sceneBody(timed, style, MOTION_FEELS[level])}</section>`;
     })
     .join("\n");
 
@@ -314,7 +354,7 @@ export function buildPage(film: Film, style: Style, timeline: Timeline, frame: L
 <head>
 <meta charset="utf-8">
 <title>${escapeHtml(film.title)}</title>
-<style>${css(style, frame, film.captions)}</style>
+<style>${css(style, frame, film.captions, levels)}</style>
 </head>
 <body>
 <div class="backdrop"></div>

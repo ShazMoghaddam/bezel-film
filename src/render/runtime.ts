@@ -19,9 +19,16 @@ export const RUNTIME_JS = String.raw`
   const backdrop = document.querySelector(".backdrop");
   const stage = document.getElementById("stage");
   const CHART_DELAY_MS = 350;
+  // Big numbers start counting a moment after their scene starts, and pulse as they land.
+  // With a quart curve the number is all but there at 70% of the count, so the pulse starts then.
+  const COUNT_DELAY = 0.25;
+  const PULSE_AT = 0.7;
+  const PULSE_SECONDS = 0.5;
+  const PULSE_SIZE = 0.07;
 
   const clamp = (x, lo = 0, hi = 1) => Math.min(hi, Math.max(lo, x));
   const easeOut = (x) => 1 - Math.pow(1 - x, 3);
+  const easeOutQuart = (x) => 1 - Math.pow(1 - x, 4);
   const easeInOut = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
 
   // Build each chart off the page with all its settings, then attach it. Bezel Charts only
@@ -112,10 +119,13 @@ export const RUNTIME_JS = String.raw`
     now.style.zIndex = "2";
 
     for (const c of counters) {
-      const owner = c.el.closest(".scene");
-      const start = scenes[Number(owner.dataset.index)].start;
-      const k = easeOut(clamp((t - start - 0.25) / 1.4));
-      c.el.textContent = formatCount(c, c.target * k);
+      const scene = scenes[Number(c.el.closest(".scene").dataset.index)];
+      const { seconds, curve, pulse } = scene.count;
+      const x = clamp((t - scene.start - COUNT_DELAY) / seconds);
+      c.el.textContent = formatCount(c, c.target * (curve === "quart" ? easeOutQuart(x) : easeOut(x)));
+      // A small swell as the number lands, so the eye knows it has arrived.
+      const u = clamp((t - scene.start - COUNT_DELAY - seconds * PULSE_AT) / PULSE_SECONDS);
+      c.el.style.scale = pulse && u > 0 && u < 1 ? String(1 + PULSE_SIZE * Math.sin(Math.PI * u) * (1 - u)) : "";
     }
 
     // Captions: the sentence being spoken, held until the next one starts.

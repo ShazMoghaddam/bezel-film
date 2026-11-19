@@ -5,6 +5,19 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+### Added
+
+- Spring motion. Things settle into place with a small, natural overshoot, worked out as real spring maths and drawn with CSS, so every frame is still exact.
+- `motion` setting, for the whole film or one scene: `calm`, `lively` or `punchy`. The `data-story` style uses `lively`.
+- Headings appear word by word in `lively` and `punchy`. Long headings get tighter gaps, so they never drag.
+- Each kind of element has its own entrance: numbers, cards, chips and buttons grow in, list points slide in from the side.
+- Big numbers land with a small pulse, and count up on a curve that settles more decisively.
+- `npm run motion` saves frame strips of every entrance and checks rendering is exact.
+
+### Changed
+
+- Films move with `lively` motion by default. Set `"motion": "calm"` to keep the v0.3.0 look, which is unchanged.
+
 ## [0.3.0] - 2026-11-19
 
 Made for social: one film, ready for TikTok, Reels, Shorts, Instagram, LinkedIn, X, WhatsApp and YouTube.
