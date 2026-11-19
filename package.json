@@ -1,6 +1,6 @@
 {
   "name": "bezel-film",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Make short narrated films in code from a repo, README or dataset. Offline, no API keys, built for coding agents.",
   "keywords": [
     "video",
@@ -61,11 +61,12 @@
     "agents:check": "tsx scripts/build-agents.ts --check",
     "example": "tsx src/cli.ts validate examples/northside-coffee/film.json",
     "check": "npm run typecheck && npm test && npm run schema:check && npm run agents:check && npm run example",
-    "prepublishOnly": "npm run check && npm run build",
+    "prepublishOnly": "npm run check",
     "smoke": "tsx scripts/smoke-render.ts",
     "instruments": "tsx scripts/build-instruments.ts",
     "banner": "tsx scripts/build-banner.ts",
-    "demo": "tsx scripts/build-demo.ts"
+    "demo": "tsx scripts/build-demo.ts",
+    "prepack": "npm run build"
   },
   "dependencies": {
     "@clack/prompts": "^1.9.0",
