@@ -5,6 +5,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-19
+
+One command to start: `npx bezel-film init` sets everything up and makes your first film.
+
 ### Added
 
 - `npx bezel-film init` sets up a folder in one step: installs Bezel Film, adds instructions for your coding agents (ticking the ones it finds), does the one-time downloads and makes a welcome film so you can see it work. `--yes`, `--agents` and `--no-sample` let agents and scripts run it too.
@@ -21,6 +25,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 ### Fixed
 
 - `validate` says "1 scene", not "1 scenes".
+- `npm pack` now builds first, so a packed copy always has the latest code.
 
 ## [0.1.0] - 2026-11-18
 
@@ -70,5 +75,6 @@ The first release: describe a film in one JSON file, and Bezel Film renders it t
 
 - CI checks on every push and pull request, including a render smoke test, plus Dependabot.
 
-[Unreleased]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/ShazMoghaddam/bezel-film/releases/tag/v0.1.0

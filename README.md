@@ -198,7 +198,7 @@ On Linux, the voice engine also tries to download large GPU files it doesn't nee
 ## Roadmap
 
 - **v0.1.0 (released):** the `data-story` style, voiceover, captions and music
-- **v0.2.0:** `init`, so anyone can start in one command, and an agent-first README
+- **v0.2.0 (released):** `init`, so anyone can start in one command, and an agent-first README
 - **v0.3.0:** made for social: presets for TikTok, Reels, Shorts and LinkedIn (mobile and desktop), with safe zones and tuned vertical layouts
 - **v0.4.0:** premium motion: spring easing, staggered entrances and sound effects that land with the movement
 - **v0.5.0:** product stories: map, timeline and roadmap scenes, and a draft film from a repo or README
