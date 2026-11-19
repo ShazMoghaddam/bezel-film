@@ -5,6 +5,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-19
+
+Made for social: one film, ready for TikTok, Reels, Shorts, Instagram, LinkedIn, X, WhatsApp and YouTube.
+
 ### Added
 
 - Platform presets: set `format.preset` to `tiktok`, `reels`, `shorts`, `instagram`, `linkedin-mobile`, `linkedin-desktop`, `linkedin-square`, `x`, `whatsapp` or `youtube`, and the film gets the right shape and size.
@@ -87,6 +91,7 @@ The first release: describe a film in one JSON file, and Bezel Film renders it t
 
 - CI checks on every push and pull request, including a render smoke test, plus Dependabot.
 
-[Unreleased]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/ShazMoghaddam/bezel-film/releases/tag/v0.1.0

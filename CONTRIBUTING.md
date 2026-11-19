@@ -55,6 +55,10 @@ npm run stills -- examples/northside-coffee/film.json all --safe-zones
 
 The stills go in `stills/` (ignored by git). Name a few presets instead of `all` to check just those, and leave out `--safe-zones` to see a film as viewers will.
 
+## Keeping CI quick
+
+The render smoke test runs in Microsoft's Playwright container (`mcr.microsoft.com/playwright`), which already has the browser's system libraries. When Dependabot bumps `playwright-core`, bump the container's version in `.github/workflows/check.yml` to match. It still works if you forget, just a little slower.
+
 ## Generated files
 
 Two things are generated, and CI fails if they're out of date:
