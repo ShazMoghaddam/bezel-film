@@ -1,7 +1,7 @@
 {
   "name": "data-story",
   "label": "Data story",
-  "description": "Clean, confident and chart-led. Big numbers, bold colour per series, calm motion.",
+  "description": "Clean, confident and chart-led. Big numbers, bold colour per series, springy motion.",
   "colours": {
     "background": "#0B1020",
     "surface": "#151B2E",
@@ -16,6 +16,7 @@
     "mono": "JetBrains Mono"
   },
   "motion": {
+    "level": "lively",
     "easing": "cubic-bezier(0.22, 1, 0.36, 1)",
     "enterMs": 600,
     "staggerMs": 90,

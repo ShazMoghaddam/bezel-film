@@ -1,4 +1,5 @@
 import { readFile } from "node:fs/promises";
+import type { MotionLevel } from "../spec/schema.js";
 
 export interface Style {
   name: string;
@@ -6,7 +7,11 @@ export interface Style {
   description: string;
   colours: { background: string; surface: string; text: string; muted: string; accent: string; palette: string[] };
   fonts: { heading: string; body: string; mono: string };
-  motion: { easing: string; enterMs: number; staggerMs: number; transition: string; transitionMs: number };
+  motion: {
+    /** The film's motion unless the film or a scene chooses another. */
+    level: MotionLevel;
+    /** Used by the calm level, and for anything without a spring. */
+    easing: string; enterMs: number; staggerMs: number; transition: string; transitionMs: number };
   layout: { safeArea: number; captionPosition: string };
 }
 

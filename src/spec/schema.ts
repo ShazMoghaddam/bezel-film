@@ -17,6 +17,7 @@ export const SPEC_VERSION = 1;
 export const STYLES = ["data-story", "product-launch", "whiteboard"] as const;
 export const FRAME_RATES = [24, 30, 60] as const;
 export const TRANSITIONS = ["cut", "fade", "slide", "wipe"] as const;
+export const MOTION_LEVELS = ["calm", "lively", "punchy"] as const;
 export const VOICE_ENGINES = ["kokoro", "piper", "none"] as const;
 export const VOICE_GENDERS = ["female", "male"] as const;
 export const MUSIC_SOURCES = ["generated", "file", "none"] as const;
@@ -61,6 +62,7 @@ const sceneBase = {
     .optional()
     .describe("Length in seconds. Overrides the timing worked out from narration."),
   transition: z.enum(TRANSITIONS).optional().describe("How this scene enters. Defaults to the style's choice."),
+  motion: z.enum(MOTION_LEVELS).optional().describe("How this scene moves, overriding the film's motion."),
 };
 
 const titleScene = z.object({
@@ -231,6 +233,10 @@ export const filmSchema = z
     voice: voiceSchema.prefault({}),
     music: musicSchema.prefault({}),
     captions: z.boolean().default(true),
+    motion: z
+      .enum(MOTION_LEVELS)
+      .optional()
+      .describe("How things move. calm: smooth and simple. lively: springy, headings appear word by word. punchy: bigger and bouncier, for short social films. Defaults to the style's choice."),
     scenes: z.array(sceneSchema).min(1).max(40),
   })
   .superRefine((film, ctx) => {
@@ -258,3 +264,4 @@ export type Film = z.output<typeof filmSchema>;
 export type FilmInput = z.input<typeof filmSchema>;
 export type Scene = z.output<typeof sceneSchema>;
 export type SceneType = Scene["type"];
+export type MotionLevel = (typeof MOTION_LEVELS)[number];

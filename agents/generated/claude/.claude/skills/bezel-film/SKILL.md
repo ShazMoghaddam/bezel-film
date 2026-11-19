@@ -18,7 +18,7 @@ If the project has no `node_modules/bezel-film` folder, set it up first. Use the
 npx bezel-film init --yes --agents claude --no-sample
 ```
 
-It installs Bezel Film, adds these instructions and does the one-time downloads (about 200 MB, so it takes a few minutes).
+It installs Bezel Film, adds these instructions and downloads about 200 MB once, so it takes a few minutes.
 
 ## How to direct a film
 
@@ -30,7 +30,7 @@ It installs Bezel Film, adds these instructions and does the one-time downloads 
    - Captions on or off? (default on)
    - Music: calm, upbeat, dramatic, epic, ambient, reflective, or none? (default calm)
 2. **Gather the material.** Read the README, the code or the dataset. Only use facts and numbers that come from the material or from the user. Never invent figures.
-3. **Write the film file** at `films/<short-name>/film.json` (for example `films/sales-2026/film.json`), following the rules below. Start it with `"$schema": "../../node_modules/bezel-film/schema/film.schema.json"` so editors can check it. `films/welcome/film.json` is a working example.
+3. **Write the film file** at `films/<short-name>/film.json` (e.g. `films/sales-2026/film.json`), following the rules below. Start it with `"$schema": "../../node_modules/bezel-film/schema/film.schema.json"` so editors can check it. `films/welcome/film.json` is a working example.
 4. **Check it** with `npx bezel-film validate films/<short-name>/film.json` and fix every problem it reports.
 5. **Render** with `npx bezel-film render films/<short-name>/film.json`. The video is saved next to the film file as `film.mp4`, with a cover image as `film-cover.png`. Tell the user where they are.
 
@@ -78,14 +78,14 @@ Pick a mood that suits the story if the user has no preference: `calm` for most 
 | --- | --- | --- |
 | `title` | Opening card | `title`, `subtitle` |
 | `stat` | One big number | `value`, `label`, `context` |
-| `chart` | A chart drawn with Bezel Charts | `chart.type`, `chart.values`, `chart.labels`, `chart.series` |
+| `chart` | A Bezel Charts chart | `chart.type`, `chart.values`, `chart.labels`, `chart.series` |
 | `points` | Up to six short points | `heading`, `points` |
 | `code` | A short code snippet | `language`, `code`, `highlight` |
 | `quote` | A quote or testimonial | `quote`, `attribution` |
 | `outro` | Closing card and call to action | `title`, `url`, `cta` |
 | `custom` | Your own canvas scene (advanced) | `module`, `props` |
 
-Every scene can also have `id`, `narration`, `duration` (seconds) and `transition` (`cut`, `fade`, `slide` or `wipe`). Each scene needs either `narration` or `duration`.
+Every scene can also have `id`, `narration`, `duration` (seconds), `transition` (`cut`, `fade`, `slide`, `wipe`) and `motion`. Each needs `narration` or `duration`.
 
 ## Writing a good film
 
@@ -93,7 +93,7 @@ Every scene can also have `id`, `narration`, `duration` (seconds) and `transitio
 - **Narration sets the pace.** About 150 words a minute, so one or two short sentences per scene. Write it to be spoken: plain words, numbers said the way people say them.
 - **Open with the hook,** close with an `outro` that says what to do next.
 - **Keep charts simple:** seven bars or fewer, short labels, one point per chart. Say the takeaway in the narration and in `chart.heading`.
-- **Keep on-screen text short.** Points under about ten words each. Code snippets under fifteen lines.
-- **Use the style's defaults** for colour, type and motion.
+- **Keep on-screen text short.** Points under ten words. Code under fifteen lines.
+- **Use the style's defaults** for colour, type and motion. Set `motion` (`calm`, `lively`, `punchy`) only if asked.
 - **Only the `data-story` style renders today.** `product-launch`, `whiteboard` and `custom` scenes are coming, so don't use them yet.
 <!-- bezel-film:end -->

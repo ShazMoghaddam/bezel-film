@@ -67,7 +67,8 @@
     "banner": "tsx scripts/build-banner.ts",
     "demo": "tsx scripts/build-demo.ts",
     "prepack": "npm run build",
-    "stills": "tsx scripts/stills.ts"
+    "stills": "tsx scripts/stills.ts",
+    "motion": "tsx scripts/motion.ts"
   },
   "dependencies": {
     "@clack/prompts": "^1.9.0",
