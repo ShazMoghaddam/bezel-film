@@ -2,6 +2,7 @@ import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { createRequire } from "node:module";
 import { availableParallelism, tmpdir } from "node:os";
 import { dirname, join } from "node:path";
+import { lengthNotes, PLATFORMS, type Platform, type PresetName } from "../spec/formats.js";
 import type { Film } from "../spec/schema.js";
 import { clipSeconds, encodeStereoWav, mixToWav } from "./audio.js";
 import { MUSIC_SAMPLE_RATE } from "./music.js";
@@ -9,7 +10,8 @@ import { buildMusic } from "./soundtrack.js";
 import type { Browser, Page } from "playwright-core";
 import { launchBrowser } from "./browser.js";
 import { findFfmpeg, startEncoder } from "./ffmpeg.js";
-import { buildPage } from "./page.js";
+import { drawScale, layoutFor, videoSize } from "./layout.js";
+import { buildPage, type PageOptions } from "./page.js";
 import { RUNTIME_JS } from "./runtime.js";
 import { loadStyle, type Style } from "./style.js";
 import { buildTimeline, overlongNarration, splitSentences, type Timeline } from "./timeline.js";
@@ -20,6 +22,16 @@ export type { Voice, Clip } from "./voice.js";
 export interface RenderOptions {
   /** Where to write the finished video, e.g. "out/film.mp4". */
   output: string;
+  /**
+   * Make a version for each of these platforms instead, each to its own file.
+   * The voice and music are made once and shared, so this is much quicker than
+   * rendering each one separately.
+   */
+  targets?: { preset: PresetName; output: string }[];
+  /** Save a cover image next to each video, for platforms that show one before play. Default: true. */
+  cover?: boolean;
+  /** Shade the parts of the frame each platform covers, to check a film by eye. */
+  showSafeZones?: boolean;
   /** Use your own voice engine instead of the one the film names. */
   voice?: Voice | null;
   /** Called with short status updates, e.g. for a progress line in the terminal. */
@@ -30,22 +42,39 @@ export interface RenderOptions {
   onWarning?: (message: string) => void;
 }
 
+export interface RenderedVideo {
+  preset?: PresetName;
+  output: string;
+  /** The cover image, if one was saved. */
+  cover?: string;
+  frames: number;
+}
+
 export interface RenderResult {
+  /** The first (or only) video. */
   output: string;
   seconds: number;
   frames: number;
+  videos: RenderedVideo[];
 }
+
+/** The film as it should be drawn for one platform: same story, that platform's frame. */
+export function filmFor(film: Film, preset: PresetName): Film {
+  const target: Platform = PLATFORMS[preset];
+  return { ...film, format: { ...film.format, preset, aspect: target.aspect, resolution: target.resolution ?? film.format.resolution } };
+}
+
+/** "films/demo/film.mp4" → "films/demo/film-cover.png". */
+export const coverPath = (video: string) => video.replace(/\.[^./\\]+$/, "") + "-cover.png";
 
 const require = createRequire(import.meta.url);
 
 /** What runtime.ts adds to the page. */
 interface BezelPage {
-  __bezel: { ready(): Promise<void>; seek(seconds: number): void };
+  __bezel: { ready(): Promise<void>; seek(seconds: number, still?: boolean): void };
 }
 /** A private address the page is served from. Nothing on it touches the network. */
 const ORIGIN = "https://bezel-film.local";
-
-const SIZES = { "16:9": [1920, 1080], "9:16": [1080, 1920], "1:1": [1080, 1080] } as const;
 
 /** Files the page may load, mapped to where they are on disk. Everything else is blocked. */
 function assetFiles(style: Style): Record<string, string> {
@@ -69,11 +98,14 @@ const contentType = (path: string) => CONTENT_TYPES[path.slice(path.lastIndexOf(
  * Opens the film's page in the browser, ready to seek. Only our own files are served;
  * every other request is blocked, so rendering never touches the network.
  */
-export async function openFilmPage(browser: Browser, film: Film, style: Style, timeline: Timeline): Promise<Page> {
-  const [width, height] = SIZES[film.format.aspect];
-  const scale = film.format.resolution === "4k" ? 2 : 1;
-  const context = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: scale, reducedMotion: "no-preference" });
-  const files: Record<string, string> = { "/index.html": buildPage(film, style, timeline), "/runtime.js": RUNTIME_JS };
+export async function openFilmPage(browser: Browser, film: Film, style: Style, timeline: Timeline, options: PageOptions = {}): Promise<Page> {
+  const layout = layoutFor(film);
+  const context = await browser.newContext({
+    viewport: { width: layout.width, height: layout.height },
+    deviceScaleFactor: drawScale(layout),
+    reducedMotion: "no-preference",
+  });
+  const files: Record<string, string> = { "/index.html": buildPage(film, style, timeline, layout, options), "/runtime.js": RUNTIME_JS };
   const disk = assetFiles(style);
   await context.route("**/*", async (route) => {
     const url = new URL(route.request().url());
@@ -167,6 +199,15 @@ async function speakFilm(film: Film, voice: Voice | null, onProgress?: Progress)
 }
 
 /**
+ * The moment used for the cover: the first scene once everything has risen in,
+ * which is usually the title.
+ */
+export function coverSeconds(timeline: Timeline): number {
+  const first = timeline.scenes[0]!;
+  return first.start + Math.min(2, (first.end - first.start) * 0.6);
+}
+
+/**
  * Turns a validated film into an MP4.
  *
  *   1. Voice: each sentence becomes audio, and its length sets the scene timing.
@@ -192,6 +233,8 @@ export async function renderFilm(film: Film, options: RenderOptions): Promise<Re
   }
   const timeline = buildTimeline(film, speech.seconds);
   for (const warning of overlongNarration(film, timeline)) onWarning?.(warning);
+  const presets = options.targets?.length ? options.targets.map((t) => t.preset) : film.format.preset ? [film.format.preset] : [];
+  for (const preset of presets) for (const note of lengthNotes(preset, timeline.duration)) onWarning?.(note);
 
   const work = await mkdtemp(join(tmpdir(), "bezel-film-"));
   const browser = await launchBrowser(onProgress);
@@ -216,20 +259,49 @@ export async function renderFilm(film: Film, options: RenderOptions): Promise<Re
       await writeFile(music, encodeStereoWav(track.left, track.right, MUSIC_SAMPLE_RATE));
     }
 
-    const page = await openFilmPage(browser, film, style, timeline);
+    const targets = options.targets?.length
+      ? options.targets.map(({ preset, output }) => ({ film: filmFor(film, preset), preset, output }))
+      : [{ film, preset: film.format.preset, output: options.output }];
     const fps = film.format.fps;
     const frames = Math.round(timeline.duration * fps);
-    encoder = startEncoder({ ffmpeg, fps, narration, music, output: options.output });
-    const extraPages = await Promise.all(
-      Array.from({ length: Math.min(workerCount(), frames) - 1 }, () => openFilmPage(browser, film, style, timeline)),
-    );
-    await captureFrames([page, ...extraPages], frames, fps, encoder.write, (done) => {
-      if (done % fps === 0 || done === frames) onProgress?.(`Drawing frames: ${done} of ${frames}`);
-    });
-    onProgress?.("Encoding the video…");
-    await encoder.finish();
-    encoder = undefined;
-    return { output: options.output, seconds: timeline.duration, frames };
+    const videos: RenderedVideo[] = [];
+
+    for (const [n, target] of targets.entries()) {
+      const label = targets.length > 1 ? `${PLATFORMS[target.preset!].label} (${n + 1} of ${targets.length}): ` : "";
+      const pageOptions = { showSafeZones: options.showSafeZones };
+      const layout = layoutFor(target.film);
+      const page = await openFilmPage(browser, target.film, style, timeline, pageOptions);
+      const limit = target.preset ? (PLATFORMS[target.preset] as Platform).maxMegabytes : undefined;
+      encoder = startEncoder({
+        ffmpeg,
+        fps,
+        narration,
+        music,
+        output: target.output,
+        sizeLimit: limit ? { megabytes: limit, seconds: timeline.duration } : undefined,
+        size: layout.scale < 1 ? videoSize(layout) : undefined,
+      });
+      const extraPages = await Promise.all(
+        Array.from({ length: Math.min(workerCount(), frames) - 1 }, () => openFilmPage(browser, target.film, style, timeline, pageOptions)),
+      );
+      const pages = [page, ...extraPages];
+      await captureFrames(pages, frames, fps, encoder.write, (done) => {
+        if (done % fps === 0 || done === frames) onProgress?.(`${label}Drawing frames: ${done} of ${frames}`);
+      });
+      onProgress?.(`${label}Encoding the video…`);
+      await encoder.finish();
+      encoder = undefined;
+
+      let cover: string | undefined;
+      if (options.cover !== false) {
+        cover = coverPath(target.output);
+        await page.evaluate((t) => (globalThis as unknown as BezelPage).__bezel.seek(t, true), coverSeconds(timeline));
+        await writeFile(cover, await page.screenshot({ type: "png" }));
+      }
+      await Promise.all(pages.map((p) => p.context().close()));
+      videos.push({ preset: target.preset, output: target.output, cover, frames });
+    }
+    return { output: videos[0]!.output, seconds: timeline.duration, frames, videos };
   } finally {
     encoder?.abort();
     await browser.close();

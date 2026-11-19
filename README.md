@@ -46,12 +46,13 @@ npx bezel-film render films/<your-film>/film.json
 - **Films from your ideas, projects and data.** Titles, big numbers, charts, lists, code and quotes, each scene timed to its voiceover.
 - **A natural voice.** Female or male, made on your computer. Hear the options with `npx bezel-film voices`.
 - **Music written for every film.** Six moods, played on recorded piano, strings, harp and timpani, dipping whenever the voice speaks. Or bring your own track.
+- **Made for every platform.** TikTok, Reels, Shorts, LinkedIn, X, WhatsApp and YouTube, each in the right shape with text kept clear of the app's buttons. Write one film and get every version, plus a cover image for each.
 - **Charts that move.** Drawn with [Bezel Charts](https://github.com/ShazMoghaddam/bezel-charts), in bold colours.
 - **Works with your agent.** Claude Code, Codex, Gemini CLI, Cursor, GitHub Copilot, Windsurf, and any agent that reads `AGENTS.md`.
 - **Private and offline.** After the one-time download, nothing leaves your computer.
 - **Smooth and repeatable.** Every frame is drawn on a frozen clock, so films look the same on any computer, every time.
 
-> **Early days:** there's one visual style so far, and 16:9 is the most polished shape. More styles, and layouts tuned for TikTok, Reels, Shorts and LinkedIn, are on the [roadmap](#roadmap).
+> **Early days:** there's one visual style so far. More styles are on the [roadmap](#roadmap).
 
 ## Reference
 
@@ -62,11 +63,14 @@ Everything below is for when you want to go further or edit films by hand.
 | Command | What it does |
 | --- | --- |
 | `npx bezel-film init` | Sets up a folder: installs Bezel Film, adds agent instructions, makes a welcome film |
-| `npx bezel-film render <film.json>` | Renders a film to an MP4 next to the film file (`-o` to choose another path) |
+| `npx bezel-film render <film.json>` | Renders a film to an MP4 and a cover image next to the film file (`-o` to choose another path) |
+| `npx bezel-film formats` | Lists the platform presets |
 | `npx bezel-film validate <film.json>` | Checks a film file and shows a summary |
 | `npx bezel-film voices` | Records a short line in eight recommended voices |
 | `npx bezel-film setup` | Does the one-time downloads (voice and browser) |
 | `npx bezel-film schema` | Prints the film file's JSON Schema |
+
+`render` also takes `--for tiktok,reels,x` (or `--for all`) to make a version for each platform, `--show-safe-zones` to shade the parts each app covers, and `--no-cover`.
 
 `init` also takes `--yes` (no questions), `--agents claude,cursor` and `--no-sample`, so agents and scripts can run it too.
 
@@ -80,7 +84,7 @@ A film is a few settings plus a list of scenes. Only `spec`, `title`, `style` an
   "spec": 1,
   "title": "Northside Coffee: a year in numbers",
   "style": "data-story",
-  "format": { "aspect": "16:9", "resolution": "1080p", "fps": 30 },
+  "format": { "preset": "linkedin-mobile" },
   "scenes": [
     {
       "type": "stat",
@@ -119,8 +123,9 @@ Every scene can also take `narration`, `duration`, `transition` and `id`.
 | Setting | Options | Default |
 | --- | --- | --- |
 | `style` | `data-story` (`product-launch` and `whiteboard` are coming) | required |
-| `format.aspect` | `16:9`, `9:16`, `1:1` (16:9 is the most polished for now) | `16:9` |
-| `format.resolution` | `1080p`, `4k` | `1080p` |
+| `format.preset` | a platform, see [Platforms](#platforms) | none |
+| `format.aspect` | `16:9`, `9:16`, `4:5`, `1:1` | from the preset, or `16:9` |
+| `format.resolution` | `720p`, `1080p`, `4k` | from the preset, or `1080p` |
 | `format.fps` | `24`, `30`, `60` | `30` |
 | `voice.engine` | `kokoro`, `none` (`piper` is planned) | `kokoro` |
 | `voice.gender` | `female`, `male` | `female` |
@@ -132,6 +137,33 @@ Every scene can also take `narration`, `duration`, `transition` and `id`.
 | `music.volume` | `0` to `1` | `0.2` |
 | `music.file` | path to your own track, relative to the film file | none |
 | `captions` | `true`, `false` | `true` |
+
+### Platforms
+
+Set `format.preset` to where the film will be posted. It sets the shape and size, and keeps titles, numbers and captions clear of the app's own buttons, names and captions.
+
+| Preset | Shape | Best for |
+| --- | --- | --- |
+| `tiktok` | 9:16 | TikTok |
+| `reels` | 9:16 | Instagram Reels (and Facebook Reels) |
+| `shorts` | 9:16 | YouTube Shorts |
+| `instagram` | 4:5 | Instagram feed posts |
+| `linkedin-mobile` | 4:5 | LinkedIn, for people on their phones |
+| `linkedin-desktop` | 16:9 | LinkedIn, for people on laptops |
+| `linkedin-square` | 1:1 | LinkedIn, a middle ground for both |
+| `x` | 16:9 | X (free accounts take up to 2 min 20 s) |
+| `whatsapp` | 9:16, 720p | WhatsApp chats and Status, kept under 16 MB |
+| `youtube` | 16:9 | YouTube and websites |
+
+To post the same film in several places, render every version in one go. The voice and music are made once and shared:
+
+```bash
+npx bezel-film render films/launch/film.json --for tiktok,linkedin-mobile,x
+```
+
+This saves `film-tiktok.mp4`, `film-linkedin-mobile.mp4` and `film-x.mp4`, each with a cover image. `validate` warns if a film is too long for its platform, for example over 3 minutes for Shorts.
+
+The safe zones come from each platform's published ad guidance (TikTok, Meta and Google, checked November 2026), as none of them publishes figures for ordinary posts. Content is always centred, with even margins. On TikTok, the like and share buttons sit over the lower right corner, so the end of a long caption or the edge of a wide chart can pass under them. To check a film by eye, add `--show-safe-zones` and the covered areas are shaded.
 
 ### Music
 
@@ -199,7 +231,7 @@ On Linux, the voice engine also tries to download large GPU files it doesn't nee
 
 - **v0.1.0 (released):** the `data-story` style, voiceover, captions and music
 - **v0.2.0 (released):** `init`, so anyone can start in one command, and an agent-first README
-- **v0.3.0:** made for social: presets for TikTok, Reels, Shorts and LinkedIn (mobile and desktop), with safe zones and tuned vertical layouts
+- **v0.3.0:** made for social: presets for TikTok, Reels, Shorts, Instagram, LinkedIn, X, WhatsApp and YouTube, with safe zones, vertical layouts, every version from one film, and cover images
 - **v0.4.0:** premium motion: spring easing, staggered entrances and sound effects that land with the movement
 - **v0.5.0:** product stories: map, timeline and roadmap scenes, and a draft film from a repo or README
 - **v0.6.0 onwards:** more looks, including product launch, whiteboard and sketch, cinematic, playful and minimal

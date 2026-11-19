@@ -1,5 +1,6 @@
 import type { Film, Scene } from "../spec/schema.js";
 import type { Style } from "./style.js";
+import type { Layout } from "./layout.js";
 import type { Timeline, TimedScene } from "./timeline.js";
 
 /**
@@ -97,7 +98,78 @@ function sceneBody(timed: TimedScene, style: Style): string {
   }
 }
 
-function css(style: Style): string {
+/** A fraction of the frame as CSS, e.g. 0.14 of the height as "14vh". */
+const pct = (fraction: number, unit: "vw" | "vh") => `${+(fraction * 100).toFixed(3)}${unit}`;
+/** Room kept above a platform's caption area for our own captions (up to three lines). */
+const CAPTION_ROOM = "calc(var(--u)*16)";
+
+/**
+ * Where content and captions may go. Without a platform safe zone, the style's own
+ * margin applies all round. With one, content stays centred inside it, and our
+ * captions sit just above the platform's own caption area.
+ */
+function safeVars(frame: Layout, captions: boolean): string {
+  const safe = frame.safe;
+  if (!safe) return "--st:var(--safe);--sr:var(--safe);--sb:var(--safe);--sl:var(--safe);--cl:0;--cr:0;--cb:calc(var(--safe)*.55);--cw:76%;";
+  // Content is centred, so both sides get the wider of the two margins. A button
+  // column (TikTok's) only covers the lower right, so it doesn't push content off centre.
+  const side = pct(Math.max(safe.left, safe.right), "vw");
+  const bottom = pct(safe.bottom, "vh");
+  return [
+    `--st:${pct(safe.top, "vh")}`,
+    `--sr:${side}`,
+    `--sb:calc(${bottom} + ${captions ? CAPTION_ROOM : "var(--u)*2"})`,
+    `--sl:${side}`,
+    `--cl:${side}`,
+    `--cr:${side}`,
+    `--cb:calc(${bottom} + var(--u)*1.5)`,
+    "--cw:100%;",
+  ].join(";");
+}
+
+/** Type and spacing for each frame shape. Wide frames use the base sizes. */
+function shapeCss(frame: Layout): string {
+  if (frame.shape === "wide") return "";
+  const shared = `.center,.column,.column.narrow{max-width:100%}`;
+  // Square and 4:5 frames are mostly seen in phone feeds, so text is a little larger.
+  if (frame.shape === "square") {
+    return `${shared}
+.points li{font-size:calc(var(--u)*4.6)}
+.lead{font-size:calc(var(--u)*3.5)}
+.caption span{font-size:calc(var(--u)*3.1)}`;
+  }
+  // Tall frames are seen on phones, held close, so text is larger and blocks stack.
+  return `${shared}
+.display{font-size:calc(var(--u)*11)}
+.heading{font-size:calc(var(--u)*7)}
+.lead{font-size:calc(var(--u)*3.9)}
+.stat-label{font-size:calc(var(--u)*6.2)}
+.chip{font-size:calc(var(--u)*3.2)}
+.points{gap:calc(var(--u)*3.2)}
+.points li{font-size:calc(var(--u)*5);align-items:flex-start}
+.points .dot{margin-top:calc(var(--u)*1.4)}
+.quote{font-size:calc(var(--u)*6.6)}
+.code pre{font-size:calc(var(--u)*3)}
+.cta{font-size:calc(var(--u)*3.8)}
+.url{font-size:calc(var(--u)*3.2)}
+.caption span{font-size:calc(var(--u)*3.4)}`;
+}
+
+/** Blocks over the parts of the frame the platform covers, for checking a film by eye. */
+function safeOverlay(frame: Layout): string {
+  const safe = frame.safe;
+  if (!safe) return "";
+  const box = (css: string) => `<i style="${css}"></i>`;
+  return `<div class="safe-overlay">
+${box(`left:0;right:0;top:0;height:${pct(safe.top, "vh")}`)}
+${box(`left:0;right:0;bottom:0;height:${pct(safe.bottom, "vh")}`)}
+${box(`left:0;top:${pct(safe.top, "vh")};bottom:${pct(safe.bottom, "vh")};width:${pct(safe.left, "vw")}`)}
+${box(`right:0;top:${pct(safe.top, "vh")};bottom:${pct(safe.bottom, "vh")};width:${pct(safe.right, "vw")}`)}
+${safe.column ? box(`right:0;top:${pct(safe.column.from, "vh")};bottom:${pct(safe.bottom, "vh")};width:${pct(safe.column.width, "vw")}`) : ""}
+</div>`;
+}
+
+function css(style: Style, frame: Layout, captions: boolean): string {
   const { colours, fonts, motion, layout } = style;
   const palette = colours.palette.map((colour, i) => `--p${i}:${colour};`).join("");
   return `
@@ -107,7 +179,7 @@ function css(style: Style): string {
 @font-face{font-family:"${fonts.body}";font-weight:600;src:url(/fonts/body-600.woff2) format("woff2")}
 @font-face{font-family:"${fonts.mono}";font-weight:400;src:url(/fonts/mono-400.woff2) format("woff2")}
 :root{--bg:${colours.background};--surface:${colours.surface};--text:${colours.text};--muted:${colours.muted};--accent:${colours.accent};${palette}
-  --u:calc(min(100vw,100vh)/100);--safe:${layout.safeArea * 100}vmin;--ease:${motion.easing};--enter:${motion.enterMs}ms;
+  --u:calc(min(100vw,100vh)/100);--safe:${layout.safeArea * 100}vmin;${safeVars(frame, captions)}--ease:${motion.easing};--enter:${motion.enterMs}ms;
   --heading:"${fonts.heading}",system-ui,sans-serif;--body:"${fonts.body}",system-ui,sans-serif;--mono:"${fonts.mono}",ui-monospace,monospace}
 *{box-sizing:border-box;margin:0;padding:0;animation-play-state:paused!important}
 html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:var(--body);-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision}
@@ -118,7 +190,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
   radial-gradient(30% 35% at 70% 15%,color-mix(in srgb,var(--p2) 10%,transparent),transparent 70%)}
 .grain{position:absolute;inset:0;background-image:radial-gradient(color-mix(in srgb,var(--text) 5%,transparent) 1px,transparent 1px);background-size:calc(var(--u)*2.4) calc(var(--u)*2.4);mask-image:radial-gradient(ellipse at center,#000 30%,transparent 80%);opacity:.5}
 #stage{position:absolute;inset:0}
-.scene{position:absolute;inset:0;padding:var(--safe);display:flex;align-items:center;justify-content:center;opacity:0;--c:var(--p0)}
+.scene{position:absolute;inset:0;padding:var(--st) var(--sr) var(--sb) var(--sl);display:flex;align-items:center;justify-content:center;opacity:0;--c:var(--p0)}
 .center{display:flex;flex-direction:column;align-items:center;text-align:center;gap:calc(var(--u)*2.6);max-width:84%}
 .center.wide{width:100%;max-width:100%}
 .column{display:flex;flex-direction:column;gap:calc(var(--u)*3.4);width:fit-content;max-width:min(100%,calc(var(--u)*150))}
@@ -153,30 +225,34 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .code pre{padding:calc(var(--u)*2.4) 0;font-family:var(--mono);font-size:calc(var(--u)*2.7);line-height:1.6}
 .ln{display:block;padding:0 calc(var(--u)*3) 0 calc(var(--u)*2);white-space:pre}
 .ln b{display:inline-block;width:calc(var(--u)*5);font-weight:400;color:color-mix(in srgb,var(--muted) 60%,transparent);text-align:right;margin-right:calc(var(--u)*3)}
+.code pre.wrap .ln{display:grid;grid-template-columns:calc(var(--u)*5) 1fr;column-gap:calc(var(--u)*3);white-space:pre-wrap;overflow-wrap:anywhere}
+.code pre.wrap .ln b{margin:0}
 .ln.hl{background:color-mix(in srgb,var(--accent) 14%,transparent);box-shadow:inset calc(var(--u)*.5) 0 var(--accent)}
 .quote-mark{font-family:var(--heading);font-weight:700;font-size:calc(var(--u)*22);line-height:.6;color:var(--c);height:calc(var(--u)*10)}
 .quote{font-family:var(--heading);font-weight:600;font-size:calc(var(--u)*5.6);line-height:1.2;letter-spacing:-.015em;text-wrap:balance}
 .cta{display:inline-block;padding:calc(var(--u)*1.6) calc(var(--u)*4);border-radius:99px;font-weight:600;font-size:calc(var(--u)*3);color:var(--bg);background:var(--accent)}
-.url{font-family:var(--mono);font-size:calc(var(--u)*2.6);color:var(--muted)}
-.caption{position:absolute;left:50%;bottom:calc(var(--safe)*.55);transform:translateX(-50%);max-width:76%;text-align:center;opacity:0}
+.url{white-space:nowrap;max-width:100%;font-family:var(--mono);font-size:calc(var(--u)*2.6);color:var(--muted)}
+.caption{position:absolute;left:var(--cl);right:var(--cr);bottom:var(--cb);margin:0 auto;width:fit-content;max-width:var(--cw);text-align:center;opacity:0}
 .caption span{display:inline;padding:calc(var(--u)*.5) calc(var(--u)*1.6);border-radius:calc(var(--u)*1);font-weight:600;font-size:calc(var(--u)*2.8);line-height:1.6;
   background:rgb(0 0 0/.62);box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.safe-overlay i{position:absolute;background:rgb(255 45 85/.3);outline:2px dashed rgb(255 45 85/.85);outline-offset:-2px}
 .progress{position:absolute;left:0;top:0;height:calc(var(--u)*.45);width:0;background:linear-gradient(90deg,var(--p0),var(--p1),var(--p3))}
-`;
+${shapeCss(frame)}`;
 }
 
 /**
  * Charts are drawn at this size, then zoomed to fill the frame, so their text
  * scales with them and stays readable on video.
  */
-const CHART_WIDTH = 620;
-const CHART_HEIGHT = 250;
+const CHART_SIZES: Record<Layout["shape"], [number, number]> = { wide: [620, 250], square: [520, 340], tall: [400, 400] };
 /** Round charts look best on a narrower canvas, with the legend close by. */
 const ROUND_CHARTS = new Set(["donut", "ring", "gauge"]);
 
 /** Everything the runtime needs to seek, sent to the page as JSON. */
-export function runtimeData(film: Film, style: Style, timeline: Timeline) {
+export function runtimeData(film: Film, style: Style, timeline: Timeline, frame: Layout) {
+  const [chartWidth, chartHeight] = CHART_SIZES[frame.shape];
   return {
+    zoned: Boolean(frame.safe),
     duration: timeline.duration,
     transitionSeconds: style.motion.transitionMs / 1000,
     endFadeSeconds: 0.6,
@@ -191,6 +267,7 @@ export function runtimeData(film: Film, style: Style, timeline: Timeline) {
       .filter((timed) => timed.scene.type === "chart")
       .map((timed) => {
         const { chart } = timed.scene as Extract<Scene, { type: "chart" }>;
+        const round = ROUND_CHARTS.has(chart.type);
         return {
           scene: timed.index,
           type: chart.type,
@@ -210,15 +287,21 @@ export function runtimeData(film: Film, style: Style, timeline: Timeline) {
             compact: "",
             "no-tooltips": "",
             "show-values": "",
-            width: String(ROUND_CHARTS.has(chart.type) ? CHART_WIDTH * 0.8 : CHART_WIDTH),
-            height: String(CHART_HEIGHT),
+            width: String(Math.round(round ? chartWidth * 0.8 : chartWidth)),
+            // A round chart with its legend beside it is wider than tall, whatever the frame.
+            height: String(round ? Math.min(chartHeight, Math.round(chartWidth * 0.6)) : chartHeight),
           },
         };
       }),
   };
 }
 
-export function buildPage(film: Film, style: Style, timeline: Timeline): string {
+export interface PageOptions {
+  /** Shade the parts of the frame the platform covers. */
+  showSafeZones?: boolean;
+}
+
+export function buildPage(film: Film, style: Style, timeline: Timeline, frame: Layout, options: PageOptions = {}): string {
   const scenes = timeline.scenes
     .map((timed) => {
       const colour = `var(--p${timed.index % style.colours.palette.length})`;
@@ -227,11 +310,11 @@ export function buildPage(film: Film, style: Style, timeline: Timeline): string 
     .join("\n");
 
   return `<!doctype html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="dark" class="shape-${frame.shape}">
 <head>
 <meta charset="utf-8">
 <title>${escapeHtml(film.title)}</title>
-<style>${css(style)}</style>
+<style>${css(style, frame, film.captions)}</style>
 </head>
 <body>
 <div class="backdrop"></div>
@@ -241,7 +324,8 @@ ${scenes}
 </main>
 <div class="caption"><span></span></div>
 <div class="progress"></div>
-<script>window.__BEZEL_DATA__ = ${safeJson(runtimeData(film, style, timeline))};</script>
+${options.showSafeZones ? safeOverlay(frame) : ""}
+<script>window.__BEZEL_DATA__ = ${safeJson(runtimeData(film, style, timeline, frame))};</script>
 <script src="/bezel-charts.js"></script>
 <script src="/runtime.js"></script>
 </body>

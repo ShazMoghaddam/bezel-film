@@ -23,8 +23,8 @@ To render the example film: `npx tsx src/cli.ts render examples/northside-coffee
 
 | Folder | What lives there |
 | --- | --- |
-| `src/spec/` | The film spec (`schema.ts`) and validation. This is the source of truth for the film file. |
-| `src/render/` | The renderer: voice (`voice.ts`), timing (`timeline.ts`), the scene page (`page.ts`, `runtime.ts`), music (`music.ts`, `colours.ts`, `nature.ts`, `instruments.ts`, `soundtrack.ts`), frame capture and ffmpeg (`index.ts`). |
+| `src/spec/` | The film spec (`schema.ts`), the platform presets and their safe zones (`formats.ts`), and validation. `schema.ts` is the source of truth for the film file. |
+| `src/render/` | The renderer: voice (`voice.ts`), timing (`timeline.ts`), the scene page and its layouts (`page.ts`, `runtime.ts`, `layout.ts`), music (`music.ts`, `colours.ts`, `nature.ts`, `instruments.ts`, `soundtrack.ts`), frame capture and ffmpeg (`index.ts`). |
 | `src/cli.ts` | The `bezel-film` command. |
 | `src/init.ts`, `src/agents.ts` | `bezel-film init`, and the list of coding agents and where their instructions go. |
 | `styles/` | One folder per style: colours, fonts and motion. |
@@ -42,15 +42,25 @@ To render the example film: `npx tsx src/cli.ts render examples/northside-coffee
 ```bash
 npm pack
 mkdir /tmp/try-init && cd /tmp/try-init
-BEZEL_FILM_INSTALL_SPEC=/path/to/bezel-film-x.y.z.tgz npx /path/to/bezel-film-x.y.z.tgz init
+BEZEL_FILM_INSTALL_SPEC=/path/to/bezel-film-x.y.z.tgz npx --package=/path/to/bezel-film-x.y.z.tgz bezel-film init
 ```
+
+## Checking layouts
+
+Changed how scenes look? Take a still of every scene in every platform format, then look through them:
+
+```bash
+npm run stills -- examples/northside-coffee/film.json all --safe-zones
+```
+
+The stills go in `stills/` (ignored by git). Name a few presets instead of `all` to check just those, and leave out `--safe-zones` to see a film as viewers will.
 
 ## Generated files
 
 Two things are generated, and CI fails if they're out of date:
 
 - Changed `src/spec/schema.ts`? Run `npm run schema`.
-- Changed `agents/instructions.md`? Run `npm run agents`. Keep it under about 5,500 characters: Windsurf rule files are capped at 6,000, and a test checks this.
+- Changed `agents/instructions.md`? Run `npm run agents`. Windsurf rule files are capped at 6,000 characters and the generated one is close, so keep additions short. A test checks this.
 - Changed the welcome film or how films look? Run `npm run demo` (it needs the voice, so run `npx bezel-film setup` first) to refresh the README demo.
 
 Commit the generated files along with your change.

@@ -5,6 +5,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+### Added
+
+- Platform presets: set `format.preset` to `tiktok`, `reels`, `shorts`, `instagram`, `linkedin-mobile`, `linkedin-desktop`, `linkedin-square`, `x`, `whatsapp` or `youtube`, and the film gets the right shape and size.
+- Safe zones: on TikTok, Reels and Shorts, titles, numbers, charts and captions stay centred and clear of the app's names and captions, and of its buttons apart from TikTok's lower right corner. `render --show-safe-zones` shades the covered areas so you can check by eye.
+- Layouts for tall and square frames, with larger text for phones. Long numbers, words and web addresses shrink to fit, long code lines wrap, and a scene with too much in it scales down rather than spilling off the frame.
+- `render --for tiktok,reels,x` (or `--for all`) makes a version for each platform from one film, sharing the voice and music.
+- A cover image next to every video, taken from the opening scene. `--no-cover` skips it.
+- `bezel-film formats` lists the presets.
+- The 4:5 shape and 720p resolution. WhatsApp videos are kept under 16 MB.
+- `validate` and `render` warn when a film is too long for its platform.
+- `init` adds cover images to `.gitignore`, alongside videos.
+
 ## [0.2.0] - 2026-11-19
 
 One command to start: `npx bezel-film init` sets everything up and makes your first film.

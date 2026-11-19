@@ -59,26 +59,53 @@ export interface EncoderOptions {
   /** Music track, if the film has music. */
   music?: string;
   output: string;
+  /** Keep the file under this size (megabytes) for a film this long (seconds), e.g. for WhatsApp. */
+  sizeLimit?: { megabytes: number; seconds: number };
+  /** Resize the frames to this size (pixels), e.g. down to 720p. */
+  size?: [number, number];
+}
+
+/** Audio bitrate when a file has to stay small. Still clear for a voice and music. */
+const SMALL_AUDIO_KBPS = 96;
+
+/**
+ * Video bitrate (kbps) that keeps a file under a size, leaving room for audio and
+ * the file's own overhead.
+ */
+export function bitrateForSize(megabytes: number, seconds: number): number {
+  const totalKbps = (megabytes * 8000 * 0.92) / Math.max(1, seconds);
+  return Math.max(150, Math.floor(totalKbps - SMALL_AUDIO_KBPS));
 }
 
 /**
  * Starts ffmpeg reading PNG frames on stdin. Write each frame with `write`,
  * then call `finish` to close the file.
  */
-export function startEncoder({ ffmpeg, fps, narration, music, output }: EncoderOptions) {
+export function startEncoder({ ffmpeg, fps, narration, music, output, sizeLimit, size }: EncoderOptions) {
   const args = ["-y", "-loglevel", "error", "-f", "image2pipe", "-framerate", String(fps), "-c:v", "png", "-i", "-"];
   const audio = [narration, music].filter((file): file is string => !!file);
   for (const file of audio) args.push("-i", file);
+  const resize = size ? `scale=${size[0]}:${size[1]}:flags=lanczos` : "";
   if (narration && music) {
     // The voice is mono; place it in the centre, then lay it over the (already dipped) music.
+    const video = resize ? `[0:v]${resize}[video];` : "";
     args.push(
       "-filter_complex",
-      "[1:a]aresample=48000,pan=stereo|c0=c0|c1=c0[voice];[2:a]aresample=48000[music];[voice][music]amix=inputs=2:normalize=0:duration=longest[mix]",
-      "-map", "0:v", "-map", "[mix]",
+      `${video}[1:a]aresample=48000,pan=stereo|c0=c0|c1=c0[voice];[2:a]aresample=48000[music];[voice][music]amix=inputs=2:normalize=0:duration=longest[mix]`,
+      "-map", resize ? "[video]" : "0:v", "-map", "[mix]",
     );
+  } else if (resize) {
+    args.push("-vf", resize);
   }
-  args.push("-c:v", "libx264", "-preset", "veryfast", "-crf", "18", "-pix_fmt", "yuv420p");
-  if (audio.length) args.push("-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-shortest");
+  args.push("-c:v", "libx264", "-preset", "veryfast", "-pix_fmt", "yuv420p");
+  if (sizeLimit) {
+    // Good quality where the picture is simple, but never over the bitrate that keeps the file small.
+    const kbps = bitrateForSize(sizeLimit.megabytes, sizeLimit.seconds);
+    args.push("-crf", "23", "-maxrate", `${kbps}k`, "-bufsize", `${kbps * 2}k`);
+  } else {
+    args.push("-crf", "18");
+  }
+  if (audio.length) args.push("-c:a", "aac", "-b:a", sizeLimit ? `${SMALL_AUDIO_KBPS}k` : "192k", "-ar", "48000", "-shortest");
   args.push("-movflags", "+faststart", output);
 
   const child = spawn(ffmpeg, args, { stdio: ["pipe", "ignore", "pipe"] });
