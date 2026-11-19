@@ -256,7 +256,7 @@ export async function renderFilm(film: Film, options: RenderOptions): Promise<Re
     let music: string | undefined;
     const track = mixInto(
       await buildMusic({ film, timeline, ffmpeg, baseDir: options.baseDir ?? process.cwd(), onProgress, onWarning }),
-      buildSoundEffects(film, style, timeline),
+      await buildSoundEffects(film, style, timeline, ffmpeg),
     );
     if (track) {
       music = join(work, "music.wav");

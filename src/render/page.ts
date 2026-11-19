@@ -70,22 +70,22 @@ function sceneBody(timed: TimedScene, style: Style, feel: MotionFeel, cue: Cue =
 
     case "stat":
       return `<div class="center">
-        <div class="pop stat-value" ${sound(0, "pop")} data-count="${escapeHtml(String(scene.value))}">${escapeHtml(String(scene.value))}</div>
+        <div class="pop stat-value" ${sound(0, "tap")} data-count="${escapeHtml(String(scene.value))}">${escapeHtml(String(scene.value))}</div>
         <div class="rise stat-label" ${delay(stagger * 3)}>${escapeHtml(scene.label)}</div>
-        ${scene.context ? `<div class="pop" ${sound(stagger * 6, "pop", { pitch: 7, gain: 0.7 })}><span class="chip">${escapeHtml(scene.context)}</span></div>` : ""}
+        ${scene.context ? `<div class="pop" ${sound(stagger * 6, "pop", { gain: 0.8 })}><span class="chip">${escapeHtml(scene.context)}</span></div>` : ""}
       </div>`;
 
     case "chart":
       return `<div class="center wide">
         ${scene.chart.heading ? words(scene.chart.heading, "h2", "heading", 0, feel) : ""}
-        <div class="card pop" ${sound(stagger * 2, "pop", { pitch: -5 })}><div class="chart-frame" data-chart="${timed.index}"></div></div>
+        <div class="card pop" ${sound(stagger * 2, "tap", { pitch: -5 })}><div class="chart-frame" data-chart="${timed.index}"></div></div>
       </div>`;
 
     case "points": {
       const { from, to } = speechWindow(timed);
       const step = scene.points.length > 1 ? (to - from) / scene.points.length : 0;
       const items = scene.points
-        .map((point, i) => `<li class="slide" ${sound(from + i * step, "swish", { pan: feel.slidePoints ? -0.35 : 0, pitch: i * 2 }, `--c:var(--p${i % style.colours.palette.length})`)}><span class="dot"></span><span>${escapeHtml(point)}</span></li>`)
+        .map((point, i) => `<li class="slide" ${sound(from + i * step, "swish", { pan: feel.slidePoints ? -0.35 : 0, pitch: i }, `--c:var(--p${i % style.colours.palette.length})`)}><span class="dot"></span><span>${escapeHtml(point)}</span></li>`)
         .join("");
       return `<div class="column">
         ${scene.heading ? words(scene.heading, "h2", "heading", 0, feel) : ""}
@@ -101,7 +101,7 @@ function sceneBody(timed: TimedScene, style: Style, feel: MotionFeel, cue: Cue =
         .map((line, i) => `<span class="ln${highlight.has(i + 1) ? " hl" : ""}"><b>${i + 1}</b>${escapeHtml(line) || " "}</span>`)
         .join("");
       return `<div class="center wide">
-        <figure class="code pop" ${sound(0, "pop", { pitch: -5 })}>
+        <figure class="code pop" ${sound(0, "tap", { pitch: -5 })}>
           <div class="code-bar"><i></i><i></i><i></i><span>${escapeHtml(scene.language)}</span></div>
           <pre><code>${lines}</code></pre>
         </figure>
@@ -111,7 +111,7 @@ function sceneBody(timed: TimedScene, style: Style, feel: MotionFeel, cue: Cue =
 
     case "quote":
       return `<div class="column narrow">
-        <div class="pop quote-mark" ${sound(0, "pop")}>“</div>
+        <div class="pop quote-mark" ${sound(0, "click")}>“</div>
         <blockquote class="rise quote" ${delay(stagger * 2)}>${escapeHtml(scene.quote)}</blockquote>
         ${scene.attribution ? `<p class="rise muted lead" ${delay(stagger * 5)}>${escapeHtml(scene.attribution)}</p>` : ""}
       </div>`;
@@ -119,8 +119,8 @@ function sceneBody(timed: TimedScene, style: Style, feel: MotionFeel, cue: Cue =
     case "outro":
       return `<div class="center">
         ${words(scene.title, "h1", "display", 0, feel)}
-        ${scene.cta ? `<div class="pop" ${sound(stagger * 4, "pop", { pitch: 7 })}><span class="cta">${escapeHtml(scene.cta)}</span></div>` : ""}
-        ${scene.url ? `<p class="rise url" ${delay(stagger * 6)}>${escapeHtml(scene.url.replace(/^https?:\/\//, ""))}</p>` : ""}
+        ${scene.cta ? `<div class="pop" ${sound(stagger * 4, "pop", { pitch: 2 })}><span class="cta">${escapeHtml(scene.cta)}</span></div>` : ""}
+        ${scene.url ? `<p class="rise url" ${sound(stagger * 6, "click", { pitch: 5, gain: 0.8 })}>${escapeHtml(scene.url.replace(/^https?:\/\//, ""))}</p>` : ""}
       </div>`;
 
     case "custom":

@@ -154,7 +154,7 @@ Every frame is still exact: the same film always renders the same video.
 
 ### Sound effects
 
-Sounds land with the movement: a whoosh between scenes, a soft pop as numbers and cards appear, a swish for each point, and ticks as a number counts up, ending in a small bell. They're made in code like the music, so there's nothing extra to download, and they play more quietly while someone is speaking.
+Sounds land with the movement: a whoosh between scenes, a soft tap as a number or chart appears, a pop for chips and buttons, a swish for each point, and ticks as a number counts up, ending in a small chime. They're real recordings from CC0 sound packs, shipped inside the package, so there's nothing extra to download. They play more quietly while someone is speaking.
 
 They're on by default and kept subtle. Set `"sfx": { "volume": 0 }` to turn them off, or raise the volume up to `1`.
 
@@ -271,6 +271,7 @@ Bezel Film is [MIT](LICENSE) licensed. It downloads and uses these, each under i
 - [ffmpeg](https://ffmpeg.org), via [ffmpeg-static](https://github.com/eugeneware/ffmpeg-static): GPL 3.0. It runs as a separate program and isn't part of Bezel Film's code.
 - Space Grotesk, Inter and JetBrains Mono fonts: SIL Open Font License
 - Instrument recordings from the [VS Chamber Orchestra: Community Edition](https://github.com/sgossner/VSCO-2-CE) by Versilian Studios: CC0 (public domain). See [instruments/CREDITS.md](instruments/CREDITS.md).
+- Sound effect recordings by [Kenney](https://kenney.nl/assets/interface-sounds), [Sparklin Labs](https://github.com/sparklinlabs/superpowers-asset-packs) and [artisticdude](https://opengameart.org/content/swishes-sound-pack): CC0 (public domain). See [sounds/CREDITS.md](sounds/CREDITS.md).
 
 ---
 
