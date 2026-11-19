@@ -152,6 +152,26 @@ export const MOTION_FEELS: Record<MotionLevel, MotionFeel> = {
   },
 };
 
+/** Big numbers start counting this long after their scene starts. */
+export const COUNT_DELAY_SECONDS = 0.25;
+/**
+ * How far through the count the number lands and pulses. With a quart curve the
+ * number is all but there at 70% of the count.
+ */
+export const COUNT_LANDS_AT = 0.7;
+/** A big number that counts up: optional text, a number (commas and decimals allowed), optional text. */
+export const COUNT_PATTERN = String.raw`^(\D*?)(\d[\d,]*(?:\.\d+)?)(.*)$`;
+
+/** How a scene's big number counts up, for the page and the sound effects alike. */
+export function countFor(feel: MotionFeel) {
+  return { delay: COUNT_DELAY_SECONDS, seconds: feel.countMs / 1000, curve: feel.countCurve, landsAt: COUNT_LANDS_AT, pulse: feel.pulse };
+}
+
+/** How far a count has got (0 to 1) when it is `x` of the way through its time. */
+export function countProgress(curve: MotionFeel["countCurve"], x: number): number {
+  return 1 - (1 - x) ** (curve === "quart" ? 4 : 3);
+}
+
 /** The longest a heading takes to finish appearing, however many words it has. */
 export const WORD_REVEAL_MAX_MS = 650;
 

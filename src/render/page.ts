@@ -1,5 +1,6 @@
 import type { Film, MotionLevel, Scene } from "../spec/schema.js";
-import { MOTION_FEELS, motionVars, wordStagger, type MotionFeel } from "./motion.js";
+import { MOTION_FEELS, countFor, motionVars, wordStagger, type MotionFeel } from "./motion.js";
+import type { SceneCue, SoundName } from "./sfx.js";
 import type { Style } from "./style.js";
 import type { Layout } from "./layout.js";
 import type { Timeline, TimedScene } from "./timeline.js";
@@ -45,35 +46,46 @@ function speechWindow(timed: TimedScene): { from: number; to: number } {
   return { from: (first.start - timed.start) * 1000, to: (last.end - timed.start) * 1000 };
 }
 
-function sceneBody(timed: TimedScene, style: Style, feel: MotionFeel): string {
+/** Called for each sound an entrance makes: when (ms into the scene), which sound, and how. */
+type Cue = (ms: number, sound: SoundName, how?: Omit<SceneCue, "ms" | "sound">) => void;
+
+/**
+ * A scene's HTML. Entrances that make a sound call `cue` with the same timing as
+ * their animation, so sound and picture can't drift apart.
+ */
+function sceneBody(timed: TimedScene, style: Style, feel: MotionFeel, cue: Cue = () => {}): string {
   const scene: Scene = timed.scene;
   const stagger = style.motion.staggerMs * feel.staggerScale;
+  const sound = (ms: number, name: SoundName, how?: Omit<SceneCue, "ms" | "sound">, extra?: string) => {
+    cue(ms, name, how);
+    return delay(ms, extra);
+  };
   switch (scene.type) {
     case "title":
       return `<div class="center">
         ${words(scene.title, "h1", "display", 0, feel)}
-        <div class="rule grow" ${delay(stagger * 3)}></div>
+        <div class="rule grow" ${sound(stagger * 3, "swish")}></div>
         ${scene.subtitle ? `<p class="rise lead muted" ${delay(stagger * 5)}>${escapeHtml(scene.subtitle)}</p>` : ""}
       </div>`;
 
     case "stat":
       return `<div class="center">
-        <div class="pop stat-value" ${delay(0)} data-count="${escapeHtml(String(scene.value))}">${escapeHtml(String(scene.value))}</div>
+        <div class="pop stat-value" ${sound(0, "pop")} data-count="${escapeHtml(String(scene.value))}">${escapeHtml(String(scene.value))}</div>
         <div class="rise stat-label" ${delay(stagger * 3)}>${escapeHtml(scene.label)}</div>
-        ${scene.context ? `<div class="pop" ${delay(stagger * 6)}><span class="chip">${escapeHtml(scene.context)}</span></div>` : ""}
+        ${scene.context ? `<div class="pop" ${sound(stagger * 6, "pop", { pitch: 7, gain: 0.7 })}><span class="chip">${escapeHtml(scene.context)}</span></div>` : ""}
       </div>`;
 
     case "chart":
       return `<div class="center wide">
         ${scene.chart.heading ? words(scene.chart.heading, "h2", "heading", 0, feel) : ""}
-        <div class="card pop" ${delay(stagger * 2)}><div class="chart-frame" data-chart="${timed.index}"></div></div>
+        <div class="card pop" ${sound(stagger * 2, "pop", { pitch: -5 })}><div class="chart-frame" data-chart="${timed.index}"></div></div>
       </div>`;
 
     case "points": {
       const { from, to } = speechWindow(timed);
       const step = scene.points.length > 1 ? (to - from) / scene.points.length : 0;
       const items = scene.points
-        .map((point, i) => `<li class="slide" ${delay(from + i * step, `--c:var(--p${i % style.colours.palette.length})`)}><span class="dot"></span><span>${escapeHtml(point)}</span></li>`)
+        .map((point, i) => `<li class="slide" ${sound(from + i * step, "swish", { pan: feel.slidePoints ? -0.35 : 0, pitch: i * 2 }, `--c:var(--p${i % style.colours.palette.length})`)}><span class="dot"></span><span>${escapeHtml(point)}</span></li>`)
         .join("");
       return `<div class="column">
         ${scene.heading ? words(scene.heading, "h2", "heading", 0, feel) : ""}
@@ -89,7 +101,7 @@ function sceneBody(timed: TimedScene, style: Style, feel: MotionFeel): string {
         .map((line, i) => `<span class="ln${highlight.has(i + 1) ? " hl" : ""}"><b>${i + 1}</b>${escapeHtml(line) || " "}</span>`)
         .join("");
       return `<div class="center wide">
-        <figure class="code pop" ${delay(0)}>
+        <figure class="code pop" ${sound(0, "pop", { pitch: -5 })}>
           <div class="code-bar"><i></i><i></i><i></i><span>${escapeHtml(scene.language)}</span></div>
           <pre><code>${lines}</code></pre>
         </figure>
@@ -99,7 +111,7 @@ function sceneBody(timed: TimedScene, style: Style, feel: MotionFeel): string {
 
     case "quote":
       return `<div class="column narrow">
-        <div class="pop quote-mark" ${delay(0)}>“</div>
+        <div class="pop quote-mark" ${sound(0, "pop")}>“</div>
         <blockquote class="rise quote" ${delay(stagger * 2)}>${escapeHtml(scene.quote)}</blockquote>
         ${scene.attribution ? `<p class="rise muted lead" ${delay(stagger * 5)}>${escapeHtml(scene.attribution)}</p>` : ""}
       </div>`;
@@ -107,13 +119,20 @@ function sceneBody(timed: TimedScene, style: Style, feel: MotionFeel): string {
     case "outro":
       return `<div class="center">
         ${words(scene.title, "h1", "display", 0, feel)}
-        ${scene.cta ? `<div class="pop" ${delay(stagger * 4)}><span class="cta">${escapeHtml(scene.cta)}</span></div>` : ""}
+        ${scene.cta ? `<div class="pop" ${sound(stagger * 4, "pop", { pitch: 7 })}><span class="cta">${escapeHtml(scene.cta)}</span></div>` : ""}
         ${scene.url ? `<p class="rise url" ${delay(stagger * 6)}>${escapeHtml(scene.url.replace(/^https?:\/\//, ""))}</p>` : ""}
       </div>`;
 
     case "custom":
       throw new Error(`Custom scenes aren't supported by the renderer yet (scene ${timed.index + 1}).`);
   }
+}
+
+/** The sounds a scene's entrances make, in the order they happen. */
+export function sceneCues(film: Film, timed: TimedScene, style: Style): SceneCue[] {
+  const cues: SceneCue[] = [];
+  sceneBody(timed, style, MOTION_FEELS[motionLevel(film, timed.scene, style)], (ms, sound, how) => cues.push({ ms, sound, ...how }));
+  return cues.sort((a, b) => a.ms - b.ms);
 }
 
 /** A fraction of the frame as CSS, e.g. 0.14 of the height as "14vh". */
@@ -280,9 +299,6 @@ ${shapeCss(frame)}`;
 const CHART_SIZES: Record<Layout["shape"], [number, number]> = { wide: [620, 250], square: [520, 340], tall: [400, 400] };
 /** Round charts look best on a narrower canvas, with the legend close by. */
 const ROUND_CHARTS = new Set(["donut", "ring", "gauge"]);
-
-/** How a scene's big number counts up. */
-const countFor = (feel: MotionFeel) => ({ seconds: feel.countMs / 1000, curve: feel.countCurve, pulse: feel.pulse });
 
 /** Everything the runtime needs to seek, sent to the page as JSON. */
 export function runtimeData(film: Film, style: Style, timeline: Timeline, frame: Layout) {

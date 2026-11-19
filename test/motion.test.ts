@@ -119,8 +119,8 @@ describe("motion in the film", async () => {
       ],
     );
     const [lively, calm] = runtimeData(f, style, buildTimeline(f), layoutFor(f)).scenes;
-    expect(lively!.count).toEqual({ seconds: 1.5, curve: "quart", pulse: true });
-    expect(calm!.count).toEqual({ seconds: 1.4, curve: "cubic", pulse: false });
+    expect(lively!.count).toEqual({ delay: 0.25, seconds: 1.5, curve: "quart", landsAt: 0.7, pulse: true });
+    expect(calm!.count).toEqual({ delay: 0.25, seconds: 1.4, curve: "cubic", landsAt: 0.7, pulse: false });
   });
 
   it("rejects a motion level that doesn't exist", () => {

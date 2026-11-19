@@ -5,6 +5,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+### Added
+
+- Sound effects that land with the movement: a whoosh between scenes, pops as numbers, cards, chips and buttons appear, a swish for each point, and ticks while a number counts up, ending in a small bell as it lands.
+- `sfx.volume` setting, from `0` (off) to `1`. Defaults to `0.5`, which keeps them subtle.
+- Sound effects play more quietly while someone is speaking.
+- Sounds are made in code, like the music: nothing to download or license, and the same film always sounds the same.
+
+### Changed
+
+- Films now have sound effects by default. Set `"sfx": { "volume": 0 }` for the v0.4.0 sound.
+- Count-up timings now live in one place, shared by the picture and the sound, so ticks and the landing bell always match the number on screen.
+
 ## [0.4.0] - 2026-11-19
 
 Spring motion: things settle into place with a little life, and every frame is still exact.
