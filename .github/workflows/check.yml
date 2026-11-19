@@ -37,6 +37,11 @@ jobs:
   render:
     name: Render smoke test
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Microsoft's Playwright image already has the browser's system libraries, so the job
+    # doesn't wait on Ubuntu's package servers, which are sometimes very slow.
+    # Keep the version in step with playwright-core in package.json.
+    container: mcr.microsoft.com/playwright:v1.65.1-noble
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -44,6 +49,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Install the headless browser and its system libraries
-        run: npx playwright-core install chromium --only-shell --with-deps
+      # Usually already in the image. If playwright-core has moved on, this fetches the matching browser.
+      - name: Install the headless browser
+        run: npx playwright-core install chromium --only-shell
       - run: npm run smoke

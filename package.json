@@ -1,6 +1,6 @@
 {
   "name": "bezel-film",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Make short narrated films in code from a repo, README or dataset. Offline, no API keys, built for coding agents.",
   "keywords": [
     "video",
