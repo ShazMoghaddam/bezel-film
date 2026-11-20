@@ -24,7 +24,7 @@ It installs Bezel Film, adds these instructions and downloads about 230 MB once 
    - Voiceover: a female voice, a male voice, or none? (default female)
    - Captions on or off? (default on)
    - Music: calm, upbeat, dramatic, epic, ambient, reflective, or none? (default calm)
-2. **Gather the material.** Read the README, the code or the dataset. Only use facts and numbers from the material or the user. Never invent figures.
+2. **Gather the material.** Read the README, the code or the dataset. Only use facts and numbers from the material or the user. Never invent figures. For a code project, `npx bezel-film draft <folder or owner/repo> -o films/<short-name>/film.json` writes a first draft: rewrite it to tell the story, don't just tidy it.
 3. **Write the film file** at `films/<short-name>/film.json` (e.g. `films/sales-2026/film.json`), following the rules below. Start it with `"$schema": "../../node_modules/bezel-film/schema/film.schema.json"` so editors can check it. `films/welcome/film.json` is a working example.
 4. **Check it** with `npx bezel-film validate films/<short-name>/film.json` and fix every problem it reports.
 5. **Render** with `npx bezel-film render films/<short-name>/film.json`. The video is saved next to the film file as `film.mp4`, with a cover image as `film-cover.png`. Tell the user where they are.

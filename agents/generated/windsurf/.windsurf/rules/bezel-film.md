@@ -23,13 +23,8 @@ It installs Bezel Film, adds these instructions and downloads about 230 MB once 
 ## How to direct a film
 
 1. **Ask one short round of questions** before writing anything. Skip any the user has already answered:
-   - What is the film about, and who is it for?
-   - How long should it be? (default 45 to 60 seconds)
-   - Where will it be posted? TikTok, Reels, Shorts, LinkedIn, X, WhatsApp, YouTube or somewhere else? (default: no platform, a 16:9 film for anywhere)
-   - Voiceover: a female voice, a male voice, or none? (default female)
-   - Captions on or off? (default on)
-   - Music: calm, upbeat, dramatic, epic, ambient, reflective, or none? (default calm)
-2. **Gather the material.** Read the README, the code or the dataset. Only use facts and numbers from the material or the user. Never invent figures.
+   Ask: the topic and audience; length (default 45 to 60 seconds); platform (default none, 16:9); voice: female, male or none (default female); captions (default on); music mood or none (default calm).
+2. **Gather the material.** Read the README, the code or the dataset. Only use facts and numbers from the material or the user. Never invent figures. For a code project, `npx bezel-film draft <folder or owner/repo> -o films/<short-name>/film.json` writes a first draft: rewrite it to tell the story, don't just tidy it.
 3. **Write the film file** at `films/<short-name>/film.json` (e.g. `films/sales-2026/film.json`), following the rules below. Start it with `"$schema": "../../node_modules/bezel-film/schema/film.schema.json"` so editors can check it. `films/welcome/film.json` is a working example.
 4. **Check it** with `npx bezel-film validate films/<short-name>/film.json` and fix every problem it reports.
 5. **Render** with `npx bezel-film render films/<short-name>/film.json`. The video is saved next to the film file as `film.mp4`, with a cover image as `film-cover.png`. Tell the user where they are.
@@ -54,7 +49,7 @@ It installs Bezel Film, adds these instructions and downloads about 230 MB once 
 
 Only `spec`, `title`, `style` and `scenes` are required. Everything else has a sensible default.
 
-Map the user's answers to settings: a male voice is `"voice": { "gender": "male" }`, no voiceover is `"voice": { "engine": "none" }`, no captions is `"captions": false`, a music mood is `"music": { "mood": "upbeat" }`, no music is `"music": { "source": "none" }`, and no sound effects is `"sfx": { "volume": 0 }`.
+Answers to settings: male voice `"voice": { "gender": "male" }`, no voice `"voice": { "engine": "none" }`, no captions `"captions": false`, a mood `"music": { "mood": "upbeat" }`, no music `"music": { "source": "none" }`, no sound effects `"sfx": { "volume": 0 }`.
 
 ## Platforms
 

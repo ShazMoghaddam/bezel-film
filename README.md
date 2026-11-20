@@ -41,6 +41,16 @@ No coding agent? Copy `films/welcome`, change the words and numbers in its `film
 npx bezel-film render films/<your-film>/film.json
 ```
 
+### A film about your project
+
+Point `draft` at a project folder, a README or a GitHub repository, and it writes a first film from what the project says about itself:
+
+```bash
+npx bezel-film draft ShazMoghaddam/bezel-charts -o films/charts/film.json
+```
+
+It reads the README, `package.json` or `pyproject.toml`, the changelog and (for a GitHub repository) the star count. Then it drafts a title, what the project does, how to start, how far it's come, what's next and a call to action, leaving out anything it found nothing for. It's a starting point, so ask your coding agent to make it tell a story, or edit it yourself, then render it. `draft` never overwrites a file.
+
 ## What you get
 
 - **Films from your ideas, projects and data.** Titles, big numbers, charts, lists, code and quotes, each scene timed to its voiceover.
@@ -63,6 +73,7 @@ Everything below is for when you want to go further or edit films by hand.
 | Command | What it does |
 | --- | --- |
 | `npx bezel-film init` | Sets up a folder: installs Bezel Film, adds agent instructions, makes a welcome film |
+| `npx bezel-film draft <source>` | Drafts a film about a project from its folder, README or GitHub repository (`owner/repo`). Saves `film.json` (`-o` to choose another path, `--for` to set the platform) |
 | `npx bezel-film render <film.json>` | Renders a film to an MP4 and a cover image next to the film file (`-o` to choose another path) |
 | `npx bezel-film formats` | Lists the platform presets |
 | `npx bezel-film validate <film.json>` | Checks a film file and shows a summary |
