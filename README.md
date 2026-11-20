@@ -70,7 +70,7 @@ Everything below is for when you want to go further or edit films by hand.
 | `npx bezel-film setup` | Does the one-time downloads (voice and browser) |
 | `npx bezel-film schema` | Prints the film file's JSON Schema |
 
-`render` also takes `--for tiktok,reels,x` (or `--for all`) to make a version for each platform, `--show-safe-zones` to shade the parts each app covers, and `--no-cover`.
+`render` also takes `--for tiktok,reels,x` (or `--for all`) to make a version for each platform, `--show-safe-zones` to shade the parts each app covers, `--quality high` for true motion blur in a final version, and `--no-cover`.
 
 `init` also takes `--yes` (no questions), `--agents claude,cursor` and `--no-sample`, so agents and scripts can run it too.
 
@@ -152,6 +152,8 @@ Everything moves on springs, so it settles into place with a little life rather 
 | `punchy` | Bigger and bouncier. Made for short social films |
 
 Every frame is still exact: the same film always renders the same video.
+
+Things in motion get a touch of motion blur in `lively` and `punchy`, as a film camera would catch them, and settle back to sharp the moment they stop. `calm` has none. The blur is drawn as each frame is made, so it adds almost nothing to the render time. For a final version, `--quality high` makes true motion blur instead: each frame is blended from five snapshots across the shutter. It's the most natural look, and takes about five times as long.
 
 ### Sound effects
 
@@ -260,7 +262,7 @@ On Linux, the voice engine also tries to download large GPU files it doesn't nee
 - **v0.4.0 (released):** spring motion: `calm`, `lively` and `punchy` levels, word-by-word headings and livelier entrances
 - **v0.4.1 (released):** sound effects: real CC0 recordings that land with the movement
 - **v0.4.2 (released):** recorded music and real nature sounds
-- **v0.4.3:** motion blur
+- **v0.4.3 (in progress):** motion blur
 - **v0.5.0:** product stories: map, timeline and roadmap scenes, and a draft film from a repo or README
 - **v0.6.0 onwards:** more looks, including product launch, whiteboard and sketch, cinematic, playful and minimal
 
