@@ -5,6 +5,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.4.2] - 2026-11-20
+
+Recorded music and real nature sounds: hand-picked pieces for every mood, and field recordings under ambient films.
+
 ### Added
 
 - Recorded music. Each mood now has a few hand-picked pieces, and a film gets one, chosen from its title. They're public-domain recordings from FreePD, levelled to the same loudness as the composed music without squashing their dynamics.
@@ -137,7 +141,8 @@ The first release: describe a film in one JSON file, and Bezel Film renders it t
 
 - CI checks on every push and pull request, including a render smoke test, plus Dependabot.
 
-[Unreleased]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.4.1...HEAD
+[Unreleased]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.4.2...HEAD
+[0.4.2]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.4.1...v0.4.2
 [0.4.1]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.2.0...v0.3.0
