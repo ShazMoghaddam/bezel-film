@@ -113,12 +113,34 @@ Each scene lasts as long as its narration, so the voice and visuals always line 
 | `points` | Up to six short points | `heading`, `points` |
 | `timeline` | Up to six dated events, oldest first | `heading`, `events` (`date`, `label`, `detail`) |
 | `roadmap` | Up to six steps, each `done`, `in-progress` or `planned` | `heading`, `steps` (`label`, `status`, `when`) |
+| `map` | Places, countries and routes on a world map | `heading`, `focus`, `pins`, `countries`, `arcs`, `legend` |
 | `code` | A short code snippet | `language`, `code`, `highlight` |
 | `quote` | A quote or testimonial | `quote`, `attribution` |
 | `outro` | Closing card and call to action | `title`, `url`, `cta` |
 | `custom` | Your own canvas scene | `module`, `props` |
 
 Every scene can also take `narration`, `duration`, `transition`, `motion` and `id`.
+
+#### Maps
+
+Name places the way you'd say them: a city (`"Nairobi"`), a city with its country or state when the name is shared (`"Paris, France"`, `"Portland, Oregon"`), or a country (`"Brazil"`, `"the UK"`). The biggest place with that name wins, so `"Birmingham"` is the English one. For anywhere else, give coordinates: `{ "lat": 51.53, "lon": -0.12, "name": "Our office" }`. Every name is checked when the film is validated, with a suggestion if it looks like a typo.
+
+```json
+{
+  "type": "map",
+  "heading": "Where our beans come from",
+  "pins": [{ "place": "Colombia" }, { "place": "Ethiopia" }, { "place": "London", "label": "Roasted here" }],
+  "arcs": [{ "from": "Colombia", "to": "London" }, { "from": "Ethiopia", "to": "London" }],
+  "narration": "Our beans come from farms in Colombia and Ethiopia, and we roast them here in London."
+}
+```
+
+- `pins`: up to 8 places, each with an optional `label`.
+- `countries`: up to 24 countries to colour in. Give each a `value` to shade them from low to high, with `legend`, `prefix` and `suffix` for the key.
+- `arcs`: up to 6 curved lines, `from` one place `to` another.
+- `focus`: where the camera ends up: `"world"`, a region (`"Europe"`, `"Africa"`, `"Middle East"`, `"Southeast Asia"` and more), a country or a city. Leave it out to fit everything shown.
+
+Maps work at country and region scale, so places in the same city sit on top of each other. Outlines come from [Natural Earth](https://www.naturalearthdata.com), which shows borders as they are on the ground; see [maps/CREDITS.md](maps/CREDITS.md).
 
 #### Settings
 
@@ -265,7 +287,7 @@ On Linux, the voice engine also tries to download large GPU files it doesn't nee
 - **v0.4.1 (released):** sound effects: real CC0 recordings that land with the movement
 - **v0.4.2 (released):** recorded music and real nature sounds
 - **v0.4.3 (released):** motion blur
-- **v0.5.0:** product stories: map, timeline and roadmap scenes, and a draft film from a repo or README
+- **v0.5.0:** product stories: timeline, roadmap and map scenes, and a draft film from a repo or README
 - **v0.6.0 onwards:** more looks, including product launch, whiteboard and sketch, cinematic, playful and minimal
 
 ## Contributing
@@ -283,6 +305,7 @@ Bezel Film is [MIT](LICENSE) licensed. It downloads and uses these, each under i
 - Instrument recordings from the [VS Chamber Orchestra: Community Edition](https://github.com/sgossner/VSCO-2-CE) by Versilian Studios: CC0 (public domain). See [instruments/CREDITS.md](instruments/CREDITS.md).
 - Music from [FreePD](https://freepd.com): public domain. See [music/CREDITS.md](music/CREDITS.md).
 - Nature recordings by richwise, cori, kvgarlic, SecureSubset, IceVFX, Extemporalist, Juandev, felix.blume and dbspin: CC0 or public domain. See [nature/CREDITS.md](nature/CREDITS.md).
+- Maps from [Natural Earth](https://www.naturalearthdata.com): public domain. See [maps/CREDITS.md](maps/CREDITS.md).
 - Sound effect recordings by [Kenney](https://kenney.nl/assets/interface-sounds), [Sparklin Labs](https://github.com/sparklinlabs/superpowers-asset-packs) and [artisticdude](https://opengameart.org/content/swishes-sound-pack): CC0 (public domain). See [sounds/CREDITS.md](sounds/CREDITS.md).
 
 ---

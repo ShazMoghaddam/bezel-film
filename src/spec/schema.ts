@@ -181,6 +181,68 @@ const roadmapScene = z.object({
     .describe(`In order. Up to ${MAX_STEPS}; split a longer roadmap across two scenes.`),
 });
 
+/** Maps hold up to this many of each, so every label stays readable on a phone. */
+export const MAX_PINS = 8;
+export const MAX_ARCS = 6;
+export const MAX_COUNTRIES = 24;
+
+const placeRef = z
+  .union([
+    text(80),
+    z.object({
+      lat: z.number().min(-90).max(90),
+      lon: z.number().min(-180).max(180),
+      name: text(40).optional(),
+    }),
+  ])
+  .describe("A city or country by name, e.g. \"Nairobi\", \"Paris, France\" or \"Brazil\", or exact coordinates as { lat, lon }.");
+
+const mapScene = z
+  .object({
+    ...sceneBase,
+    type: z.literal("map"),
+    heading: text(120).optional(),
+    focus: text(80)
+      .optional()
+      .describe("Where the camera ends up: \"world\", a region such as \"Europe\" or \"East Asia\", a country, or a city. Defaults to fitting everything shown."),
+    pins: z
+      .array(z.object({ place: placeRef, label: text(32).optional().describe("Defaults to the place's name.") }))
+      .max(MAX_PINS)
+      .optional()
+      .describe(`Places to mark, in the order they appear. Up to ${MAX_PINS}.`),
+    countries: z
+      .array(
+        z.object({
+          country: text(60).describe("By name or code, e.g. \"Japan\", \"UK\" or \"DEU\"."),
+          value: z.number().optional().describe("Shades the country by size. Give every country a value, or none."),
+        }),
+      )
+      .max(MAX_COUNTRIES)
+      .optional()
+      .describe(`Countries to colour in. Up to ${MAX_COUNTRIES}.`),
+    arcs: z
+      .array(z.object({ from: placeRef, to: placeRef }))
+      .max(MAX_ARCS)
+      .optional()
+      .describe(`Curved lines between places, e.g. a route or a shipment. Up to ${MAX_ARCS}.`),
+    legend: text(60).optional().describe("What the shading means, e.g. \"Orders in 2025\". Shown when countries have values."),
+    prefix: z.string().max(8).optional(),
+    suffix: z.string().max(12).optional(),
+  })
+  .superRefine((scene, ctx) => {
+    if (!scene.focus && !scene.pins?.length && !scene.countries?.length && !scene.arcs?.length) {
+      ctx.addIssue({ code: "custom", path: ["pins"], message: "add some pins, countries or arcs, or a focus to show" });
+    }
+    const valued = scene.countries?.filter((c) => c.value !== undefined).length ?? 0;
+    if (valued && valued !== scene.countries!.length) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["countries"],
+        message: `${valued} of ${scene.countries!.length} countries have a value; give every country a value, or none`,
+      });
+    }
+  });
+
 const codeScene = z.object({
   ...sceneBase,
   type: z.literal("code"),
@@ -219,6 +281,7 @@ export const sceneSchema = z.discriminatedUnion("type", [
   pointsScene,
   timelineScene,
   roadmapScene,
+  mapScene,
   codeScene,
   quoteScene,
   outroScene,

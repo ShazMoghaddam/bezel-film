@@ -59,6 +59,125 @@ export const RUNTIME_JS = String.raw`
     return c.before + text + c.after;
   };
 
+  // Maps. Each has a camera that flies from a wide view to the scene's focus, along the
+  // smooth path a person would take: pulling back a little, travelling, then settling in
+  // (van Wijk and Nuij's "smooth and efficient zooming", as d3 uses). Pins sit in a layer
+  // above the map, moved with the camera but never scaled, so they stay crisp and readable.
+  const RHO = 1.25;
+  function zoomPath([x0, y0, w0], [x1, y1, w1]) {
+    const dx = x1 - x0, dy = y1 - y0, d2 = dx * dx + dy * dy;
+    if (d2 < 1e-6) {
+      const s = Math.log(w1 / w0);
+      return (t) => [x0 + t * dx, y0 + t * dy, w0 * Math.exp(s * t)];
+    }
+    const d1 = Math.sqrt(d2), r2 = RHO * RHO, r4 = r2 * r2;
+    const b0 = (w1 * w1 - w0 * w0 + r4 * d2) / (2 * w0 * r2 * d1);
+    const b1 = (w1 * w1 - w0 * w0 - r4 * d2) / (2 * w1 * r2 * d1);
+    const q0 = Math.log(Math.sqrt(b0 * b0 + 1) - b0);
+    const q1 = Math.log(Math.sqrt(b1 * b1 + 1) - b1);
+    const S = (q1 - q0) / RHO;
+    return (t) => {
+      const s = t * S;
+      const u = (w0 / (r2 * d1)) * (Math.cosh(q0) * Math.tanh(RHO * s + q0) - Math.sinh(q0));
+      return [x0 + u * dx, y0 + u * dy, (w0 * Math.cosh(q0)) / Math.cosh(RHO * s + q0)];
+    };
+  }
+
+  const maps = data.maps.map((m) => {
+    const el = document.querySelector('[data-map="' + m.scene + '"]');
+    const pins = [...el.querySelectorAll(".pin")].map((pin) => ({ el: pin, x: Number(pin.dataset.x), y: Number(pin.dataset.y) }));
+    return { ...m, el, camera: el.querySelector(".map-camera"), pins };
+  });
+
+  // A box on the map as the camera's centre and width, fitted to the map's own shape.
+  // A box wider than the frame (the world, on a phone) is cropped from the sides, as far
+  // as the things the scene shows allow, so the map fills the frame rather than a strip.
+  function viewOf([x0, y0, x1, y1], width, height, keep) {
+    let cx = (x0 + x1) / 2;
+    const fitHeight = ((y1 - y0) * width) / height;
+    let w = Math.max(x1 - x0, fitHeight);
+    if (keep) {
+      const need = Math.max(keep[2] - keep[0], ((keep[3] - keep[1]) * width) / height);
+      w = Math.min(w, Math.max(fitHeight, need));
+      // Slide sideways, within the box, until everything kept is in view.
+      if (keep[0] < cx - w / 2) cx = keep[0] + w / 2;
+      if (keep[2] > cx + w / 2) cx = keep[2] - w / 2;
+    }
+    return [cx, (y0 + y1) / 2, w];
+  }
+
+  function setupMaps() {
+    for (const m of maps) {
+      m.width = m.el.offsetWidth;
+      m.height = m.el.offsetHeight;
+      m.path = zoomPath(viewOf(m.from, m.width, m.height, null), viewOf(m.to, m.width, m.height, m.keep));
+      placeLabels(m);
+    }
+  }
+
+  // Where a map point lands on screen, for a camera at [x, y, width].
+  const onScreen = (m, [cx, cy, w], x, y) => {
+    const k = m.width / w;
+    return [(x - cx) * k + m.width / 2, (y - cy) * k + m.height / 2];
+  };
+
+  // Each label goes beside its pin where it overlaps nothing else and stays on the map:
+  // right, then left, above or below. Pins near the right edge try the left first.
+  function placeLabels(m) {
+    const end = m.path(1);
+    const taken = m.pins.map((pin) => {
+      const [x, y] = onScreen(m, end, pin.x, pin.y);
+      const r = pin.el.querySelector(".pin-dot").offsetWidth;
+      return [x - r, y - r, x + r, y + r];
+    });
+    const overlap = (a, b) => Math.max(0, Math.min(a[2], b[2]) - Math.max(a[0], b[0])) * Math.max(0, Math.min(a[3], b[3]) - Math.max(a[1], b[1]));
+    for (const pin of m.pins) {
+      const label = pin.el.querySelector(".pin-label");
+      if (!label) continue;
+      const [x, y] = onScreen(m, end, pin.x, pin.y);
+      const dot = pin.el.querySelector(".pin-dot").offsetWidth;
+      const w = label.offsetWidth, h = label.offsetHeight, gap = dot * 0.9, side = dot * 0.5, lift = dot * 0.6;
+      // Matches the .pin.<side> rules in the map CSS.
+      const sides = {
+        right: [x + gap, y - h / 2, x + gap + w, y + h / 2],
+        left: [x - gap - w, y - h / 2, x - gap, y + h / 2],
+        above: [x - w / 2, y - gap - h, x + w / 2, y - gap],
+        below: [x - w / 2, y + gap, x + w / 2, y + gap + h],
+        ne: [x + side, y - lift - h, x + side + w, y - lift],
+        nw: [x - side - w, y - lift - h, x - side, y - lift],
+        se: [x + side, y + lift, x + side + w, y + lift + h],
+        sw: [x - side - w, y + lift, x - side, y + lift + h],
+      };
+      const order = x > m.width * 0.66 ? ["left", "right", "nw", "sw", "above", "below", "ne", "se"] : ["right", "left", "ne", "se", "above", "below", "nw", "sw"];
+      const cost = (side) => {
+        const box = sides[side];
+        const outside = Math.max(0, -box[0]) + Math.max(0, box[2] - m.width) + Math.max(0, -box[1]) + Math.max(0, box[3] - m.height);
+        return taken.reduce((sum, other) => sum + overlap(box, other), 0) + outside * h * 4;
+      };
+      let best = order[0];
+      for (const side of order) {
+        if (cost(side) === 0) { best = side; break; }
+        if (cost(side) < cost(best)) best = side;
+      }
+      pin.el.classList.remove("left", "above", "below", "ne", "nw", "se", "sw");
+      if (best !== "right") pin.el.classList.add(best);
+      taken.push(sides[best]);
+    }
+  }
+
+  function placeMap(m, local) {
+    if (!m.path) return;
+    const view = m.path(easeInOut(clamp((local * 1000) / m.flyMs)));
+    const k = m.width / view[2];
+    const [tx, ty] = onScreen(m, view, 0, 0);
+    m.camera.setAttribute("transform", "translate(" + tx + " " + ty + ") scale(" + k + ")");
+    m.el.style.setProperty("--zoom", String(k));
+    for (const pin of m.pins) {
+      const [x, y] = onScreen(m, view, pin.x, pin.y);
+      pin.el.style.transform = "translate(" + x + "px," + y + "px)";
+    }
+  }
+
   // Every shadow root under an element, however deeply nested (charts wrap other components).
   function shadowRoots(root, found = []) {
     for (const el of root.querySelectorAll("*")) {
@@ -239,6 +358,10 @@ export const RUNTIME_JS = String.raw`
       before.style.zIndex = "0";
     }
     setSceneTime(now, local);
+    for (const m of maps) {
+      if (m.scene === index) placeMap(m, local);
+      else if (before && m.scene === index - 1) placeMap(m, t - scenes[index - 1].start);
+    }
     if (current.transition === "slide") styleScene(now, p, "translateX(" + ((1 - p) * 6) + "%)");
     else if (current.transition === "wipe") styleScene(now, 1, "", "inset(0 " + ((1 - p) * 100) + "% 0 0)");
     else styleScene(now, p);
@@ -363,6 +486,7 @@ export const RUNTIME_JS = String.raw`
     }
     fitText();
     fitScenes();
+    setupMaps();
     await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
     seek(0);
   }

@@ -49,6 +49,7 @@
     "instruments",
     "sounds",
     "nature",
+    "maps",
     "music/manifest.json",
     "music/CREDITS.md"
   ],
@@ -70,6 +71,7 @@
     "instruments": "tsx scripts/build-instruments.ts",
     "sounds": "tsx scripts/build-sounds.ts",
     "music": "tsx scripts/build-music.ts",
+    "maps": "tsx scripts/build-maps.ts",
     "banner": "tsx scripts/build-banner.ts",
     "demo": "tsx scripts/build-demo.ts",
     "prepack": "npm run build",
@@ -83,12 +85,19 @@
     "@fontsource/space-grotesk": "^5.3.0",
     "@huggingface/transformers": "^3.8.1",
     "bezel-charts": "^1.11.0",
+    "d3-geo": "^3.1.1",
     "kokoro-js": "^1.2.1",
     "playwright-core": "^1.65.1",
+    "topojson-client": "^3.1.0",
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@types/d3-geo": "^3.1.1",
+    "@types/geojson": "^7946.0.16",
     "@types/node": "^22.20.5",
+    "@types/topojson-client": "^3.1.5",
+    "@types/topojson-server": "^3.0.4",
+    "topojson-server": "^3.0.1",
     "tsx": "^4.23.15",
     "typescript": "^7.0.2",
     "vitest": "^5.1.1"

@@ -75,6 +75,6 @@ describe("estimateFilmSeconds", () => {
 
 describe("SCENE_TYPES", () => {
   it("lists every scene type", () => {
-    expect(SCENE_TYPES).toEqual(["title", "stat", "chart", "points", "timeline", "roadmap", "code", "quote", "outro", "custom"]);
+    expect(SCENE_TYPES).toEqual(["title", "stat", "chart", "points", "timeline", "roadmap", "map", "code", "quote", "outro", "custom"]);
   });
 });
