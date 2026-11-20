@@ -5,6 +5,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.4.3] - 2026-11-20
+
+Motion blur, completing Stage 3: things in motion blur as a film camera would catch them, and settle back to sharp.
+
 ### Added
 
 - Motion blur. In `lively` and `punchy`, things in motion are blurred along the way they move, as a film camera would catch them, and are sharp again the moment they stop. Each frame measures where everything was half a frame earlier (a little more for `punchy`) and blurs only what moved. `calm` has no blur, so it still looks exactly as it did. Covers are always sharp.
@@ -151,7 +155,8 @@ The first release: describe a film in one JSON file, and Bezel Film renders it t
 
 - CI checks on every push and pull request, including a render smoke test, plus Dependabot.
 
-[Unreleased]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.4.2...HEAD
+[Unreleased]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.4.3...HEAD
+[0.4.3]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.4.2...v0.4.3
 [0.4.2]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.4.1...v0.4.2
 [0.4.1]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.3.0...v0.4.0
