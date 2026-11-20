@@ -139,7 +139,7 @@
         },
         "mood": {
           "default": "calm",
-          "description": "calm: flowing piano. upbeat: a driving groove. dramatic: building strings and timpani. epic: dramatic with a frame drum and choir. ambient: nature sounds and distant piano. reflective: expressive piano and a lone whistle.",
+          "description": "calm: gentle piano. upbeat: bright and positive. dramatic: tense and building. epic: big and cinematic. ambient: slow, spacious music over a nature sound. reflective: thoughtful piano. Each mood has a few pieces; one is picked from the title.",
           "type": "string",
           "enum": [
             "calm",
@@ -148,6 +148,24 @@
             "epic",
             "ambient",
             "reflective"
+          ]
+        },
+        "track": {
+          "description": "A specific piece of music, instead of one picked from the mood. \"composed\" is music written for the film.",
+          "type": "string",
+          "enum": [
+            "composed",
+            "lovely-piano-song",
+            "study-and-relax",
+            "city-sunshine",
+            "the-drama",
+            "driving-concern",
+            "epic-blockbuster-2",
+            "heroic-adventure",
+            "infinite-wonder",
+            "wisdom-in-the-sun",
+            "nostalgic-piano",
+            "romantic-inspiration"
           ]
         },
         "nature": {

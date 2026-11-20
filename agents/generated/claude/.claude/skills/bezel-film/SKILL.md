@@ -18,7 +18,7 @@ If the project has no `node_modules/bezel-film` folder, set it up first. Use the
 npx bezel-film init --yes --agents claude --no-sample
 ```
 
-It installs Bezel Film, adds these instructions and downloads about 200 MB once (a few minutes).
+It installs Bezel Film, adds these instructions and downloads about 230 MB once (a few minutes).
 
 ## How to direct a film
 

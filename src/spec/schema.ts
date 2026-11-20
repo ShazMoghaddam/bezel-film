@@ -22,6 +22,21 @@ export const VOICE_ENGINES = ["kokoro", "piper", "none"] as const;
 export const VOICE_GENDERS = ["female", "male"] as const;
 export const MUSIC_SOURCES = ["generated", "file", "none"] as const;
 export const MUSIC_MOODS = ["calm", "upbeat", "dramatic", "epic", "ambient", "reflective"] as const;
+/** "composed" is Bezel Film's own music, written for the film. The rest are recorded tracks (see src/render/tracks.ts). */
+export const MUSIC_TRACKS = [
+  "composed",
+  "lovely-piano-song",
+  "study-and-relax",
+  "city-sunshine",
+  "the-drama",
+  "driving-concern",
+  "epic-blockbuster-2",
+  "heroic-adventure",
+  "infinite-wonder",
+  "wisdom-in-the-sun",
+  "nostalgic-piano",
+  "romantic-inspiration",
+] as const;
 export const NATURE_SOUNDS = ["rain", "waves", "stream", "wind"] as const;
 
 /** Chart types that map one to one onto Bezel Charts' `<bezel-chart type="...">`. */
@@ -210,7 +225,11 @@ const musicSchema = z
     mood: z
       .enum(MUSIC_MOODS)
       .default("calm")
-      .describe("calm: flowing piano. upbeat: a driving groove. dramatic: building strings and timpani. epic: dramatic with a frame drum and choir. ambient: nature sounds and distant piano. reflective: expressive piano and a lone whistle."),
+      .describe("calm: gentle piano. upbeat: bright and positive. dramatic: tense and building. epic: big and cinematic. ambient: slow, spacious music over a nature sound. reflective: thoughtful piano. Each mood has a few pieces; one is picked from the title."),
+    track: z
+      .enum(MUSIC_TRACKS)
+      .optional()
+      .describe("A specific piece of music, instead of one picked from the mood. \"composed\" is music written for the film."),
     nature: z.enum(NATURE_SOUNDS).optional().describe("The nature sound under ambient music. Picked from the title if left out."),
     volume: z.number().min(0).max(1).default(0.2).describe("How loud the music is between lines. It dips further while someone speaks."),
   })
@@ -275,3 +294,5 @@ export type FilmInput = z.input<typeof filmSchema>;
 export type Scene = z.output<typeof sceneSchema>;
 export type SceneType = Scene["type"];
 export type MotionLevel = (typeof MOTION_LEVELS)[number];
+export type MusicMood = (typeof MUSIC_MOODS)[number];
+export type MusicTrack = (typeof MUSIC_TRACKS)[number];

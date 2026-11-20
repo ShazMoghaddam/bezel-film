@@ -5,6 +5,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+### Added
+
+- Recorded music. Each mood now has a few hand-picked pieces, and a film gets one, chosen from its title. They're public-domain recordings from FreePD, levelled to the same loudness as the composed music without squashing their dynamics.
+- `music.track` setting, to choose a piece yourself: any recorded track, or `composed`.
+- The recordings download once during `bezel-film setup` and `init` (about 30 MB), from the release's own copy in the repo, each checked against its fingerprint. If one can't be had, the film uses composed music and says how to get it.
+- `npm run music` rebuilds the tracks and nature loops from their sources, each pinned to a commit and checked against its fingerprint.
+
+### Changed
+
+- Nature sounds under ambient music are now real field recordings (CC0 or public domain), with two or three recordings of each sound, picked from the title. They ship in the package as seamless 45-second loops (4 MB in all).
+- The `dramatic` and `ambient` moods now use recorded music. `calm`, `upbeat`, `epic` and `reflective` keep composed music as one of their options. Set `"music": { "track": "composed" }` for the composed music in any mood.
+
 ## [0.4.1] - 2026-11-19
 
 Sound effects: real recordings that land with the movement, and step back while someone is speaking.

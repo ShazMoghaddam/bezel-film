@@ -162,10 +162,10 @@ export async function init(options: InitOptions): Promise<number> {
     p.log.step("Told git to skip rendered videos (.gitignore)");
   }
 
-  // 4. The one-time downloads: a headless browser and the voice model.
+  // 4. The one-time downloads: a headless browser, the voice model and the music.
   if (options.downloads) {
     const spinner = progress();
-    spinner.start("Downloading the browser and voice (one time only, about 200 MB)");
+    spinner.start("Downloading the browser, voice and music (one time only, about 230 MB)");
     try {
       const { installBrowser } = await import("./render/browser.js");
       const { kokoroSpeaker } = await import("./render/voice.js");
@@ -173,7 +173,9 @@ export async function init(options: InitOptions): Promise<number> {
       if (!process.env.BEZEL_FILM_CHROME) await installBrowser((message) => spinner.message(message));
       const speaker = await kokoroSpeaker((message) => spinner.message(message));
       await speaker.dispose();
-      spinner.stop("Downloaded the browser and voice. Everything now works offline.");
+      const { downloadTracks } = await import("./render/tracks.js");
+      await downloadTracks((message) => spinner.message(message));
+      spinner.stop("Downloaded the browser, voice and music. Everything now works offline.");
     } catch (error) {
       spinner.stop("Couldn't finish the downloads");
       p.log.error(error instanceof Error ? error.message : String(error));

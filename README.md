@@ -9,7 +9,7 @@
 
 **Turn an idea into a short narrated film. Just describe it.**
 
-Bezel Film makes polished short films with a voiceover, captions, charts and music written for each film. Tell your coding agent what you want in plain words, and it does the rest. Everything runs on your own computer, with no accounts and no API keys.
+Bezel Film makes polished short films with a voiceover, captions, charts, music and sound effects. Tell your coding agent what you want in plain words, and it does the rest. Everything runs on your own computer, with no accounts and no API keys.
 
 <a href="docs/welcome.mp4"><img src="docs/welcome.gif" alt="The welcome film: a title card, a big number, a colourful bar chart, a list of ideas and a closing card, with captions along the bottom" width="720"></a>
 
@@ -25,7 +25,7 @@ You need [Node.js](https://nodejs.org) 22 or later, and ideally a coding agent s
 npx bezel-film init
 ```
 
-It asks which coding agent you use, installs Bezel Film, downloads the voice and a browser once (about 200 MB), and makes a welcome film so you can see it work.
+It asks which coding agent you use, installs Bezel Film, downloads the voice, a browser and the music once (about 230 MB), and makes a welcome film so you can see it work.
 
 **2. Describe your film.** Open your coding agent in that folder and say what you want:
 
@@ -45,7 +45,7 @@ npx bezel-film render films/<your-film>/film.json
 
 - **Films from your ideas, projects and data.** Titles, big numbers, charts, lists, code and quotes, each scene timed to its voiceover.
 - **A natural voice.** Female or male, made on your computer. Hear the options with `npx bezel-film voices`.
-- **Music written for every film.** Six moods, played on recorded piano, strings, harp and timpani, dipping whenever the voice speaks. Or bring your own track.
+- **Music for every mood.** Six moods, each with a few hand-picked pieces: public-domain recordings, or music composed for the film and played on recorded orchestral instruments. It dips whenever the voice speaks. Or bring your own track.
 - **Made for every platform.** TikTok, Reels, Shorts, LinkedIn, X, WhatsApp and YouTube, each in the right shape with text kept clear of the app's buttons. Write one film and get every version, plus a cover image for each.
 - **Charts that move.** Drawn with [Bezel Charts](https://github.com/ShazMoghaddam/bezel-charts), in bold colours.
 - **Works with your agent.** Claude Code, Codex, Gemini CLI, Cursor, GitHub Copilot, Windsurf, and any agent that reads `AGENTS.md`.
@@ -133,6 +133,7 @@ Every scene can also take `narration`, `duration`, `transition`, `motion` and `i
 | `voice.speed` | `0.5` to `2` | `1` |
 | `music.source` | `generated`, `file`, `none` | `generated` |
 | `music.mood` | `calm`, `upbeat`, `dramatic`, `epic`, `ambient`, `reflective` | `calm` |
+| `music.track` | a piece from the [Music](#music) table, or `composed` | picked from the mood and title |
 | `music.nature` | `rain`, `waves`, `stream`, `wind` (ambient only) | picked from the title |
 | `music.volume` | `0` to `1` | `0.2` |
 | `music.file` | path to your own track, relative to the film file | none |
@@ -187,16 +188,20 @@ The safe zones come from each platform's published ad guidance (TikTok, Meta and
 
 ### Music
 
-Every film gets its own music, composed from its title: the same film always sounds the same, and two films never sound quite alike. The music dips whenever the voice speaks, rises in the gaps, and fades out with the picture.
+Each mood has a few pieces of music, picked by ear. A film gets one of them, chosen from its title, so the same film always sounds the same. The music dips whenever the voice speaks, rises in the gaps, and fades out with the picture.
 
-| Mood | How it feels |
+| Mood | The pieces (`music.track`) |
 | --- | --- |
-| `calm` | Flowing piano broken chords and a gentle melody over warm cellos, with soft violins above |
-| `upbeat` | A driving groove: full drum kit, deep pulsing bass, dark piano chords and strings |
-| `dramatic` | Opens on a timpani rumble; cellos and violins build, with timpani hits, a solo violin and cymbal swells |
-| `epic` | Dramatic, with a rolling frame drum groove and a choir swelling in |
-| `ambient` | Rain, sea waves, a stream or wind in the leaves, with a few slow, distant piano and harp notes |
-| `reflective` | Expressive solo piano, a breath, then a lone whistle with slow vibrato, answered by the piano |
+| `calm` | `composed`, `lovely-piano-song`, `study-and-relax` |
+| `upbeat` | `composed`, `city-sunshine` |
+| `dramatic` | `the-drama`, `driving-concern` |
+| `epic` | `composed`, `epic-blockbuster-2`, `heroic-adventure` |
+| `ambient` | `infinite-wonder`, `wisdom-in-the-sun`, over a nature recording: rain, sea waves, a stream or wind |
+| `reflective` | `composed`, `nostalgic-piano`, `romantic-inspiration` |
+
+`composed` is music written for the film from its title, played on recorded piano, strings, harp and timpani, so it fits the film's length exactly and two films never sound quite alike. The other pieces are public-domain recordings from [FreePD](https://freepd.com), all levelled to the same loudness. To choose one yourself, set `"music": { "track": "city-sunshine" }`. Any piece works with any mood.
+
+The recordings download once with the voice, so films work offline afterwards. If one hasn't been downloaded and you're offline, the film uses composed music instead and tells you.
 
 To use your own track, set `"music": { "source": "file", "file": "my-track.mp3" }`. It's trimmed to the film's length, or fades out early if it's shorter.
 
@@ -254,7 +259,8 @@ On Linux, the voice engine also tries to download large GPU files it doesn't nee
 - **v0.3.0 (released):** made for social: presets for TikTok, Reels, Shorts, Instagram, LinkedIn, X, WhatsApp and YouTube, with safe zones, vertical layouts, every version from one film, and cover images
 - **v0.4.0 (released):** spring motion: `calm`, `lively` and `punchy` levels, word-by-word headings and livelier entrances
 - **v0.4.1 (released):** sound effects: real CC0 recordings that land with the movement
-- **v0.4.2:** motion blur
+- **v0.4.2 (in progress):** recorded music and real nature sounds
+- **v0.4.3:** motion blur
 - **v0.5.0:** product stories: map, timeline and roadmap scenes, and a draft film from a repo or README
 - **v0.6.0 onwards:** more looks, including product launch, whiteboard and sketch, cinematic, playful and minimal
 
@@ -271,6 +277,8 @@ Bezel Film is [MIT](LICENSE) licensed. It downloads and uses these, each under i
 - [ffmpeg](https://ffmpeg.org), via [ffmpeg-static](https://github.com/eugeneware/ffmpeg-static): GPL 3.0. It runs as a separate program and isn't part of Bezel Film's code.
 - Space Grotesk, Inter and JetBrains Mono fonts: SIL Open Font License
 - Instrument recordings from the [VS Chamber Orchestra: Community Edition](https://github.com/sgossner/VSCO-2-CE) by Versilian Studios: CC0 (public domain). See [instruments/CREDITS.md](instruments/CREDITS.md).
+- Music from [FreePD](https://freepd.com): public domain. See [music/CREDITS.md](music/CREDITS.md).
+- Nature recordings by richwise, cori, kvgarlic, SecureSubset, IceVFX, Extemporalist, Juandev, felix.blume and dbspin: CC0 or public domain. See [nature/CREDITS.md](nature/CREDITS.md).
 - Sound effect recordings by [Kenney](https://kenney.nl/assets/interface-sounds), [Sparklin Labs](https://github.com/sparklinlabs/superpowers-asset-packs) and [artisticdude](https://opengameart.org/content/swishes-sound-pack): CC0 (public domain). See [sounds/CREDITS.md](sounds/CREDITS.md).
 
 ---

@@ -1,223 +1,99 @@
 /**
- * Nature sounds made in code, for the ambient mood: rain, sea waves, a stream and
- * wind in the leaves. Each is shaped noise, built from a few simple filters, with
- * slow, uneven changes so it never sounds like an obvious loop.
+ * Nature sounds for the ambient mood: rain, sea waves, a stream and wind. Each is a
+ * real field recording, released as CC0 or public domain (see nature/CREDITS.md),
+ * cut into a seamless loop and shipped inside the package as a small Opus file.
+ *
+ * Some sounds have more than one recording, so two rainy films needn't sound the
+ * same. A film gets one, picked from its title.
  */
-
+import { fileURLToPath } from "node:url";
 import { NATURE_SOUNDS } from "../spec/schema.js";
+import { decodeAudio } from "./ffmpeg.js";
+import { seededRandom } from "./music.js";
+import { packageRoot } from "./style.js";
 
 export { NATURE_SOUNDS };
 export type NatureSound = (typeof NATURE_SOUNDS)[number];
 
-/** A standard two-pole audio filter (the "RBJ cookbook" biquad). */
-export class Filter {
-  private b0 = 0;
-  private b1 = 0;
-  private b2 = 0;
-  private a1 = 0;
-  private a2 = 0;
-  private x1 = 0;
-  private x2 = 0;
-  private y1 = 0;
-  private y2 = 0;
-
-  constructor(
-    private readonly type: "lowpass" | "highpass" | "bandpass",
-    hz: number,
-    private readonly q = 0.707,
-    private readonly sampleRate = 44_100,
-  ) {
-    this.tune(hz);
-  }
-
-  /** Moves the filter's frequency, so sounds can open and close over time. */
-  tune(hz: number) {
-    const w = (2 * Math.PI * Math.min(hz, this.sampleRate * 0.45)) / this.sampleRate;
-    const alpha = Math.sin(w) / (2 * this.q);
-    const cos = Math.cos(w);
-    const a0 = 1 + alpha;
-    if (this.type === "lowpass") {
-      this.b0 = (1 - cos) / 2 / a0;
-      this.b1 = (1 - cos) / a0;
-      this.b2 = this.b0;
-    } else if (this.type === "highpass") {
-      this.b0 = (1 + cos) / 2 / a0;
-      this.b1 = -(1 + cos) / a0;
-      this.b2 = this.b0;
-    } else {
-      this.b0 = alpha / a0;
-      this.b1 = 0;
-      this.b2 = -alpha / a0;
-    }
-    this.a1 = (-2 * cos) / a0;
-    this.a2 = (1 - alpha) / a0;
-  }
-
-  run(x: number): number {
-    const y = this.b0 * x + this.b1 * this.x1 + this.b2 * this.x2 - this.a1 * this.y1 - this.a2 * this.y2;
-    this.x2 = this.x1;
-    this.x1 = x;
-    this.y2 = this.y1;
-    this.y1 = y;
-    return y;
-  }
-}
-
-/** A value that drifts smoothly and unevenly between 0 and 1, for gusts, swells and intensity. */
-function drift(random: () => number, length: number, sampleRate: number, secondsPerChange: number): Float32Array {
-  const out = new Float32Array(length);
-  const step = Math.max(1, Math.floor(secondsPerChange * sampleRate));
-  let from = random();
-  let to = random();
-  for (let i = 0; i < length; i++) {
-    const k = i % step;
-    if (k === 0 && i > 0) {
-      from = to;
-      to = random();
-    }
-    const t = k / step;
-    out[i] = from + (to - from) * (t * t * (3 - 2 * t));
-  }
-  return out;
-}
-
-interface Stereo {
+export interface Stereo {
   left: Float32Array;
   right: Float32Array;
 }
 
-function rain(seconds: number, random: () => number, sr: number): Stereo {
-  const length = Math.ceil(seconds * sr);
-  const left = new Float32Array(length);
-  const right = new Float32Array(length);
-  // The steady hiss of rain everywhere: noise with the harshest highs and the rumble taken out.
-  // Soft, not harsh: the hiss is rolled off well below the top of hearing.
-  const bed = [new Filter("lowpass", 3200, 0.6, sr), new Filter("lowpass", 3000, 0.6, sr)];
-  const air = [new Filter("highpass", 500, 0.7, sr), new Filter("highpass", 520, 0.7, sr)];
-  const intensity = drift(random, length, sr, 6);
-  for (let i = 0; i < length; i++) {
-    const level = 0.11 + 0.05 * intensity[i]!;
-    left[i] = air[0]!.run(bed[0]!.run(random() * 2 - 1)) * level;
-    right[i] = air[1]!.run(bed[1]!.run(random() * 2 - 1)) * level;
-  }
-  // Droplets: thousands of tiny ticks, each with its own pitch and place.
-  const drops = Math.floor(seconds * 90);
-  for (let d = 0; d < drops; d++) {
-    const at = Math.floor(random() * length);
-    const hz = 1800 + random() * 4500;
-    const filter = new Filter("bandpass", hz, 4 + random() * 6, sr);
-    const amp = (0.08 + random() * 0.25) * (random() < 0.06 ? 2.2 : 1);
-    const decay = (0.002 + random() * 0.006) * sr;
-    const p = random();
-    for (let k = 0; k < decay * 6 && at + k < length; k++) {
-      const v = filter.run((random() * 2 - 1) * Math.exp(-k / decay)) * amp;
-      left[at + k]! += v * (1 - p);
-      right[at + k]! += v * p;
-    }
-  }
-  return { left, right };
+export interface NatureRecording {
+  /** The file in nature/, without its extension. */
+  id: string;
+  title: string;
+  by: string;
+  /** The original recording's page. */
+  page: string;
+  licence: "CC0 1.0" | "Public domain";
+  /** Where the loop was cut from: a pinned copy in one of the PACKS. */
+  pack: "omarchy" | "brown-noise";
+  path: string;
+  sha256: string;
+  /** Where in the source the loop starts, in seconds. */
+  from: number;
 }
 
-function waves(seconds: number, random: () => number, sr: number): Stereo {
-  const length = Math.ceil(seconds * sr);
-  const left = new Float32Array(length);
-  const right = new Float32Array(length);
-  // Each wave swells, breaks and drains away over 6 to 11 seconds, never quite in time.
-  const envelope = new Float32Array(length);
-  const brightness = new Float32Array(length);
-  for (let at = -random() * 4; at < seconds; ) {
-    const period = 6 + random() * 5;
-    const size = 0.6 + random() * 0.4;
-    for (let i = Math.max(0, Math.floor(at * sr)); i < Math.min(length, Math.floor((at + period * 1.3) * sr)); i++) {
-      const t = (i / sr - at) / period;
-      const rise = t < 0.35 ? Math.sin((t / 0.35) * (Math.PI / 2)) ** 2 : Math.exp(-(t - 0.35) * 3.2);
-      envelope[i] = Math.max(envelope[i]!, rise * size);
-      brightness[i] = Math.max(brightness[i]!, t > 0.3 && t < 0.55 ? Math.sin(((t - 0.3) / 0.25) * Math.PI) * size : 0);
-    }
-    at += period;
-  }
-  const body = [new Filter("lowpass", 600, 0.7, sr), new Filter("lowpass", 600, 0.7, sr)];
-  const foam = [new Filter("highpass", 2500, 0.7, sr), new Filter("highpass", 2600, 0.7, sr)];
-  const lag = Math.floor(0.12 * sr);
-  for (let i = 0; i < length; i++) {
-    if (i % 64 === 0) {
-      body[0]!.tune(300 + 1600 * envelope[i]!);
-      body[1]!.tune(300 + 1600 * envelope[Math.max(0, i - lag)]!);
-    }
-    const e = [envelope[i]!, envelope[Math.max(0, i - lag)]!];
-    const b = [brightness[i]!, brightness[Math.max(0, i - lag)]!];
-    left[i] = body[0]!.run(random() * 2 - 1) * (0.05 + 0.5 * e[0]!) + foam[0]!.run(random() * 2 - 1) * 0.12 * b[0]!;
-    right[i] = body[1]!.run(random() * 2 - 1) * (0.05 + 0.5 * e[1]!) + foam[1]!.run(random() * 2 - 1) * 0.12 * b[1]!;
-  }
-  return { left, right };
+export const NATURE_RECORDINGS: Record<NatureSound, NatureRecording[]> = {
+  rain: [
+    { id: "rain-tile-roof", title: "Soft rain on a tile roof", by: "richwise", page: "https://freesound.org/s/466241/", licence: "CC0 1.0", pack: "omarchy", path: "sounds/rain.ogg", sha256: "b29bb359af8f9569e7b409bb025aac4dcee1a4c2ef491920ec0c4d9c2a378f3f", from: 30 },
+    { id: "rain-window", title: "Rain against the window", by: "cori", page: "https://commons.wikimedia.org/wiki/File:Rain_against_the_window.ogg", licence: "Public domain", pack: "brown-noise", path: "sounds/rain-window.ogg", sha256: "0d86a169803660b5930b23d110213162d3bb2644557abd7884efb5ff476b2d6c", from: 5 },
+    { id: "rain-woods", title: "Light rain, distant thunder", by: "kvgarlic", page: "https://commons.wikimedia.org/wiki/File:Light_Rain_Distant_Thunder_July_5th_2016.wav", licence: "CC0 1.0", pack: "brown-noise", path: "sounds/light-rain-woods.ogg", sha256: "3c436824bf10481b70f90b91e41ac9326816739249ac4e15e47dbb54e06bfd99", from: 5 },
+  ],
+  waves: [
+    { id: "waves-pacific", title: "Crashing waves, Pacific Ocean", by: "SecureSubset", page: "https://freesound.org/s/817075/", licence: "CC0 1.0", pack: "omarchy", path: "sounds/waves.ogg", sha256: "738c325c88a41dd544c7940b3b402c8d3a7bb5c59ec83b3e83600d3a0e59f82d", from: 30 },
+  ],
+  stream: [
+    { id: "stream-river", title: "Relaxing river", by: "IceVFX", page: "https://freesound.org/s/722875/", licence: "CC0 1.0", pack: "omarchy", path: "sounds/stream.ogg", sha256: "511255b980efa5bcbb554492ab3c823f5e29df640ed213382d303f0c4bf91d0d", from: 30 },
+    { id: "stream-mountain", title: "Snowmelt flowing into a lake", by: "Extemporalist", page: "https://commons.wikimedia.org/wiki/File:Snowmelt_flowing_into_lake_at_Okanagan_Mountain_Provincial_Park.flac", licence: "CC0 1.0", pack: "brown-noise", path: "sounds/mountain-stream.ogg", sha256: "6fe8cc615fda045221b3362153d30d4a69c5e9c195a7c310901613c8f2b0d1da", from: 5 },
+    { id: "stream-weir", title: "River weir", by: "Juandev", page: "https://commons.wikimedia.org/wiki/File:Vojn%C3%ADkov,_3._jez,_st%C5%99eda.ogg", licence: "Public domain", pack: "brown-noise", path: "sounds/river-weir.ogg", sha256: "f3f2e587d0d092cbde6f4c0e6cd10fcbc15a27aef57bc13dfea6b382ac3d93f2", from: 5 },
+  ],
+  wind: [
+    { id: "wind-bushes", title: "Wind on bushes", by: "felix.blume", page: "https://freesound.org/s/711106/", licence: "CC0 1.0", pack: "omarchy", path: "sounds/wind.ogg", sha256: "038aa5449ccfe210ca04c73234b02fbfa3a494c995751da60e6be6cb8f2b51ab", from: 30 },
+    { id: "wind-trees", title: "Wind in the trees, Grunewald", by: "dbspin", page: "https://commons.wikimedia.org/wiki/File:245286_dbspin_grunewald.wav", licence: "CC0 1.0", pack: "brown-noise", path: "sounds/wind-in-trees.ogg", sha256: "77422ad235f153c4436969af9fd39a0771dba041c55829f369a1be4561d3122f", from: 5 },
+  ],
+};
+
+/** The nature sound an ambient film gets: the one it asks for, or one picked from its title. */
+export function pickNature(seed: string, nature?: NatureSound): NatureSound {
+  return nature ?? NATURE_SOUNDS[Math.floor(seededRandom(`${seed}:nature`)() * NATURE_SOUNDS.length)]!;
 }
 
-function stream(seconds: number, random: () => number, sr: number): Stereo {
-  const length = Math.ceil(seconds * sr);
-  const left = new Float32Array(length);
-  const right = new Float32Array(length);
-  // A soft rush of water underneath.
-  const rush = [new Filter("bandpass", 900, 0.5, sr), new Filter("bandpass", 1000, 0.5, sr)];
-  for (let i = 0; i < length; i++) {
-    left[i] = rush[0]!.run(random() * 2 - 1) * 0.12;
-    right[i] = rush[1]!.run(random() * 2 - 1) * 0.12;
-  }
-  // Babbling: lots of little bubbles, each a quick rising chirp.
-  const bubbles = Math.floor(seconds * 55);
-  for (let n = 0; n < bubbles; n++) {
-    const at = Math.floor(random() * length);
-    const hz = 450 + random() ** 2 * 1600;
-    const rise = 1.3 + random() * 1.2;
-    const life = (0.012 + random() * 0.03) * sr;
-    const amp = 0.05 + random() * 0.09;
-    const p = 0.2 + random() * 0.6;
-    let phase = 0;
-    for (let k = 0; k < life && at + k < length; k++) {
-      const t = k / life;
-      phase += (2 * Math.PI * hz * (1 + (rise - 1) * t)) / sr;
-      const v = Math.sin(phase) * Math.sin(Math.PI * t) * amp;
-      left[at + k]! += v * (1 - p);
-      right[at + k]! += v * p;
-    }
-  }
-  return { left, right };
+/** Which recording of that sound the film gets, picked from its title. */
+export function pickRecording(seed: string, kind: NatureSound): NatureRecording {
+  const options = NATURE_RECORDINGS[kind];
+  return options[Math.floor(seededRandom(`${seed}:nature-recording`)() * options.length)]!;
 }
 
-function wind(seconds: number, random: () => number, sr: number): Stereo {
-  const length = Math.ceil(seconds * sr);
+/**
+ * A nature sound for the whole film: the recording's loop played round as often as
+ * needed (each loop's end already blends into its start), levelled so every sound
+ * sits the same under the music.
+ */
+export async function natureBed(o: { kind: NatureSound; seed: string; seconds: number; ffmpeg: string; sampleRate?: number }): Promise<Stereo> {
+  const recording = pickRecording(o.seed, o.kind);
+  const file = fileURLToPath(new URL(`nature/${recording.id}.opus`, packageRoot));
+  const loop = await decodeAudio(o.ffmpeg, file, o.sampleRate ?? 44_100);
+  const length = Math.ceil(o.seconds * (o.sampleRate ?? 44_100));
   const left = new Float32Array(length);
   const right = new Float32Array(length);
-  const gusts = drift(random, length, sr, 4.5);
-  const swirl = drift(random, length, sr, 2.2);
-  // The wind itself: a low, breathy whoosh that rises and falls with the gusts.
-  const air = [new Filter("bandpass", 400, 0.8, sr), new Filter("bandpass", 450, 0.8, sr)];
-  // The leaves: bright crackles of rustle, busier when the wind is stronger.
-  const leaves = [new Filter("highpass", 3000, 0.7, sr), new Filter("highpass", 3200, 0.7, sr)];
-  let rustle = 0;
   for (let i = 0; i < length; i++) {
-    const g = gusts[i]! ** 1.5;
-    if (i % 64 === 0) {
-      air[0]!.tune(220 + 650 * g + 120 * swirl[i]!);
-      air[1]!.tune(240 + 620 * g + 140 * (1 - swirl[i]!));
-    }
-    // Rustle comes in short, random bursts, more of them in a gust.
-    if (random() < 0.0015 + 0.01 * g) rustle = 0.6 + random() * 0.4;
-    rustle *= 0.9993;
-    const crackle = random() < 0.35 ? random() * 2 - 1 : 0;
-    left[i] = air[0]!.run(random() * 2 - 1) * (0.08 + 0.45 * g) + leaves[0]!.run(crackle) * rustle * (0.05 + 0.25 * g);
-    right[i] = air[1]!.run(random() * 2 - 1) * (0.08 + 0.45 * g) + leaves[1]!.run(random() < 0.35 ? random() * 2 - 1 : 0) * rustle * (0.05 + 0.25 * g);
+    left[i] = loop.left[i % loop.left.length]!;
+    right[i] = loop.right[i % loop.right.length]!;
   }
-  return { left, right };
+  return levelTo({ left, right }, NATURE_RMS);
 }
 
-const MAKERS: Record<NatureSound, (seconds: number, random: () => number, sampleRate: number) => Stereo> = { rain, waves, stream, wind };
+/** How loud a nature bed is: the same steady level the code-made sounds had. */
+export const NATURE_RMS = 0.1;
 
-/** Makes a nature sound, levelled to a steady loudness so every one sits the same under the music. */
-export function natureSound(kind: NatureSound, seconds: number, random: () => number, sampleRate = 44_100): Stereo {
-  const sound = MAKERS[kind](seconds, random, sampleRate);
+/** Scales a sound to an average (RMS) level. */
+export function levelTo(sound: Stereo, rms: number): Stereo {
   let sum = 0;
   for (let i = 0; i < sound.left.length; i++) sum += sound.left[i]! ** 2 + sound.right[i]! ** 2;
-  const gain = 0.1 / (Math.sqrt(sum / (2 * sound.left.length)) || 1);
+  const gain = rms / (Math.sqrt(sum / (2 * sound.left.length)) || 1);
   for (let i = 0; i < sound.left.length; i++) {
     sound.left[i]! *= gain;
     sound.right[i]! *= gain;
