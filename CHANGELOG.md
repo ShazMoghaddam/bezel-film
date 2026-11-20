@@ -5,6 +5,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.5.1] - 2026-11-20
+
+Point Bezel Film at a project and get a first film.
+
 ### Added
 
 - `bezel-film draft <source>` writes a first film about a project from its folder, a README file or a GitHub repository (`owner/repo` or its link). It reads the README, `package.json` or `pyproject.toml`, the changelog and, for GitHub, the star count, then drafts a title, what it does (from the feature list), how to start (the install command and a short example), how far it's come (from the changelog), what's next (from the README's roadmap), its stars and a call to action. Scenes it has nothing for are left out. The draft is a starting point: coding agents are told to rewrite it into a story, and it never overwrites a file.
@@ -177,7 +181,8 @@ The first release: describe a film in one JSON file, and Bezel Film renders it t
 
 - CI checks on every push and pull request, including a render smoke test, plus Dependabot.
 
-[Unreleased]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.5.1...HEAD
+[0.5.1]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.4.3...v0.5.0
 [0.4.3]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.4.2...v0.4.3
 [0.4.2]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.4.1...v0.4.2
