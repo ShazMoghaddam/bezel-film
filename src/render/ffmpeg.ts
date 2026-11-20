@@ -63,6 +63,11 @@ export interface EncoderOptions {
   sizeLimit?: { megabytes: number; seconds: number };
   /** Resize the frames to this size (pixels), e.g. down to 720p. */
   size?: [number, number];
+  /**
+   * Snapshots per frame, for true motion blur. Each frame arrives as this many
+   * snapshots across the shutter, and ffmpeg blends each group into one frame.
+   */
+  blend?: number;
 }
 
 /** Audio bitrate when a file has to stay small. Still clear for a voice and music. */
@@ -77,26 +82,29 @@ export function bitrateForSize(megabytes: number, seconds: number): number {
   return Math.max(150, Math.floor(totalKbps - SMALL_AUDIO_KBPS));
 }
 
-/**
- * Starts ffmpeg reading PNG frames on stdin. Write each frame with `write`,
- * then call `finish` to close the file.
- */
-export function startEncoder({ ffmpeg, fps, narration, music, output, sizeLimit, size }: EncoderOptions) {
-  const args = ["-y", "-loglevel", "error", "-f", "image2pipe", "-framerate", String(fps), "-c:v", "png", "-i", "-"];
+/** The ffmpeg command line for a film: frames on stdin, plus its voice and music files. */
+export function encoderArgs({ fps, narration, music, output, sizeLimit, size, blend = 1 }: Omit<EncoderOptions, "ffmpeg">): string[] {
+  const args = ["-y", "-loglevel", "error", "-f", "image2pipe", "-framerate", String(fps * blend), "-c:v", "png", "-i", "-"];
   const audio = [narration, music].filter((file): file is string => !!file);
   for (const file of audio) args.push("-i", file);
-  const resize = size ? `scale=${size[0]}:${size[1]}:flags=lanczos` : "";
+  const steps = [
+    // True motion blur: average each group of snapshots, keep one frame per group
+    // (the last, when the group is complete), and set it back to the film's frame rate.
+    blend > 1 ? `tmix=frames=${blend},select='eq(mod(n,${blend}),${blend - 1})',setpts=N/(${fps}*TB)` : "",
+    size ? `scale=${size[0]}:${size[1]}:flags=lanczos` : "",
+  ].filter(Boolean);
+  const video = steps.join(",");
   if (narration && music) {
     // The voice is mono; place it in the centre, then lay it over the (already dipped) music.
-    const video = resize ? `[0:v]${resize}[video];` : "";
     args.push(
       "-filter_complex",
-      `${video}[1:a]aresample=48000,pan=stereo|c0=c0|c1=c0[voice];[2:a]aresample=48000[music];[voice][music]amix=inputs=2:normalize=0:duration=longest[mix]`,
-      "-map", resize ? "[video]" : "0:v", "-map", "[mix]",
+      `${video ? `[0:v]${video}[video];` : ""}[1:a]aresample=48000,pan=stereo|c0=c0|c1=c0[voice];[2:a]aresample=48000[music];[voice][music]amix=inputs=2:normalize=0:duration=longest[mix]`,
+      "-map", video ? "[video]" : "0:v", "-map", "[mix]",
     );
-  } else if (resize) {
-    args.push("-vf", resize);
+  } else if (video) {
+    args.push("-vf", video);
   }
+  if (blend > 1) args.push("-r", String(fps));
   args.push("-c:v", "libx264", "-preset", "veryfast", "-pix_fmt", "yuv420p");
   if (sizeLimit) {
     // Good quality where the picture is simple, but never over the bitrate that keeps the file small.
@@ -107,7 +115,15 @@ export function startEncoder({ ffmpeg, fps, narration, music, output, sizeLimit,
   }
   if (audio.length) args.push("-c:a", "aac", "-b:a", sizeLimit ? `${SMALL_AUDIO_KBPS}k` : "192k", "-ar", "48000", "-shortest");
   args.push("-movflags", "+faststart", output);
+  return args;
+}
 
+/**
+ * Starts ffmpeg reading PNG frames on stdin. Write each frame with `write`,
+ * then call `finish` to close the file.
+ */
+export function startEncoder({ ffmpeg, ...options }: EncoderOptions) {
+  const args = encoderArgs(options);
   const child = spawn(ffmpeg, args, { stdio: ["pipe", "ignore", "pipe"] });
   let errors = "";
   child.stderr.on("data", (chunk) => (errors += chunk));

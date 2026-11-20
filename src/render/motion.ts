@@ -103,6 +103,11 @@ export interface MotionFeel {
   countCurve: "cubic" | "quart";
   /** The number gives a small pulse as it lands. */
   pulse: boolean;
+  /**
+   * Motion blur, as a share of a frame: how long the "shutter" stays open. 0.5 is a
+   * film camera's classic half-frame shutter. 0 means no blur.
+   */
+  shutter: number;
 }
 
 /**
@@ -123,6 +128,7 @@ export const MOTION_FEELS: Record<MotionLevel, MotionFeel> = {
     countMs: 1400,
     countCurve: "cubic",
     pulse: false,
+    shutter: 0,
   },
   lively: {
     move: "snappy",
@@ -136,6 +142,7 @@ export const MOTION_FEELS: Record<MotionLevel, MotionFeel> = {
     countMs: 1500,
     countCurve: "quart",
     pulse: true,
+    shutter: 0.5,
   },
   punchy: {
     move: "bouncy",
@@ -149,6 +156,7 @@ export const MOTION_FEELS: Record<MotionLevel, MotionFeel> = {
     countMs: 1100,
     countCurve: "quart",
     pulse: true,
+    shutter: 0.6,
   },
 };
 

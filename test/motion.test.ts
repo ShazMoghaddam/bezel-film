@@ -128,3 +128,56 @@ describe("motion in the film", async () => {
     expect(result.ok).toBe(false);
   });
 });
+
+describe("motion blur", async () => {
+  const { encoderArgs } = await import("../src/render/ffmpeg.js");
+  const { snapshotTime, HIGH_QUALITY_SHUTTER } = await import("../src/render/index.js");
+  const style = await loadStyle("data-story");
+
+  it("is off for calm, so calm films look exactly as before", () => {
+    expect(MOTION_FEELS.calm.shutter).toBe(0);
+    expect(MOTION_FEELS.lively.shutter).toBe(0.5);
+    expect(MOTION_FEELS.punchy.shutter).toBeGreaterThan(MOTION_FEELS.lively.shutter);
+  });
+
+  it("tells the page each scene's shutter, and whether to draw blur itself", () => {
+    const f = film([
+      { type: "title", title: "A", duration: 3 },
+      { type: "title", title: "B", duration: 3, motion: "calm" },
+    ]);
+    const data = runtimeData(f, style, buildTimeline(f), layoutFor(f));
+    expect(data.fps).toBe(f.format.fps);
+    expect(data.pageBlur).toBe(true);
+    expect(data.scenes.map((s) => s.shutter)).toEqual([0.5, 0]);
+    expect(runtimeData(f, style, buildTimeline(f), layoutFor(f), { trueBlur: true }).pageBlur).toBe(false);
+  });
+
+  it("spreads high-quality snapshots across the shutter, ending on the frame", () => {
+    const times = [0, 1, 2, 3, 4].map((k) => snapshotTime(30, k, 5, 30));
+    expect(times.at(-1)).toBe(1);
+    expect(times[0]).toBeCloseTo((30 - HIGH_QUALITY_SHUTTER) / 30, 10);
+    for (let k = 1; k < 5; k++) expect(times[k]! - times[k - 1]!).toBeCloseTo(HIGH_QUALITY_SHUTTER / 4 / 30, 10);
+    expect(snapshotTime(0, 0, 5, 30)).toBe(0); // never before the film starts
+    expect(snapshotTime(12, 0, 1, 30)).toBe(12 / 30); // standard quality: one snapshot, on the frame
+  });
+
+  it("leaves the encoder as it was at standard quality", () => {
+    const args = encoderArgs({ fps: 30, output: "film.mp4" });
+    expect(args.slice(0, 12)).toEqual(["-y", "-loglevel", "error", "-f", "image2pipe", "-framerate", "30", "-c:v", "png", "-i", "-", "-c:v"]);
+    expect(args.join(" ")).not.toContain("tmix");
+  });
+
+  it("blends each group of snapshots into one frame at high quality", () => {
+    const args = encoderArgs({ fps: 30, output: "film.mp4", blend: 5, size: [1280, 720] }).join(" ");
+    expect(args).toContain("-framerate 150");
+    expect(args).toContain("-vf tmix=frames=5,select='eq(mod(n,5),4)',setpts=N/(30*TB),scale=1280:720:flags=lanczos");
+    expect(args).toContain("-r 30");
+  });
+
+  it("blends the picture alongside the voice and music too", () => {
+    const args = encoderArgs({ fps: 30, output: "film.mp4", blend: 5, narration: "voice.wav", music: "music.wav" });
+    const graph = args[args.indexOf("-filter_complex") + 1]!;
+    expect(graph.startsWith("[0:v]tmix=frames=5,")).toBe(true);
+    expect(args).toContain("[video]");
+  });
+});

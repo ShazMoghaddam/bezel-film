@@ -92,11 +92,136 @@ export const RUNTIME_JS = String.raw`
     section.style.zIndex = opacity > 0 ? "1" : "0";
   }
 
-  // still: a single picture (the cover), so no captions or progress bar.
-  function seek(t, still = false) {
-    const scenes = data.scenes;
+  function sceneIndexAt(t) {
     let index = 0;
-    for (let i = 0; i < scenes.length; i++) if (t >= scenes[i].start) index = i;
+    for (let i = 0; i < data.scenes.length; i++) if (t >= data.scenes[i].start) index = i;
+    return index;
+  }
+
+  // Motion blur. To draw a frame, the page is first set to the moment the "shutter"
+  // opened (a fraction of a frame earlier), and every moving element's position is
+  // measured. Then it's set to the frame's own moment and measured again. Each
+  // element that moved is blurred along the way it moved, by how far it moved, using
+  // an SVG blur that can be wider than it is tall. Anything standing still stays sharp.
+  const MOVERS = ".rise, .pop, .slide, .word, .grow";
+  // A smear of length L looks closest to a Gaussian blur about a third of L wide.
+  const BLUR_PER_PIXEL = 0.35;
+  const SVG = "http://www.w3.org/2000/svg";
+  const blurDefs = (() => {
+    const svg = document.createElementNS(SVG, "svg");
+    svg.setAttribute("width", "0");
+    svg.setAttribute("height", "0");
+    svg.style.position = "absolute";
+    const defs = document.createElementNS(SVG, "defs");
+    svg.appendChild(defs);
+    document.body.appendChild(svg);
+    return defs;
+  })();
+  const blurs = new Map();
+  let nextBlur = 0;
+
+  function measure() {
+    const rects = new Map();
+    for (const section of sections) {
+      if (section.style.opacity === "0") continue;
+      rects.set(section, section.getBoundingClientRect());
+      for (const el of section.querySelectorAll(MOVERS)) rects.set(el, el.getBoundingClientRect());
+    }
+    return rects;
+  }
+
+  function setBlur(el, x, y) {
+    let blur = blurs.get(el);
+    if (x < 0.25 && y < 0.25) {
+      if (blur) el.style.filter = "";
+      return;
+    }
+    if (!blur) {
+      const filter = document.createElementNS(SVG, "filter");
+      filter.id = "motion-blur-" + nextBlur++;
+      // Measured in the element's own pixels, so the room is set per blur below.
+      filter.setAttribute("filterUnits", "userSpaceOnUse");
+      const gaussian = document.createElementNS(SVG, "feGaussianBlur");
+      filter.appendChild(gaussian);
+      blurDefs.appendChild(filter);
+      blur = { id: filter.id, filter, gaussian };
+      blurs.set(el, blur);
+    }
+    // Room around the element for the blur to spread into. Letters can reach past a
+    // tight line box, so this is generous: the blur's full reach plus a line's height.
+    const padX = 3 * x + el.offsetHeight;
+    const padY = 3 * y + el.offsetHeight;
+    blur.filter.setAttribute("x", String(-padX));
+    blur.filter.setAttribute("y", String(-padY));
+    blur.filter.setAttribute("width", String(el.offsetWidth + 2 * padX));
+    blur.filter.setAttribute("height", String(el.offsetHeight + 2 * padY));
+    blur.gaussian.setAttribute("stdDeviation", x.toFixed(2) + " " + y.toFixed(2));
+    el.style.filter = "url(#" + blur.id + ")";
+  }
+
+  function blurMotion(before, after) {
+    for (const el of blurs.keys()) el.style.filter = "";
+    for (const [el, now] of after) {
+      const then = before.get(el);
+      if (!then) continue;
+      // A scene moves its contents with it; blur the scene for that, and each element
+      // only for its own movement on top.
+      const section = el.classList.contains("scene") ? null : el.closest(".scene");
+      const outer = section && before.get(section) && after.get(section);
+      const shiftX = outer ? after.get(section).left - before.get(section).left : 0;
+      const shiftY = outer ? after.get(section).top - before.get(section).top : 0;
+      const dx = now.left + now.width / 2 - (then.left + then.width / 2) - shiftX;
+      const dy = now.top + now.height / 2 - (then.top + then.height / 2) - shiftY;
+      // Growing or shrinking moves every edge outwards or in: a gentle blur all round.
+      const grow = Math.max(Math.abs(now.width - then.width), Math.abs(now.height - then.height)) / 2;
+      // The blur is drawn in the element's own size, before any scaling, so undo that.
+      const scale = el.offsetWidth ? now.width / el.offsetWidth : 1;
+      const x = (BLUR_PER_PIXEL * Math.hypot(dx, grow)) / (scale || 1);
+      const y = (BLUR_PER_PIXEL * Math.hypot(dy, grow)) / (scale || 1);
+      setBlur(el, x, y);
+    }
+  }
+
+  // When each scene's last entrance finishes (seconds into the scene). After that nothing
+  // in it moves, so frames can skip measuring for blur, which keeps rendering quick.
+  const settled = new Map();
+  function settledAt(index) {
+    if (!settled.has(index)) {
+      let end = 0;
+      for (const animation of sections[index].getAnimations({ subtree: true })) {
+        end = Math.max(end, animation.effect.getComputedTiming().endTime);
+      }
+      settled.set(index, end / 1000);
+    }
+    return settled.get(index);
+  }
+
+  function moving(t, shutter) {
+    const index = sceneIndexAt(t);
+    const scene = data.scenes[index];
+    const local = t - scene.start;
+    const open = shutter / data.fps;
+    const changing = index > 0 && scene.transition !== "cut" && local < data.transitionSeconds + open;
+    return changing || local - open < settledAt(index);
+  }
+
+  // still: a single picture (the cover), so no captions, progress bar or blur.
+  function seek(t, still = false) {
+    const shutter = data.pageBlur && !still ? data.scenes[sceneIndexAt(t)].shutter : 0;
+    if (!shutter || !moving(t, shutter)) {
+      for (const el of blurs.keys()) el.style.filter = "";
+      place(t, still);
+      return;
+    }
+    place(Math.max(0, t - shutter / data.fps), still);
+    const before = measure();
+    place(t, still);
+    blurMotion(before, measure());
+  }
+
+  function place(t, still) {
+    const scenes = data.scenes;
+    const index = sceneIndexAt(t);
     const current = scenes[index];
     const local = t - current.start;
     const p = index === 0 || current.transition === "cut" ? 1 : easeInOut(clamp(local / data.transitionSeconds));

@@ -22,6 +22,8 @@ Options
   --for <list>          render: make a version for each platform, e.g. tiktok,reels,x
                         (or "all"). -o is then a folder.
   --show-safe-zones     render: shade the parts each platform's app covers
+  --quality high        render: true motion blur, for final versions. About five
+                        times slower (default: standard)
   --no-cover            render: don't save a cover image
   -y, --yes             init: skip the questions and use the defaults
   --agents <list>       init: agents to add instructions for, e.g. claude,cursor
@@ -105,6 +107,7 @@ interface RenderFlags {
   for?: string;
   showSafeZones: boolean;
   cover: boolean;
+  quality?: string;
 }
 
 function formats(): number {
@@ -124,6 +127,12 @@ async function render(path: string | undefined, flags: RenderFlags): Promise<num
     console.error(`✗ ${path} has ${result.errors.length} problem${result.errors.length === 1 ? "" : "s"}. Run bezel-film validate ${path} to see them.`);
     return 1;
   }
+  const { RENDER_QUALITIES } = await import("./render/index.js");
+  const quality = (flags.quality ?? "standard") as (typeof RENDER_QUALITIES)[number];
+  if (!RENDER_QUALITIES.includes(quality)) {
+    console.error(`✗ --quality can be ${RENDER_QUALITIES.join(" or ")}, not "${flags.quality}".`);
+    return 1;
+  }
   const name = basename(path!, extname(path!));
   const presets = flags.for ? parsePresets(flags.for) : [];
   const folder = flags.output ?? dirname(path!);
@@ -132,7 +141,7 @@ async function render(path: string | undefined, flags: RenderFlags): Promise<num
   const target = flags.output && !presets.length ? flags.output : join(dirname(path!), `${name}.mp4`);
   const status = statusLine();
   const started = Date.now();
-  console.log(`Rendering "${result.film.title}"`);
+  console.log(`Rendering "${result.film.title}"${quality === "high" ? " at high quality (true motion blur, so it takes longer)" : ""}`);
   const { renderFilm } = await import("./render/index.js");
   try {
     const done = await renderFilm(result.film, {
@@ -140,6 +149,7 @@ async function render(path: string | undefined, flags: RenderFlags): Promise<num
       targets,
       cover: flags.cover,
       showSafeZones: flags.showSafeZones,
+      quality,
       baseDir: dirname(path!),
       onProgress: status.update,
       onWarning: (message) => {
@@ -219,6 +229,7 @@ async function main(argv: string[]): Promise<number> {
       for: { type: "string" },
       "show-safe-zones": { type: "boolean" },
       "no-cover": { type: "boolean" },
+      quality: { type: "string" },
       "no-install": { type: "boolean" },
       "no-downloads": { type: "boolean" },
     },
@@ -245,6 +256,7 @@ async function main(argv: string[]): Promise<number> {
         for: values.for,
         showSafeZones: !!values["show-safe-zones"],
         cover: !values["no-cover"],
+        quality: values.quality,
       });
     case "formats":
       return formats();

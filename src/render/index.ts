@@ -20,6 +20,23 @@ import { voiceForFilm, type Clip, type Progress, type Voice } from "./voice.js";
 
 export type { Voice, Clip } from "./voice.js";
 
+export const RENDER_QUALITIES = ["standard", "high"] as const;
+export type RenderQuality = (typeof RENDER_QUALITIES)[number];
+
+/** At high quality, each frame is blended from this many snapshots... */
+export const HIGH_QUALITY_SNAPSHOTS = 5;
+/** ...spread across this much of a frame: a film camera's classic half-frame shutter. */
+export const HIGH_QUALITY_SHUTTER = 0.5;
+
+/**
+ * When a snapshot is taken: frame `frame`, snapshot `k` of `snapshots`. Snapshots
+ * spread evenly over the shutter, ending on the frame's own moment.
+ */
+export function snapshotTime(frame: number, k: number, snapshots: number, fps: number, shutter = HIGH_QUALITY_SHUTTER): number {
+  if (snapshots <= 1) return frame / fps;
+  return Math.max(0, (frame - shutter * (1 - k / (snapshots - 1))) / fps);
+}
+
 export interface RenderOptions {
   /** Where to write the finished video, e.g. "out/film.mp4". */
   output: string;
@@ -33,6 +50,11 @@ export interface RenderOptions {
   cover?: boolean;
   /** Shade the parts of the frame each platform covers, to check a film by eye. */
   showSafeZones?: boolean;
+  /**
+   * "high" draws true motion blur: each frame is blended from several snapshots,
+   * which looks the most natural but takes about five times as long. Default "standard".
+   */
+  quality?: RenderQuality;
   /** Use your own voice engine instead of the one the film names. */
   voice?: Voice | null;
   /** Called with short status updates, e.g. for a progress line in the terminal. */
@@ -145,7 +167,10 @@ async function captureFrames(
   fps: number,
   write: (frame: Buffer) => Promise<void>,
   onFrame: (done: number) => void,
+  snapshots = 1,
 ): Promise<void> {
+  // With true motion blur, each frame is several snapshots in a row, and the encoder blends them.
+  const shots = frames * snapshots;
   const ready = new Map<number, Buffer>();
   const maxAhead = pages.length * 3;
   let next = 0;
@@ -158,7 +183,7 @@ async function captureFrames(
       ready.delete(next);
       await write(frame);
       next++;
-      onFrame(next);
+      if (next % snapshots === 0) onFrame(next / snapshots);
       const wake = waiting;
       waiting = [];
       wake.forEach((resolve) => resolve());
@@ -168,11 +193,12 @@ async function captureFrames(
   await Promise.all(
     pages.map(async (page, k) => {
       const cdp = await page.context().newCDPSession(page);
-      for (let frame = k; frame < frames; frame += pages.length) {
-        while (frame - next >= maxAhead) await new Promise<void>((resolve) => waiting.push(resolve));
-        await page.evaluate((t) => (globalThis as unknown as BezelPage).__bezel.seek(t), frame / fps);
+      for (let i = k; i < shots; i += pages.length) {
+        while (i - next >= maxAhead) await new Promise<void>((resolve) => waiting.push(resolve));
+        const t = snapshotTime(Math.floor(i / snapshots), i % snapshots, snapshots, fps);
+        await page.evaluate((s) => (globalThis as unknown as BezelPage).__bezel.seek(s), t);
         const shot = (await cdp.send("Page.captureScreenshot", { format: "png", optimizeForSpeed: true })) as { data: string };
-        ready.set(frame, Buffer.from(shot.data, "base64"));
+        ready.set(i, Buffer.from(shot.data, "base64"));
         writing = writing.then(flush);
       }
     }),
@@ -272,7 +298,9 @@ export async function renderFilm(film: Film, options: RenderOptions): Promise<Re
 
     for (const [n, target] of targets.entries()) {
       const label = targets.length > 1 ? `${PLATFORMS[target.preset!].label} (${n + 1} of ${targets.length}): ` : "";
-      const pageOptions = { showSafeZones: options.showSafeZones };
+      const snapshots = options.quality === "high" ? HIGH_QUALITY_SNAPSHOTS : 1;
+      // The page draws its own blur unless the snapshots are blended instead.
+      const pageOptions = { showSafeZones: options.showSafeZones, trueBlur: snapshots > 1 };
       const layout = layoutFor(target.film);
       const page = await openFilmPage(browser, target.film, style, timeline, pageOptions);
       const limit = target.preset ? (PLATFORMS[target.preset] as Platform).maxMegabytes : undefined;
@@ -284,6 +312,7 @@ export async function renderFilm(film: Film, options: RenderOptions): Promise<Re
         output: target.output,
         sizeLimit: limit ? { megabytes: limit, seconds: timeline.duration } : undefined,
         size: layout.scale < 1 ? videoSize(layout) : undefined,
+        blend: snapshots,
       });
       const extraPages = await Promise.all(
         Array.from({ length: Math.min(workerCount(), frames) - 1 }, () => openFilmPage(browser, target.film, style, timeline, pageOptions)),
@@ -291,7 +320,7 @@ export async function renderFilm(film: Film, options: RenderOptions): Promise<Re
       const pages = [page, ...extraPages];
       await captureFrames(pages, frames, fps, encoder.write, (done) => {
         if (done % fps === 0 || done === frames) onProgress?.(`${label}Drawing frames: ${done} of ${frames}`);
-      });
+      }, snapshots);
       onProgress?.(`${label}Encoding the video…`);
       await encoder.finish();
       encoder = undefined;

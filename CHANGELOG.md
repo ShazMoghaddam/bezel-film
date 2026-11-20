@@ -5,6 +5,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+### Added
+
+- Motion blur. In `lively` and `punchy`, things in motion are blurred along the way they move, as a film camera would catch them, and are sharp again the moment they stop. Each frame measures where everything was half a frame earlier (a little more for `punchy`) and blurs only what moved. `calm` has no blur, so it still looks exactly as it did. Covers are always sharp.
+- `--quality high` for `render`: true motion blur, with each frame blended from five snapshots across the shutter. The most natural look, for final versions; it takes about five times as long.
+- `npm run motion` now also checks motion blur: present while things come in, absent in `calm` and in stills.
+
 ### Changed
 
 - Releases now publish to npm from GitHub Actions when a GitHub release is published, using npm trusted publishing: no tokens or logins, and each version carries a provenance statement linking it to the exact build. The workflow checks the tag matches the version and that every music track is in the tag first.

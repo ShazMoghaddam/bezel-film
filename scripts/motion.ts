@@ -17,6 +17,8 @@ import { buildTimeline } from "../src/render/timeline.js";
  *    so you can judge the movement by eye.
  * 2. Checks the renderer is exact: seeking to the same moment, in any order and on a
  *    fresh page, must give the same picture. Fails if it doesn't.
+ * 3. Checks motion blur: things coming in are blurred in lively and punchy, never in
+ *    calm, and never in a still (the cover).
  *
  *   npm run motion -- examples/northside-coffee/film.json [youtube] [lively,punchy]
  */
@@ -72,8 +74,20 @@ try {
       }
     }
     await fresh.context().close();
+
+    // Motion blur: count blurred elements just after each scene starts, when things are moving.
+    const blurredAt = async (t: number, still = false) => {
+      await page.evaluate(([s, st]) => (globalThis as any).__bezel.seek(s, st), [t, still] as const);
+      // Runs in the page, so it reaches the page's document through globalThis.
+      return page.evaluate(() => [...(globalThis as any).document.querySelectorAll("*")].filter((el: any) => el.style.filter.includes("motion-blur")).length);
+    };
+    let moving = 0;
+    for (const scene of timeline.scenes) moving += await blurredAt(scene.start + 0.06);
+    const still = await blurredAt(timeline.scenes[0]!.start + 0.06, true);
+    if (level === "calm" ? moving > 0 : moving === 0) throw new Error(`${level}: ${moving} blurred elements during entrances`);
+    if (still > 0) throw new Error(`${level}: a still (the cover) had motion blur`);
     await page.context().close();
-    console.log(`✓ ${level}: strips saved, every frame exact`);
+    console.log(`✓ ${level}: strips saved, every frame exact, ${level === "calm" ? "no blur" : `blur on ${moving} moving elements`}, stills sharp`);
   }
 } finally {
   await browser.close();

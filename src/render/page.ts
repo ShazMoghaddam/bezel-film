@@ -301,9 +301,12 @@ const CHART_SIZES: Record<Layout["shape"], [number, number]> = { wide: [620, 250
 const ROUND_CHARTS = new Set(["donut", "ring", "gauge"]);
 
 /** Everything the runtime needs to seek, sent to the page as JSON. */
-export function runtimeData(film: Film, style: Style, timeline: Timeline, frame: Layout) {
+export function runtimeData(film: Film, style: Style, timeline: Timeline, frame: Layout, options: PageOptions = {}) {
   const [chartWidth, chartHeight] = CHART_SIZES[frame.shape];
   return {
+    fps: film.format.fps,
+    // The page draws motion blur itself, unless the renderer is blending snapshots instead.
+    pageBlur: !options.trueBlur,
     zoned: Boolean(frame.safe),
     duration: timeline.duration,
     transitionSeconds: style.motion.transitionMs / 1000,
@@ -314,6 +317,7 @@ export function runtimeData(film: Film, style: Style, timeline: Timeline, frame:
       end: timed.end,
       transition: timed.scene.transition ?? style.motion.transition,
       count: countFor(MOTION_FEELS[motionLevel(film, timed.scene, style)]),
+      shutter: MOTION_FEELS[motionLevel(film, timed.scene, style)].shutter,
     })),
     lines: timeline.scenes.flatMap((timed) => timed.lines.map((line) => ({ ...line, scene: timed.index }))),
     charts: timeline.scenes
@@ -352,6 +356,11 @@ export function runtimeData(film: Film, style: Style, timeline: Timeline, frame:
 export interface PageOptions {
   /** Shade the parts of the frame the platform covers. */
   showSafeZones?: boolean;
+  /**
+   * Leave motion blur to the renderer, which blends several snapshots into each frame
+   * (`--quality high`), instead of drawing it on the page.
+   */
+  trueBlur?: boolean;
 }
 
 export function buildPage(film: Film, style: Style, timeline: Timeline, frame: Layout, options: PageOptions = {}): string {
@@ -381,7 +390,7 @@ ${scenes}
 <div class="caption"><span></span></div>
 <div class="progress"></div>
 ${options.showSafeZones ? safeOverlay(frame) : ""}
-<script>window.__BEZEL_DATA__ = ${safeJson(runtimeData(film, style, timeline, frame))};</script>
+<script>window.__BEZEL_DATA__ = ${safeJson(runtimeData(film, style, timeline, frame, options))};</script>
 <script src="/bezel-charts.js"></script>
 <script src="/runtime.js"></script>
 </body>
