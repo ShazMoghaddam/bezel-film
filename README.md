@@ -299,7 +299,7 @@ On Linux, the voice engine also tries to download large GPU files it doesn't nee
 - **v0.4.2 (released):** recorded music and real nature sounds
 - **v0.4.3 (released):** motion blur
 - **v0.5.0 (released):** product stories: timeline, roadmap and map scenes
-- **v0.5.1:** a draft film from a repo or README
+- **v0.5.1 (released):** a draft film from a repo or README
 - **v0.6.0 onwards:** more looks, including product launch, whiteboard and sketch, cinematic, playful and minimal
 
 ## Contributing
