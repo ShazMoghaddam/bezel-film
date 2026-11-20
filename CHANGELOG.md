@@ -5,6 +5,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-11-20
+
+Product stories: three new scenes for telling where a project has been, where it's going and where in the world it happens.
+
 ### Added
 
 - `map` scenes: pins with labels, countries coloured in (or shaded by a number, with a legend) and curved arcs between places. Name places in plain words, such as "Nairobi", "Paris, France" or "the UK", or give coordinates. Everything is looked up in the package's own copy of [Natural Earth](https://www.naturalearthdata.com) (public domain), so it works offline, and a typo gets a "did you mean" suggestion. The camera flies from the whole world to the `focus` (a region, a country or a city) or to fit everything shown, then countries fill in, pins pop and arcs draw as the narrator reaches them. On tall and square frames the camera crops in from the sides to fill the frame, never cutting anything off.
@@ -168,7 +172,8 @@ The first release: describe a film in one JSON file, and Bezel Film renders it t
 
 - CI checks on every push and pull request, including a render smoke test, plus Dependabot.
 
-[Unreleased]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.4.3...HEAD
+[Unreleased]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.4.3...v0.5.0
 [0.4.3]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.4.2...v0.4.3
 [0.4.2]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.4.1...v0.4.2
 [0.4.1]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.4.0...v0.4.1
