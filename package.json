@@ -47,7 +47,10 @@
     "styles",
     "agents/generated",
     "instruments",
-    "sounds"
+    "sounds",
+    "nature",
+    "music/manifest.json",
+    "music/CREDITS.md"
   ],
   "engines": {
     "node": ">=22"
@@ -66,6 +69,7 @@
     "smoke": "tsx scripts/smoke-render.ts",
     "instruments": "tsx scripts/build-instruments.ts",
     "sounds": "tsx scripts/build-sounds.ts",
+    "music": "tsx scripts/build-music.ts",
     "banner": "tsx scripts/build-banner.ts",
     "demo": "tsx scripts/build-demo.ts",
     "prepack": "npm run build",

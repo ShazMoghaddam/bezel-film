@@ -1,0 +1,83 @@
+{
+  "source": "https://github.com/SoundSafari/CC0-1.0-Music/tree/655388f987eacf6d08d73080fcc3e727f267bfde",
+  "licence": "Public domain",
+  "tracks": {
+    "lovely-piano-song": {
+      "file": "lovely-piano-song.opus",
+      "seconds": 95.8,
+      "lufs": -15.7,
+      "bytes": 1820231,
+      "sha256": "01d3222d8eaaafb498d8e989d4fa134eb658a6aec5e51f876615fa99ecb97c65"
+    },
+    "study-and-relax": {
+      "file": "study-and-relax.opus",
+      "seconds": 223.4,
+      "lufs": -14.7,
+      "bytes": 3763914,
+      "sha256": "a532f038aa34c3bb90c7cbd50b7567bb6959faaf8531c78704c7a67a6b8ee96c"
+    },
+    "city-sunshine": {
+      "file": "city-sunshine.opus",
+      "seconds": 185,
+      "lufs": -15.3,
+      "bytes": 3710057,
+      "sha256": "8dc3482e581a22d1fca1bcd9c8fed5dd6b8866d7966074cfcef210bbde3c268b"
+    },
+    "the-drama": {
+      "file": "the-drama.opus",
+      "seconds": 96.8,
+      "lufs": -13.9,
+      "bytes": 1726061,
+      "sha256": "51021ba51d83211315b28007d342646dd646b6377d3a57e4d8c9493e3d74e571"
+    },
+    "driving-concern": {
+      "file": "driving-concern.opus",
+      "seconds": 200.3,
+      "lufs": -14.9,
+      "bytes": 3432021,
+      "sha256": "616aee5bd5ce2152be4b7a0f2727f1c51debd504a68965c96dbc17374de89811"
+    },
+    "epic-blockbuster-2": {
+      "file": "epic-blockbuster-2.opus",
+      "seconds": 159,
+      "lufs": -10.7,
+      "bytes": 2458654,
+      "sha256": "e7463c1959870e25767888d89c5df0b91857c406928c3d1ddd687c1c6c8484d9"
+    },
+    "heroic-adventure": {
+      "file": "heroic-adventure.opus",
+      "seconds": 142.8,
+      "lufs": -12.5,
+      "bytes": 2354776,
+      "sha256": "c2dd7341a1a678599fe938f0a3476f3f3da971d2ccf5f05e9d5f8e593ef7f811"
+    },
+    "infinite-wonder": {
+      "file": "infinite-wonder.opus",
+      "seconds": 188.1,
+      "lufs": -16.7,
+      "bytes": 3168554,
+      "sha256": "8cffefe03fd1f5bc709002d9123533089c1d7fbc52343eb0ad5ecba1806e27e4"
+    },
+    "wisdom-in-the-sun": {
+      "file": "wisdom-in-the-sun.opus",
+      "seconds": 154.5,
+      "lufs": -14.6,
+      "bytes": 2887429,
+      "sha256": "10c7fa919ab3e5afb0db198d7ef41bb37f7723e425e63a4e2d3e5d28cd0653f7"
+    },
+    "nostalgic-piano": {
+      "file": "nostalgic-piano.opus",
+      "seconds": 196,
+      "lufs": -22.7,
+      "bytes": 3619120,
+      "sha256": "33f5903ec79345ec3c7787a83fe3f5e9e37c2d0df09398eb3adf808ca6780e8d"
+    },
+    "romantic-inspiration": {
+      "file": "romantic-inspiration.opus",
+      "seconds": 149.5,
+      "lufs": -16.6,
+      "bytes": 2552643,
+      "sha256": "5037239eea62d847d04946b73bfb06f5293b2b2a56ef7c5d342674c2f3f5ecab"
+    }
+  }
+}

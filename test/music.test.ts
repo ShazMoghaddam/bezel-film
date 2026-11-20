@@ -3,9 +3,10 @@ import { describe, expect, it } from "vitest";
 import { MUSIC_MOODS, NATURE_SOUNDS, validateFilm } from "../src/index.js";
 import { whistle } from "../src/render/colours.js";
 import { closestRecording, type InstrumentName, type Instruments } from "../src/render/instruments.js";
-import { DUCK_LEVEL, MOOD_INSTRUMENTS, MUSIC_SAMPLE_RATE, composeMusic, musicGain, pickNature, seededRandom } from "../src/render/music.js";
-import { natureSound } from "../src/render/nature.js";
-import { fitToLength } from "../src/render/soundtrack.js";
+import { DUCK_LEVEL, MOOD_INSTRUMENTS, MUSIC_SAMPLE_RATE, composeMusic, musicGain, seededRandom } from "../src/render/music.js";
+import { findFfmpeg } from "../src/render/ffmpeg.js";
+import { NATURE_RECORDINGS, NATURE_RMS, natureBed, pickNature, pickRecording } from "../src/render/nature.js";
+import { fitToLength, loopToLength } from "../src/render/soundtrack.js";
 
 const SR = MUSIC_SAMPLE_RATE;
 
@@ -83,11 +84,29 @@ describe("musicGain", () => {
 });
 
 describe("nature sounds", () => {
-  it.each(NATURE_SOUNDS)("makes %s at a steady level", (kind) => {
-    const sound = natureSound(kind, 4, seededRandom(kind));
-    expect(sound.left.every(Number.isFinite)).toBe(true);
-    expect(rms(sound.left)).toBeGreaterThan(0.05);
-    expect(rms(sound.left)).toBeLessThan(0.15);
+  const ffmpeg = findFfmpeg();
+
+  it.each(NATURE_SOUNDS)("plays a real %s recording for the whole film, at a steady level", async (kind) => {
+    // 100 seconds is longer than any loop, so this also plays the loop round.
+    const bed = await natureBed({ kind, seed: "Test", seconds: 100, ffmpeg });
+    expect(bed.left.length).toBe(100 * SR);
+    expect(bed.left.every(Number.isFinite)).toBe(true);
+    const level = Math.sqrt((rms(bed.left) ** 2 + rms(bed.right) ** 2) / 2);
+    expect(level).toBeCloseTo(NATURE_RMS, 3);
+    // No gap where the loop comes round: every second has sound in it.
+    for (let s = 0; s < 100; s++) expect(rms(bed.left, s * SR, (s + 1) * SR), `second ${s}`).toBeGreaterThan(NATURE_RMS / 10);
+  });
+
+  it("has a loop file for every recording", () => {
+    for (const recording of Object.values(NATURE_RECORDINGS).flat()) {
+      expect(existsSync(new URL(`../nature/${recording.id}.opus`, import.meta.url)), recording.id).toBe(true);
+    }
+  });
+
+  it("picks a recording from the title, the same one every time", () => {
+    const pick = pickRecording("Rainy day", "rain");
+    expect(NATURE_RECORDINGS.rain).toContain(pick);
+    expect(pickRecording("Rainy day", "rain")).toBe(pick);
   });
 
   it("lets a film choose its sound, or picks one from its title", () => {
@@ -106,6 +125,32 @@ describe("whistle", () => {
     for (let i = Math.floor(0.3 * SR); i < Math.floor(0.4 * SR); i++) if (out.left[i - 1]! < 0 && out.left[i]! >= 0) crossings++;
     expect(crossings * 10).toBeGreaterThan(860);
     expect(crossings * 10).toBeLessThan(900);
+  });
+});
+
+describe("loopToLength", () => {
+  const ramp = (seconds: number) => {
+    const left = new Float32Array(seconds * SR).fill(0.5);
+    return { left, right: left.slice() };
+  };
+
+  it("cuts a long track to the film", () => {
+    expect(loopToLength(ramp(10), 4).left.length).toBe(4 * SR);
+  });
+
+  it("plays a short track again, blending into itself without a dip or a bump", () => {
+    const looped = loopToLength(ramp(20), 50);
+    expect(looped.left.length).toBe(50 * SR);
+    // A steady track stays steady through every join (equal-power blends sum close to 1 for steady sound).
+    for (let s = 1; s < 50; s++) {
+      const level = rms(looped.left, s * SR, (s + 1) * SR);
+      expect(level, `second ${s}`).toBeGreaterThan(0.45);
+      expect(level, `second ${s}`).toBeLessThan(0.75);
+    }
+  });
+
+  it("starts without a click", () => {
+    expect(loopToLength(ramp(5), 2).left[0]).toBe(0);
   });
 });
 

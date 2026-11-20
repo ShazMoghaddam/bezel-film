@@ -13,7 +13,7 @@ Usage
   bezel-film render <film.json>     Render the film to an MP4
   bezel-film formats                List the platform presets, e.g. tiktok, linkedin-mobile
   bezel-film voices                 Hear a short line in each recommended voice
-  bezel-film setup                  Do the one-time downloads now (voice and browser)
+  bezel-film setup                  Do the one-time downloads now (browser, voice and music)
   bezel-film schema                 Print the film file's JSON Schema
 
 Options
@@ -187,7 +187,7 @@ async function setup(): Promise<number> {
   const { installBrowser } = await import("./render/browser.js");
   const { kokoroVoice, cacheDir } = await import("./render/voice.js");
   const { findFfmpeg } = await import("./render/ffmpeg.js");
-  console.log("Setting up Bezel Film. This downloads about 200 MB, once.");
+  console.log("Setting up Bezel Film. This downloads about 230 MB, once.");
   await installBrowser(status.update);
   status.done();
   console.log("  ✓ Headless browser");
@@ -195,6 +195,10 @@ async function setup(): Promise<number> {
   await voice.dispose?.();
   status.done();
   console.log(`  ✓ Voice model (saved in ${cacheDir()})`);
+  const { downloadTracks } = await import("./render/tracks.js");
+  await downloadTracks(status.update);
+  status.done();
+  console.log("  ✓ Music");
   findFfmpeg();
   console.log("  ✓ ffmpeg");
   console.log("All set. Everything now works offline.");

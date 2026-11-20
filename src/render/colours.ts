@@ -1,4 +1,4 @@
-import { Filter } from "./nature.js";
+import { Filter } from "./filter.js";
 
 /**
  * Extra tone colours for the music: a lone whistle with slow vibrato, slides and the odd

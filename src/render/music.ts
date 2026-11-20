@@ -1,5 +1,5 @@
 import { closestRecording, type InstrumentName, type Instruments } from "./instruments.js";
-import { NATURE_SOUNDS, natureSound, type NatureSound } from "./nature.js";
+import type { Stereo } from "./nature.js";
 import { choir, frameDrum, whistle, type WhistleNote } from "./colours.js";
 import type { Line } from "./timeline.js";
 
@@ -507,13 +507,8 @@ export interface MusicOptions {
   seconds: number;
   seed: string;
   instruments: Instruments;
-  /** The nature sound under ambient music. Picked from the seed if not given. */
-  nature?: NatureSound;
-}
-
-/** The nature sound an ambient film gets: the one it asks for, or one picked from its seed. */
-export function pickNature(seed: string, nature?: NatureSound): NatureSound {
-  return nature ?? NATURE_SOUNDS[Math.floor(seededRandom(`${seed}:nature`)() * NATURE_SOUNDS.length)]!;
+  /** The nature bed under ambient music, from `natureBed`, at least `seconds` long. */
+  nature?: Stereo;
 }
 
 /** Composes and plays the music. Returns stereo samples at MUSIC_SAMPLE_RATE, at a steady loudness for every mood. */
@@ -550,12 +545,12 @@ export function composeMusic({ mood, seconds, seed, instruments, nature }: Music
   }
 
   // Ambient music sits on a bed of nature sound, added after the reverb so it stays close and clear.
-  if (mood === "ambient") {
+  if (mood === "ambient" && nature) {
     // Level the piano on its own first, so its notes always sit clearly above the nature sound.
     let notes = 0;
     for (let i = 0; i < length; i++) notes += left[i]! ** 2 + right[i]! ** 2;
     const level = 0.08 / (Math.sqrt(notes / (2 * length)) || 1);
-    const bed = natureSound(pickNature(seed, nature), seconds, seededRandom(`${seed}:nature-sound`));
+    const bed = nature;
     for (let i = 0; i < length; i++) {
       const g = i < fadeIn ? (i / fadeIn) ** 2 : 1;
       left[i] = left[i]! * level + bed.left[i]! * g;
