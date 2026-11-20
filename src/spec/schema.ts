@@ -142,6 +142,45 @@ const pointsScene = z.object({
   points: z.array(text(140)).min(1).max(6),
 });
 
+/** Timelines and roadmaps hold up to this many items, so each stays readable on a phone. */
+export const MAX_STEPS = 6;
+
+const timelineScene = z.object({
+  ...sceneBase,
+  type: z.literal("timeline"),
+  heading: text(120).optional(),
+  events: z
+    .array(
+      z.object({
+        date: text(24).describe("When it happened, as it should appear, e.g. \"2021\" or \"March 2024\"."),
+        label: text(48).describe("What happened, in a few words."),
+        detail: text(90).optional().describe("One short line more, if it helps."),
+      }),
+    )
+    .min(2)
+    .max(MAX_STEPS)
+    .describe(`In order, oldest first. Up to ${MAX_STEPS}; split a longer story across two scenes.`),
+});
+
+export const ROADMAP_STATUSES = ["done", "in-progress", "planned"] as const;
+
+const roadmapScene = z.object({
+  ...sceneBase,
+  type: z.literal("roadmap"),
+  heading: text(120).optional(),
+  steps: z
+    .array(
+      z.object({
+        label: text(48).describe("The step, in a few words."),
+        status: z.enum(ROADMAP_STATUSES).describe("done gets a tick, in-progress pulses gently, planned is shown faded."),
+        when: text(24).optional().describe("When it's due or was done, e.g. \"Q3\" or \"Spring 2027\"."),
+      }),
+    )
+    .min(2)
+    .max(MAX_STEPS)
+    .describe(`In order. Up to ${MAX_STEPS}; split a longer roadmap across two scenes.`),
+});
+
 const codeScene = z.object({
   ...sceneBase,
   type: z.literal("code"),
@@ -178,6 +217,8 @@ export const sceneSchema = z.discriminatedUnion("type", [
   statScene,
   chartScene,
   pointsScene,
+  timelineScene,
+  roadmapScene,
   codeScene,
   quoteScene,
   outroScene,

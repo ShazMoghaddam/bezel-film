@@ -111,6 +111,8 @@ Each scene lasts as long as its narration, so the voice and visuals always line 
 | `stat` | One big number | `value`, `label`, `context` |
 | `chart` | Any [Bezel Charts](https://github.com/ShazMoghaddam/bezel-charts) chart | `chart.type`, `chart.values`, `chart.labels` |
 | `points` | Up to six short points | `heading`, `points` |
+| `timeline` | Up to six dated events, oldest first | `heading`, `events` (`date`, `label`, `detail`) |
+| `roadmap` | Up to six steps, each `done`, `in-progress` or `planned` | `heading`, `steps` (`label`, `status`, `when`) |
 | `code` | A short code snippet | `language`, `code`, `highlight` |
 | `quote` | A quote or testimonial | `quote`, `attribution` |
 | `outro` | Closing card and call to action | `title`, `url`, `cta` |

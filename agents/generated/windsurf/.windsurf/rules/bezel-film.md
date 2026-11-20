@@ -60,17 +60,11 @@ Map the user's answers to settings: a male voice is `"voice": { "gender": "male"
 
 Set `format.preset` to the platform. It sets the shape and keeps text clear of the app's buttons and captions:
 
-| Preset | Shape | For |
-| --- | --- | --- |
-| `tiktok`, `reels`, `shorts` | 9:16 | TikTok, Instagram Reels, YouTube Shorts |
-| `instagram`, `linkedin-mobile` | 4:5 | Instagram and LinkedIn feed posts, seen on phones |
-| `linkedin-desktop`, `x`, `youtube` | 16:9 | LinkedIn on desktop, X, YouTube |
-| `linkedin-square` | 1:1 | LinkedIn, for phones and desktops alike |
-| `whatsapp` | 9:16, 720p | WhatsApp, kept small to send |
+Presets: `tiktok`, `reels`, `shorts`, `whatsapp` (9:16); `instagram`, `linkedin-mobile` (4:5); `linkedin-square` (1:1); `linkedin-desktop`, `x`, `youtube` (16:9). Run `npx bezel-film formats` for details.
 
 Posting in several places? Write one film and make every version at once: `npx bezel-film render films/<short-name>/film.json --for tiktok,linkedin-mobile,x`. Each video is saved as `film-<preset>.mp4`. `validate` warns when a film is too long for its preset.
 
-Pick a mood that suits the story if the user has no preference: `calm` for most data stories, `upbeat` for launches and good news, `dramatic` or `epic` for a big reveal, `ambient` for a quiet, natural feel, and `reflective` for something personal or looking back. If the user wants to hear voices first, run `npx bezel-film voices`.
+Moods: `calm` for most data stories, `upbeat` for good news, `dramatic` or `epic` for a big reveal, `ambient` or `reflective` for quiet stories.
 
 ## Scene types
 
@@ -80,6 +74,8 @@ Pick a mood that suits the story if the user has no preference: `calm` for most 
 | `stat` | One big number | `value`, `label`, `context` |
 | `chart` | A Bezel Charts chart | `chart.type`, `chart.values`, `chart.labels`, `chart.series` |
 | `points` | Up to six short points | `heading`, `points` |
+| `timeline` | Dated events, oldest first | `heading`, `events` (`date`, `label`, `detail`) |
+| `roadmap` | Steps that are `done`, `in-progress` or `planned` | `heading`, `steps` (`label`, `status`, `when`) |
 | `code` | A short code snippet | `language`, `code`, `highlight` |
 | `quote` | A quote or testimonial | `quote`, `attribution` |
 | `outro` | Closing card and call to action | `title`, `url`, `cta` |
@@ -94,6 +90,7 @@ Every scene can also have `id`, `narration`, `duration` (seconds), `transition` 
 - **Open with the hook,** close with an `outro` that says what to do next.
 - **Keep charts simple:** seven bars or fewer, short labels, one point per chart. Say the takeaway in the narration and in `chart.heading`.
 - **Keep on-screen text short.** Points under ten words. Code under fifteen lines.
+- **Six items at most** in points, timelines and roadmaps; split more across two scenes. On tall formats, four or five read best, with few `detail` lines.
 - **Use the style's defaults** for colour, type and motion. Set `motion` (`calm`, `lively`, `punchy`) only if asked.
 - **Only the `data-story` style renders today.** `product-launch`, `whiteboard` and `custom` scenes are coming, so don't use them yet.
 <!-- bezel-film:end -->

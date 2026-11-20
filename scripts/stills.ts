@@ -10,7 +10,8 @@ import { buildTimeline } from "../src/render/timeline.js";
 /**
  * Saves a still of every scene in every platform format, for checking layouts by eye
  * without rendering whole videos. Each still is taken once the scene has settled,
- * with its first caption showing.
+ * with its first caption showing. Scenes whose items arrive with the narration
+ * (points, timelines, roadmaps) are taken just before they end, with every item in.
  *
  *   npm run stills -- films/welcome/film.json [tiktok,reels] [--safe-zones]
  */
@@ -31,7 +32,8 @@ try {
     const timeline = buildTimeline(film);
     const page = await openFilmPage(browser, film, style, timeline, { showSafeZones });
     for (const scene of timeline.scenes) {
-      const t = Math.min(scene.end - 0.05, scene.start + 2.2);
+      const paced = ["points", "timeline", "roadmap"].includes(scene.scene.type);
+      const t = paced ? scene.end - 0.3 : Math.min(scene.end - 0.05, scene.start + 2.2);
       await page.evaluate((s) => (globalThis as any).__bezel.seek(s), t);
       await writeFile(join(out, `${preset}-${scene.index + 1}-${scene.scene.type}.png`), await page.screenshot({ type: "png" }));
     }

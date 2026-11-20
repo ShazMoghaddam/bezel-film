@@ -1,0 +1,50 @@
+{
+  "$schema": "../../schema/film.schema.json",
+  "spec": 1,
+  "title": "Northside Coffee: our story so far",
+  "style": "data-story",
+  "format": { "aspect": "16:9", "resolution": "1080p", "fps": 30 },
+  "voice": { "engine": "kokoro" },
+  "music": { "source": "generated", "mood": "reflective" },
+  "scenes": [
+    {
+      "id": "intro",
+      "type": "title",
+      "title": "Our story so far",
+      "subtitle": "Northside Coffee · sample data",
+      "narration": "Five years ago, Northside Coffee was one counter and a second-hand espresso machine."
+    },
+    {
+      "id": "history",
+      "type": "timeline",
+      "heading": "From one counter to three shops",
+      "events": [
+        { "date": "2021", "label": "Opened on Mill Street", "detail": "One counter, six seats" },
+        { "date": "2022", "label": "Started roasting our own beans" },
+        { "date": "2023", "label": "Second shop by the station", "detail": "Open from 6 am for commuters" },
+        { "date": "2024", "label": "Oat milk at no extra cost" },
+        { "date": "2025", "label": "Loyalty card goes digital" }
+      ],
+      "narration": "We opened on Mill Street in twenty twenty-one. A year later we started roasting our own beans. Then came a second shop by the station, oat milk at no extra cost, and last year a digital loyalty card."
+    },
+    {
+      "id": "next",
+      "type": "roadmap",
+      "heading": "What's next",
+      "steps": [
+        { "label": "New roastery", "status": "done", "when": "Spring" },
+        { "label": "Order ahead in the app", "status": "done", "when": "Summer" },
+        { "label": "Third shop, Riverside", "status": "in-progress", "when": "Opens March" },
+        { "label": "Weekend cupping classes", "status": "planned", "when": "2027" }
+      ],
+      "narration": "This year, the new roastery opened, and you can now order ahead in the app. Our third shop, at Riverside, is being built right now. Next year, weekend cupping classes."
+    },
+    {
+      "id": "outro",
+      "type": "outro",
+      "title": "Thanks for every cup",
+      "cta": "See you at Riverside",
+      "narration": "Thank you for every cup. See you at Riverside."
+    }
+  ]
+}

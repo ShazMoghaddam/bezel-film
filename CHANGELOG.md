@@ -5,6 +5,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+### Added
+
+- `timeline` scenes: up to six dated events along a line, oldest first, each with an optional detail line. Each stop appears as the narrator reaches it, and the line draws itself to meet it, blending from one stop's colour to the next.
+- `roadmap` scenes: up to six steps marked `done` (ticked), `in-progress` (a gently pulsing ring) or `planned` (faded, on a dashed road), each with an optional `when`. The line draws as far as the work has got.
+- Both run left to right on wide frames and top to bottom on square and tall ones, and get the spring motion, sound effects and motion blur.
+- A second example film, `examples/northside-story`, with a timeline and a roadmap.
+
+### Changed
+
+- Windsurf's instructions are now a compact version of the shared ones (its rule files are capped at 6,000 characters), so every other agent keeps the full platform table and mood guidance.
+- `npm run stills` takes scenes whose items arrive with the narration (points, timelines and roadmaps) just before they end, with every item showing.
+
 ## [0.4.3] - 2026-11-20
 
 Motion blur, completing Stage 3: things in motion blur as a film camera would catch them, and settle back to sharp.
