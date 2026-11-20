@@ -1,7 +1,8 @@
 #!/usr/bin/env node
-import { mkdir, readFile } from "node:fs/promises";
+import { existsSync } from "node:fs";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { parseArgs } from "node:util";
-import { basename, dirname, extname, join } from "node:path";
+import { basename, dirname, extname, join, relative, resolve } from "node:path";
 import { lengthNotes, PLATFORMS, PRESETS, readPresetList, type PresetName } from "./spec/formats.js";
 import { estimateFilmSeconds, validateFilm } from "./spec/validate.js";
 
@@ -9,6 +10,8 @@ const HELP = `Bezel Film: make short films in code.
 
 Usage
   bezel-film init                   Set up this folder: install, agent instructions, a welcome film
+  bezel-film draft <source>         Draft a film about a project from its folder, README
+                                    or GitHub repository (e.g. owner/repo)
   bezel-film validate <film.json>   Check a film file and show a summary
   bezel-film render <film.json>     Render the film to an MP4
   bezel-film formats                List the platform presets, e.g. tiktok, linkedin-mobile
@@ -18,9 +21,11 @@ Usage
 
 Options
   -o, --output <path>   Where render saves the video (default: next to the film file),
-                        or where voices saves its samples (default: voice-samples)
+                        where draft saves the film (default: film.json), or where
+                        voices saves its samples (default: voice-samples)
   --for <list>          render: make a version for each platform, e.g. tiktok,reels,x
                         (or "all"). -o is then a folder.
+                        draft: the platform the film is for, e.g. tiktok
   --show-safe-zones     render: shade the parts each platform's app covers
   --quality high        render: true motion blur, for final versions. About five
                         times slower (default: standard)
@@ -170,6 +175,35 @@ async function render(path: string | undefined, flags: RenderFlags): Promise<num
   }
 }
 
+async function draft(source: string | undefined, output: string, platform: string | undefined): Promise<number> {
+  if (!source) throw new UsageError("Give a project to draft from: a folder (e.g. .), a README file, or a GitHub repository such as owner/repo");
+  if (existsSync(output)) throw new UsageError(`${output} already exists. Choose another name with -o, e.g. bezel-film draft ${source} -o project-film.json`);
+  const presets = platform ? parsePresets(platform) : [];
+  if (presets.length > 1) throw new UsageError("draft makes one film; give one platform with --for, and render it for others later");
+  const { gatherFacts } = await import("./repo.js");
+  const { draftFilm } = await import("./draft.js");
+  const facts = await gatherFacts(source);
+  const film = draftFilm(facts, { preset: presets[0] });
+  // A sanity check: a draft that doesn't validate is a bug in draft, not the user's fault.
+  const result = validateFilm(film);
+  if (!result.ok) throw new Error(`The draft didn't come out valid. Please report this:\n  ${result.errors.join("\n  ")}`);
+  // Point editors at the schema, so they can check the file as it's edited.
+  const schema = resolve("node_modules/bezel-film/schema/film.schema.json");
+  const file = existsSync(schema) ? { $schema: relative(dirname(resolve(output)), schema), ...film } : film;
+  await mkdir(dirname(resolve(output)), { recursive: true });
+  await writeFile(output, `${JSON.stringify(file, null, 2)}\n`);
+
+  const types = result.film.scenes.map((scene) => scene.type);
+  console.log(`✓ Drafted ${output}: a film about ${facts.name}`);
+  console.log(`  From ${facts.sources.join(", ")}`);
+  console.log(`  ${types.length} scenes (${types.join(", ")}) · about ${formatSeconds(estimateFilmSeconds(result.film))}`);
+  console.log("\nIt's a first draft, built from what the project says about itself. Next:");
+  console.log("  • Ask your coding agent to polish it: tighten the narration, keep what matters,");
+  console.log("    and add a stat, chart or map if the project has a story to tell.");
+  console.log(`  • Or edit it yourself, then render it: npx bezel-film render ${output}`);
+  return 0;
+}
+
 async function voices(folder: string): Promise<number> {
   const status = statusLine();
   const { kokoroSpeaker } = await import("./render/voice.js");
@@ -248,6 +282,8 @@ async function main(argv: string[]): Promise<number> {
   }
 
   switch (command) {
+    case "draft":
+      return draft(file, values.output ?? "film.json", values.for);
     case "validate":
       return validate(file);
     case "render":

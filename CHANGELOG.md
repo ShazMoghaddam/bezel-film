@@ -5,6 +5,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+### Added
+
+- `bezel-film draft <source>` writes a first film about a project from its folder, a README file or a GitHub repository (`owner/repo` or its link). It reads the README, `package.json` or `pyproject.toml`, the changelog and, for GitHub, the star count, then drafts a title, what it does (from the feature list), how to start (the install command and a short example), how far it's come (from the changelog), what's next (from the README's roadmap), its stars and a call to action. Scenes it has nothing for are left out. The draft is a starting point: coding agents are told to rewrite it into a story, and it never overwrites a file.
+- Windsurf's compact instructions are shorter, which leaves room for what's to come.
+
 ## [0.5.0] - 2026-11-20
 
 Product stories: three new scenes for telling where a project has been, where it's going and where in the world it happens.
