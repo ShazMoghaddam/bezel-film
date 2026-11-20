@@ -86,6 +86,16 @@ Commit the generated files along with your change.
 3. Add a line under **Unreleased** in [CHANGELOG.md](CHANGELOG.md).
 4. Make sure `npm run check` passes.
 
+## Releasing
+
+Releases publish to npm by themselves, from GitHub Actions, with no npm login.
+
+1. Merge a pull request that bumps the version in `package.json` and `package-lock.json`, and dates the **Unreleased** section of [CHANGELOG.md](CHANGELOG.md).
+2. Publish a GitHub release on `main`, tagged `v` plus the version (for example `v0.4.3`).
+3. The **Release** workflow checks the tag matches the version and that every music track is in the tag, runs the full check, and publishes to npm with a provenance statement.
+
+npm trusts the workflow directly ([trusted publishing](https://docs.npmjs.com/trusted-publishers)), so there's no token to keep or renew. The tag always exists before the new version reaches npm, so films can download their music straight away.
+
 ## Writing style
 
 Docs, errors and CLI messages use plain English, short sentences and British spelling.

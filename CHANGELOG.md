@@ -5,6 +5,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+### Changed
+
+- Releases now publish to npm from GitHub Actions when a GitHub release is published, using npm trusted publishing: no tokens or logins, and each version carries a provenance statement linking it to the exact build. The workflow checks the tag matches the version and that every music track is in the tag first.
+
 ## [0.4.2] - 2026-11-20
 
 Recorded music and real nature sounds: hand-picked pieces for every mood, and field recordings under ambient films.
