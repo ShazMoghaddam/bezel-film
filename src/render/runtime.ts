@@ -189,7 +189,9 @@ export const RUNTIME_JS = String.raw`
     if (!settled.has(index)) {
       let end = 0;
       for (const animation of sections[index].getAnimations({ subtree: true })) {
-        end = Math.max(end, animation.effect.getComputedTiming().endTime);
+        // Endless loops, like a roadmap's pulsing halo, never "finish"; they don't move anything either.
+        const finish = animation.effect.getComputedTiming().endTime;
+        if (Number.isFinite(finish)) end = Math.max(end, finish);
       }
       settled.set(index, end / 1000);
     }

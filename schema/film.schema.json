@@ -602,6 +602,183 @@
               },
               "type": {
                 "type": "string",
+                "const": "timeline"
+              },
+              "heading": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "events": {
+                "minItems": 2,
+                "maxItems": 6,
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "date": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 24,
+                      "description": "When it happened, as it should appear, e.g. \"2021\" or \"March 2024\"."
+                    },
+                    "label": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 48,
+                      "description": "What happened, in a few words."
+                    },
+                    "detail": {
+                      "description": "One short line more, if it helps.",
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 90
+                    }
+                  },
+                  "required": [
+                    "date",
+                    "label"
+                  ]
+                },
+                "description": "In order, oldest first. Up to 6; split a longer story across two scenes."
+              }
+            },
+            "required": [
+              "type",
+              "events"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "description": "Optional name for the scene, handy for previews and error messages.",
+                "type": "string",
+                "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+              },
+              "narration": {
+                "description": "What the voice says during this scene. Scene length is timed from this unless duration is set.",
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 600
+              },
+              "duration": {
+                "description": "Length in seconds. Overrides the timing worked out from narration.",
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "maximum": 120
+              },
+              "transition": {
+                "description": "How this scene enters. Defaults to the style's choice.",
+                "type": "string",
+                "enum": [
+                  "cut",
+                  "fade",
+                  "slide",
+                  "wipe"
+                ]
+              },
+              "motion": {
+                "description": "How this scene moves, overriding the film's motion.",
+                "type": "string",
+                "enum": [
+                  "calm",
+                  "lively",
+                  "punchy"
+                ]
+              },
+              "type": {
+                "type": "string",
+                "const": "roadmap"
+              },
+              "heading": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "steps": {
+                "minItems": 2,
+                "maxItems": 6,
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 48,
+                      "description": "The step, in a few words."
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "done",
+                        "in-progress",
+                        "planned"
+                      ],
+                      "description": "done gets a tick, in-progress pulses gently, planned is shown faded."
+                    },
+                    "when": {
+                      "description": "When it's due or was done, e.g. \"Q3\" or \"Spring 2027\".",
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 24
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "status"
+                  ]
+                },
+                "description": "In order. Up to 6; split a longer roadmap across two scenes."
+              }
+            },
+            "required": [
+              "type",
+              "steps"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "description": "Optional name for the scene, handy for previews and error messages.",
+                "type": "string",
+                "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+              },
+              "narration": {
+                "description": "What the voice says during this scene. Scene length is timed from this unless duration is set.",
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 600
+              },
+              "duration": {
+                "description": "Length in seconds. Overrides the timing worked out from narration.",
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "maximum": 120
+              },
+              "transition": {
+                "description": "How this scene enters. Defaults to the style's choice.",
+                "type": "string",
+                "enum": [
+                  "cut",
+                  "fade",
+                  "slide",
+                  "wipe"
+                ]
+              },
+              "motion": {
+                "description": "How this scene moves, overriding the film's motion.",
+                "type": "string",
+                "enum": [
+                  "calm",
+                  "lively",
+                  "punchy"
+                ]
+              },
+              "type": {
+                "type": "string",
                 "const": "code"
               },
               "language": {

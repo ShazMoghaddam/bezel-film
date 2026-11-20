@@ -93,6 +93,10 @@ function sceneBody(timed: TimedScene, style: Style, feel: MotionFeel, cue: Cue =
       </div>`;
     }
 
+    case "timeline":
+    case "roadmap":
+      return journey(timed, style, feel, sound);
+
     case "code": {
       const highlight = new Set(scene.highlight ?? []);
       const lines = scene.code
@@ -126,6 +130,70 @@ function sceneBody(timed: TimedScene, style: Style, feel: MotionFeel, cue: Cue =
     case "custom":
       throw new Error(`Custom scenes aren't supported by the renderer yet (scene ${timed.index + 1}).`);
   }
+}
+
+type Sound = (ms: number, name: SoundName, how?: Omit<SceneCue, "ms" | "sound">, extra?: string) => string;
+
+const TICK = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.2 4.2L19 7" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const STATUS_WORDS = { done: "Done", "in-progress": "In progress", planned: "Planned" } as const;
+
+/**
+ * A timeline or a roadmap: stops along a line. Each stop appears as the narrator
+ * reaches it, and the line draws itself so its tip arrives at each stop just as the
+ * stop appears. On a roadmap it draws only as far as the work has got, and the rest
+ * of the road is dashed. The CSS lays it out left to right on wide frames and top to
+ * bottom on square and tall ones.
+ */
+function journey(timed: TimedScene, style: Style, feel: MotionFeel, sound: Sound): string {
+  const scene = timed.scene;
+  if (scene.type !== "timeline" && scene.type !== "roadmap") throw new Error("not a journey scene");
+  const { from, to } = speechWindow(timed);
+  const count = scene.type === "timeline" ? scene.events.length : scene.steps.length;
+  const step = (to - from) / count;
+  const at = (i: number) => from + i * step;
+  const stagger = style.motion.staggerMs * feel.staggerScale;
+  const text = (ms: number, cls: string, value: string) => `<span class="rise ${cls}" ${delay(ms)}>${escapeHtml(value)}</span>`;
+
+  // Each stop but the last has a leg: the stretch of line to the next stop. It draws
+  // in the time between the two stops appearing, so it meets the next one on time,
+  // however much text either stop has. On a roadmap, legs past the step being worked
+  // on (or the last one done) stay as dashed road.
+  let reach = count - 1;
+  const leg = (i: number) =>
+    i === count - 1 ? "" : `<span class="leg">${i < reach ? `<span class="leg-fill draw" ${delay(at(i), `--draw-ms:${Math.round(step)}ms`)}></span>` : ""}</span>`;
+  let stops: string;
+  if (scene.type === "timeline") {
+    stops = scene.events
+      .map((event, i) => {
+        const palette = style.colours.palette.length;
+        const colour = `--c:var(--p${i % palette});--c-next:var(--p${(i + 1) % palette})`;
+        return `<li class="stop" style="${colour}">${leg(i)}
+          <span class="stop-dot pop" ${sound(at(i), "pop", { pitch: i * 2 })}></span>
+          <span class="stop-text">${text(at(i) + stagger, "stop-when", event.date)}${text(at(i) + stagger * 2, "stop-label", event.label)}${event.detail ? text(at(i) + stagger * 3, "stop-detail muted", event.detail) : ""}</span>
+        </li>`;
+      })
+      .join("");
+  } else {
+    const current = scene.steps.findIndex((s) => s.status === "in-progress");
+    const lastDone = scene.steps.map((s) => s.status).lastIndexOf("done");
+    reach = Math.max(current, lastDone, 0);
+    stops = scene.steps
+      .map((s, i) => {
+        const cue = s.status === "done" ? sound(at(i), "tap", { pitch: i }) : s.status === "in-progress" ? sound(at(i), "pop", { pitch: i }) : sound(at(i), "click", { gain: 0.7 });
+        const when = [STATUS_WORDS[s.status], s.when].filter(Boolean).join(" · ");
+        return `<li class="stop ${s.status}">${leg(i)}
+          <span class="stop-dot pop" ${cue}>${s.status === "done" ? TICK : ""}</span>
+          <span class="stop-text">${text(at(i) + stagger, "stop-label", s.label)}${text(at(i) + stagger * 2, "stop-when", when)}</span>
+        </li>`;
+      })
+      .join("");
+  }
+  return `<div class="column journey-wrap">
+    ${scene.heading ? words(scene.heading, "h2", "heading", 0, feel) : ""}
+    <ol class="journey ${scene.type}" style="--n:${count}">
+      ${stops}
+    </ol>
+  </div>`;
 }
 
 /** The sounds a scene's entrances make, in the order they happen. */
@@ -167,11 +235,22 @@ function safeVars(frame: Layout, captions: boolean): string {
 /** Type and spacing for each frame shape. Wide frames use the base sizes. */
 function shapeCss(frame: Layout): string {
   if (frame.shape === "wide") return "";
-  const shared = `.center,.column,.column.narrow{max-width:100%}`;
+  const shared = `.center,.column,.column.narrow{max-width:100%}
+.journey-wrap{width:min(100%,calc(var(--u)*120))}
+.journey{grid-template-columns:1fr}
+.stop{--pad:calc(var(--u)*.9);flex-direction:row;align-items:flex-start;text-align:left;gap:calc(var(--u)*3.4);padding:var(--pad) 0}
+.stop-text{gap:calc(var(--u)*.3);padding-top:calc((var(--dot) - 1.3em) / 2)}
+.leg{left:calc((var(--dot) - var(--line)) / 2);width:var(--line);top:calc(var(--pad) + var(--dot) / 2);height:100%}
+.leg-fill{transform-origin:center top;--draw-from:scaleY(0);background:linear-gradient(180deg,var(--c),var(--c-next,var(--c)))}
+.roadmap .leg{background:repeating-linear-gradient(180deg,color-mix(in srgb,var(--muted) 45%,transparent) 0 calc(var(--u)*1.4),transparent 0 calc(var(--u)*2.4))}`;
   // Square and 4:5 frames are mostly seen in phone feeds, so text is a little larger.
   if (frame.shape === "square") {
     return `${shared}
 .points li{font-size:calc(var(--u)*4.6)}
+.journey{--dot:calc(var(--u)*4)}
+.stop-label{font-size:calc(var(--u)*4.2)}
+.stop-when{font-size:calc(var(--u)*2.8)}
+.stop-detail{font-size:calc(var(--u)*3)}
 .lead{font-size:calc(var(--u)*3.5)}
 .caption span{font-size:calc(var(--u)*3.1)}`;
   }
@@ -185,6 +264,10 @@ function shapeCss(frame: Layout): string {
 .points{gap:calc(var(--u)*3.2)}
 .points li{font-size:calc(var(--u)*5);align-items:flex-start}
 .points .dot{margin-top:calc(var(--u)*1.4)}
+.journey{--dot:calc(var(--u)*4.6)}
+.stop-label{font-size:calc(var(--u)*5)}
+.stop-when{font-size:calc(var(--u)*3.3)}
+.stop-detail{font-size:calc(var(--u)*3.5)}
 .quote{font-size:calc(var(--u)*6.6)}
 .code pre{font-size:calc(var(--u)*3)}
 .cta{font-size:calc(var(--u)*3.8)}
@@ -269,6 +352,37 @@ ${motionCss(style, levels)}
 .points{list-style:none;display:flex;flex-direction:column;gap:calc(var(--u)*2.4)}
 .points li{display:flex;align-items:center;gap:calc(var(--u)*2.4);font-size:calc(var(--u)*4.2);font-weight:600;line-height:1.2}
 .dot{flex:none;width:calc(var(--u)*2.2);height:calc(var(--u)*2.2);border-radius:50%;background:var(--c);box-shadow:0 0 calc(var(--u)*2.4) color-mix(in srgb,var(--c) 60%,transparent)}
+/* Timelines and roadmaps: stops along a line, left to right on wide frames (the square
+   and tall blocks turn it top to bottom). Each stop's leg reaches to the next stop's dot:
+   across one equal-width column here, down one row there. */
+.journey-wrap{width:min(100%,calc(var(--u)*165));max-width:none}
+.journey{--dot:calc(var(--u)*3.4);--line:calc(var(--u)*.55);list-style:none;display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr))}
+.stop{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;gap:calc(var(--u)*2);padding:0 calc(var(--u)*1.2)}
+.stop-dot{position:relative;z-index:1;flex:none;width:var(--dot);height:var(--dot);border-radius:50%;display:grid;place-items:center;
+  background:var(--c,var(--accent));color:var(--bg);box-shadow:0 0 0 calc(var(--u)*.7) var(--bg),0 0 calc(var(--u)*2.6) color-mix(in srgb,var(--c,var(--accent)) 55%,transparent)}
+.stop-dot svg{width:62%;height:62%}
+.stop-text{display:flex;flex-direction:column;gap:calc(var(--u)*.7)}
+.stop-when{font-size:calc(var(--u)*2.3);font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--c,var(--accent))}
+.stop-label{font-family:var(--heading);font-size:calc(var(--u)*3);font-weight:700;line-height:1.15;text-wrap:balance}
+.stop-detail{font-size:calc(var(--u)*2.3);line-height:1.3;text-wrap:balance}
+.leg{position:absolute;left:50%;width:100%;top:calc((var(--dot) - var(--line)) / 2);height:var(--line);border-radius:99px;
+  background:color-mix(in srgb,var(--muted) 28%,transparent)}
+.leg-fill{position:absolute;inset:0;border-radius:inherit;transform-origin:left center;--draw-from:scaleX(0);
+  background:linear-gradient(90deg,var(--c),var(--c-next,var(--c)))}
+.draw{animation:draw var(--draw-ms) linear var(--d,0ms) both}
+@keyframes draw{from{transform:var(--draw-from)}to{transform:none}}
+/* Roadmaps: done is ticked, in progress pulses, planned is faded on a dashed road. */
+.roadmap .stop{--c:var(--accent)}
+.roadmap .leg{background:repeating-linear-gradient(90deg,color-mix(in srgb,var(--muted) 45%,transparent) 0 calc(var(--u)*1.4),transparent 0 calc(var(--u)*2.4))}
+.roadmap .stop-when{color:var(--muted)}
+.roadmap .done .stop-when,.roadmap .in-progress .stop-when{color:var(--accent)}
+.roadmap .in-progress .stop-dot{background:var(--bg);border:calc(var(--u)*.6) solid var(--accent)}
+.roadmap .in-progress .stop-dot::before{content:"";width:40%;height:40%;border-radius:50%;background:var(--accent)}
+.roadmap .in-progress .stop-dot::after{content:"";position:absolute;inset:calc(var(--u)*-.6);border-radius:50%;border:calc(var(--u)*.4) solid var(--accent);
+  animation:halo 1.8s ease-out calc(var(--d,0ms) + 400ms) infinite both}
+@keyframes halo{from{opacity:.7;transform:scale(1)}to{opacity:0;transform:scale(1.9)}}
+.roadmap .planned .stop-dot{background:var(--bg);border:calc(var(--u)*.4) dashed var(--muted);box-shadow:0 0 0 calc(var(--u)*.7) var(--bg)}
+.roadmap .planned .stop-text{opacity:.55}
 .code{width:min(100%,calc(var(--u)*140));border-radius:calc(var(--u)*2.4);overflow:hidden;text-align:left;background:var(--surface);border:1px solid color-mix(in srgb,var(--text) 10%,transparent)}
 .code-bar{display:flex;gap:calc(var(--u)*1);align-items:center;padding:calc(var(--u)*1.6) calc(var(--u)*2.4);background:color-mix(in srgb,var(--text) 5%,transparent)}
 .code-bar i{width:calc(var(--u)*1.4);height:calc(var(--u)*1.4);border-radius:50%;background:var(--p1)}

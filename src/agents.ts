@@ -23,6 +23,11 @@ export interface AgentTarget {
   shared: boolean;
   /** Files or folders whose presence shows the project already uses this agent. */
   signs: string[];
+  /**
+   * The agent caps the size of its rule file, so it gets the compact instructions:
+   * parts marked "full only" are left out, and short "compact" stand-ins go in.
+   */
+  compact?: boolean;
 }
 
 const DESCRIPTION =
@@ -52,6 +57,8 @@ export const AGENT_TARGETS: AgentTarget[] = [
     id: "windsurf",
     name: "Windsurf",
     file: ".windsurf/rules/bezel-film.md",
+    // Windsurf rule files hold at most 6,000 characters.
+    compact: true,
     frontmatter: ["trigger: model_decision", `description: ${DESCRIPTION}`],
     shared: false,
     signs: [".windsurf", ".windsurfrules"],
@@ -65,10 +72,22 @@ const NOTICE = "<!-- Added by Bezel Film. Run `npx bezel-film init` again to upd
 /** Where a target's ready-made file sits inside the package. */
 export const generatedPath = (target: AgentTarget) => `agents/generated/${target.id}/${target.file}`;
 
+/**
+ * The shared instructions in their full or compact form. Text between
+ * `<!-- full -->` and `<!-- /full -->` appears only in the full form, and a line
+ * `<!-- compact: … -->` becomes that text, only in the compact form.
+ */
+export function shapeInstructions(instructions: string, compact: boolean): string {
+  return instructions
+    .replace(/<!-- full -->\n?([\s\S]*?)<!-- \/full -->\n?/g, compact ? "" : "$1")
+    .replace(/<!-- compact: ([\s\S]*?) -->\n?/g, compact ? "$1\n" : "");
+}
+
 /** The full instruction file for one agent, built from the shared instructions. */
 export function renderInstructions(target: AgentTarget, instructions: string): string {
   const head = target.frontmatter ? `---\n${target.frontmatter.join("\n")}\n---\n\n` : "";
-  return `${head}${SECTION_START}\n${NOTICE}\n\n${instructions.trim()}\n${SECTION_END}\n`;
+  const body = shapeInstructions(instructions, !!target.compact).trim();
+  return `${head}${SECTION_START}\n${NOTICE}\n\n${body}\n${SECTION_END}\n`;
 }
 
 /** Just the marked Bezel Film section of a rendered file, without frontmatter. */
