@@ -24,7 +24,8 @@ To render the example film: `npx tsx src/cli.ts render examples/northside-coffee
 | Folder | What lives there |
 | --- | --- |
 | `src/spec/` | The film spec (`schema.ts`), the platform presets and their safe zones (`formats.ts`), and validation. `schema.ts` is the source of truth for the film file. |
-| `src/render/` | The renderer: voice (`voice.ts`), timing (`timeline.ts`), the scene page and its layouts (`page.ts`, `runtime.ts`, `layout.ts`), music (`music.ts`, `colours.ts`, `nature.ts`, `instruments.ts`, `soundtrack.ts`), frame capture and ffmpeg (`index.ts`). |
+| `src/render/` | The renderer: voice (`voice.ts`), timing (`timeline.ts`), the scene page and its layouts (`page.ts`, `runtime.ts`, `layout.ts`), map scenes (`map.ts`), music (`music.ts`, `colours.ts`, `nature.ts`, `instruments.ts`, `soundtrack.ts`), frame capture and ffmpeg (`index.ts`). |
+| `src/geo.ts` | Place names and the world map: finds cities, countries and regions, and draws the world. |
 | `src/cli.ts` | The `bezel-film` command. |
 | `src/init.ts`, `src/agents.ts` | `bezel-film init`, and the list of coding agents and where their instructions go. |
 | `styles/` | One folder per style: colours, fonts and motion. |
@@ -32,6 +33,7 @@ To render the example film: `npx tsx src/cli.ts render examples/northside-coffee
 | `agents/generated/` | Built from the source. Don't edit these by hand. |
 | `schema/` | JSON Schema built from `src/spec/schema.ts`. Don't edit by hand. |
 | `instruments/` | Recorded instruments for the music. Built by `npm run instruments`; don't edit by hand. |
+| `maps/` | World outlines and places from Natural Earth. Built by `npm run maps`, from a pinned version with checked fingerprints; don't edit by hand. |
 | `examples/` | Example films, checked in CI. |
 | `docs/` | The README banner and social preview, built from `docs/banner.html` by `npm run banner`, and the demo (`welcome.gif`, `welcome.mp4`), built by `npm run demo`. |
 

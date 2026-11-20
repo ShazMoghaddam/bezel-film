@@ -108,6 +108,8 @@ export interface MotionFeel {
    * film camera's classic half-frame shutter. 0 means no blur.
    */
   shutter: number;
+  /** How long a map's camera takes to fly to where it's going. */
+  flyMs: number;
 }
 
 /**
@@ -129,6 +131,7 @@ export const MOTION_FEELS: Record<MotionLevel, MotionFeel> = {
     countCurve: "cubic",
     pulse: false,
     shutter: 0,
+    flyMs: 2200,
   },
   lively: {
     move: "snappy",
@@ -143,6 +146,7 @@ export const MOTION_FEELS: Record<MotionLevel, MotionFeel> = {
     countCurve: "quart",
     pulse: true,
     shutter: 0.5,
+    flyMs: 1800,
   },
   punchy: {
     move: "bouncy",
@@ -157,6 +161,7 @@ export const MOTION_FEELS: Record<MotionLevel, MotionFeel> = {
     countCurve: "quart",
     pulse: true,
     shutter: 0.6,
+    flyMs: 1400,
   },
 };
 

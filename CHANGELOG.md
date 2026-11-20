@@ -5,21 +5,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
-## [0.4.3] - 2026-11-20
-
-Motion blur, completing Stage 3: things in motion blur as a film camera would catch them, and settle back to sharp.
-
 ### Added
 
+- `map` scenes: pins with labels, countries coloured in (or shaded by a number, with a legend) and curved arcs between places. Name places in plain words, such as "Nairobi", "Paris, France" or "the UK", or give coordinates. Everything is looked up in the package's own copy of [Natural Earth](https://www.naturalearthdata.com) (public domain), so it works offline, and a typo gets a "did you mean" suggestion. The camera flies from the whole world to the `focus` (a region, a country or a city) or to fit everything shown, then countries fill in, pins pop and arcs draw as the narrator reaches them. On tall and square frames the camera crops in from the sides to fill the frame, never cutting anything off.
 - `timeline` scenes: up to six dated events along a line, oldest first, each with an optional detail line. Each stop appears as the narrator reaches it, and the line draws itself to meet it, blending from one stop's colour to the next.
 - `roadmap` scenes: up to six steps marked `done` (ticked), `in-progress` (a gently pulsing ring) or `planned` (faded, on a dashed road), each with an optional `when`. The line draws as far as the work has got.
-- Both run left to right on wide frames and top to bottom on square and tall ones, and get the spring motion, sound effects and motion blur.
-- A second example film, `examples/northside-story`, with a timeline and a roadmap.
+- Timelines and roadmaps run left to right on wide frames and top to bottom on square and tall ones. All three new scenes get the spring motion, sound effects and motion blur.
+- A second example film, `examples/northside-story`, with a timeline, a map and a roadmap.
 
 ### Changed
 
 - Windsurf's instructions are now a compact version of the shared ones (its rule files are capped at 6,000 characters), so every other agent keeps the full platform table and mood guidance.
-- `npm run stills` takes scenes whose items arrive with the narration (points, timelines and roadmaps) just before they end, with every item showing.
+- `npm run stills` takes scenes whose items arrive with the narration (points, timelines, roadmaps and maps) just before they end, with every item showing.
 
 ## [0.4.3] - 2026-11-20
 

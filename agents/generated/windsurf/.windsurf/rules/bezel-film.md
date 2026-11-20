@@ -76,6 +76,7 @@ Moods: `calm` for most data stories, `upbeat` for good news, `dramatic` or `epic
 | `points` | Up to six short points | `heading`, `points` |
 | `timeline` | Dated events, oldest first | `heading`, `events` (`date`, `label`, `detail`) |
 | `roadmap` | Steps that are `done`, `in-progress` or `planned` | `heading`, `steps` (`label`, `status`, `when`) |
+| `map` | Places and routes on a map | `pins`, `countries`, `arcs`, `focus` |
 | `code` | A short code snippet | `language`, `code`, `highlight` |
 | `quote` | A quote or testimonial | `quote`, `attribution` |
 | `outro` | Closing card and call to action | `title`, `url`, `cta` |

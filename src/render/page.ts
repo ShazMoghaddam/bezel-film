@@ -4,6 +4,7 @@ import type { SceneCue, SoundName } from "./sfx.js";
 import type { Style } from "./style.js";
 import type { Layout } from "./layout.js";
 import type { Timeline, TimedScene } from "./timeline.js";
+import { MAP_CSS, mapBody, mapCamera, mapDefs } from "./map.js";
 
 /**
  * Builds the web page the film is drawn in. Every scene sits on the page at once,
@@ -96,6 +97,12 @@ function sceneBody(timed: TimedScene, style: Style, feel: MotionFeel, cue: Cue =
     case "timeline":
     case "roadmap":
       return journey(timed, style, feel, sound);
+
+    case "map": {
+      const { from, to } = speechWindow(timed);
+      const heading = scene.heading ? words(scene.heading, "h2", "heading", 0, feel) : "";
+      return mapBody(scene, timed.index, { from, to, stagger }, feel, style.colours.palette.length, sound, heading);
+    }
 
     case "code": {
       const highlight = new Set(scene.highlight ?? []);
@@ -403,6 +410,7 @@ ${motionCss(style, levels)}
   background:rgb(0 0 0/.62);box-decoration-break:clone;-webkit-box-decoration-break:clone}
 .safe-overlay i{position:absolute;background:rgb(255 45 85/.3);outline:2px dashed rgb(255 45 85/.85);outline-offset:-2px}
 .progress{position:absolute;left:0;top:0;height:calc(var(--u)*.45);width:0;background:linear-gradient(90deg,var(--p0),var(--p1),var(--p3))}
+${MAP_CSS}
 ${shapeCss(frame)}`;
 }
 
@@ -433,6 +441,12 @@ export function runtimeData(film: Film, style: Style, timeline: Timeline, frame:
       count: countFor(MOTION_FEELS[motionLevel(film, timed.scene, style)]),
       shutter: MOTION_FEELS[motionLevel(film, timed.scene, style)].shutter,
     })),
+    maps: timeline.scenes
+      .filter((timed) => timed.scene.type === "map")
+      .map((timed) => ({
+        scene: timed.index,
+        ...mapCamera(timed.scene as Extract<Scene, { type: "map" }>, MOTION_FEELS[motionLevel(film, timed.scene, style)]),
+      })),
     lines: timeline.scenes.flatMap((timed) => timed.lines.map((line) => ({ ...line, scene: timed.index }))),
     charts: timeline.scenes
       .filter((timed) => timed.scene.type === "chart")
@@ -498,6 +512,7 @@ export function buildPage(film: Film, style: Style, timeline: Timeline, frame: L
 <body>
 <div class="backdrop"></div>
 <div class="grain"></div>
+${timeline.scenes.some((timed) => timed.scene.type === "map") ? mapDefs() : ""}
 <main id="stage">
 ${scenes}
 </main>

@@ -77,6 +77,7 @@ Pick a mood that suits the story if the user has no preference: `calm` for most 
 | `points` | Up to six short points | `heading`, `points` |
 | `timeline` | Dated events, oldest first | `heading`, `events` (`date`, `label`, `detail`) |
 | `roadmap` | Steps that are `done`, `in-progress` or `planned` | `heading`, `steps` (`label`, `status`, `when`) |
+| `map` | Places and routes on a map | `pins`, `countries`, `arcs`, `focus` |
 | `code` | A short code snippet | `language`, `code`, `highlight` |
 | `quote` | A quote or testimonial | `quote`, `attribution` |
 | `outro` | Closing card and call to action | `title`, `url`, `cta` |
@@ -92,6 +93,7 @@ Every scene can also have `id`, `narration`, `duration` (seconds), `transition` 
 - **Keep charts simple:** seven bars or fewer, short labels, one point per chart. Say the takeaway in the narration and in `chart.heading`.
 - **Keep on-screen text short.** Points under ten words. Code under fifteen lines.
 - **Six items at most** in points, timelines and roadmaps; split more across two scenes. On tall formats, four or five read best, with few `detail` lines.
+- **Maps:** name places as people say them (`"Nairobi"`, `"Paris, France"`, `"UK"`), or give `{ "lat", "lon", "name" }`. Run `validate` to check every name. Maps work at country and region scale, so don't pin several places in one city.
 - **Use the style's defaults** for colour, type and motion. Set `motion` (`calm`, `lively`, `punchy`) only if asked.
 - **Only the `data-story` style renders today.** `product-launch`, `whiteboard` and `custom` scenes are coming, so don't use them yet.
 <!-- bezel-film:end -->

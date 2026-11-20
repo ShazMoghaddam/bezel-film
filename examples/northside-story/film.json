@@ -28,6 +28,23 @@
       "narration": "We opened on Mill Street in twenty twenty-one. A year later we started roasting our own beans. Then came a second shop by the station, oat milk at no extra cost, and last year a digital loyalty card."
     },
     {
+      "id": "beans",
+      "type": "map",
+      "heading": "Where our beans come from",
+      "pins": [
+        { "place": "Colombia", "label": "Huila, Colombia" },
+        { "place": "Ethiopia", "label": "Yirgacheffe, Ethiopia" },
+        { "place": "Brazil", "label": "Minas Gerais, Brazil" },
+        { "place": "London", "label": "Roasted in London" }
+      ],
+      "arcs": [
+        { "from": "Colombia", "to": "London" },
+        { "from": "Ethiopia", "to": "London" },
+        { "from": "Brazil", "to": "London" }
+      ],
+      "narration": "Our beans come from three farms we know by name, in Colombia, Ethiopia and Brazil. Every sack comes to London, where we roast it ourselves."
+    },
+    {
       "id": "next",
       "type": "roadmap",
       "heading": "What's next",
