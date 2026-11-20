@@ -5,6 +5,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+### Security
+
+- The repository now uses sharp 0.35.5, which fixes high-severity issues in the image libraries it bundles (libvips, libheif and librsvg). sharp comes in through the voice engine (kokoro-js and Hugging Face transformers), which still ask for 0.34, so an npm override moves it up. Bezel Film never gives sharp an image to open, so installed copies were not exposed.
+
 ## [0.5.1] - 2026-11-20
 
 Point Bezel Film at a project and get a first film.
