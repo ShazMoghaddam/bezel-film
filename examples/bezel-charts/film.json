@@ -1,0 +1,250 @@
+{
+  "$schema": "../../schema/film.schema.json",
+  "spec": 1,
+  "title": "Bezel Charts: charts that look finished the moment you add them",
+  "style": "data-story",
+  "format": {
+    "preset": "linkedin-desktop"
+  },
+  "voice": {
+    "engine": "kokoro",
+    "gender": "female"
+  },
+  "music": {
+    "source": "generated",
+    "mood": "upbeat"
+  },
+  "captions": true,
+  "scenes": [
+    {
+      "id": "intro",
+      "type": "title",
+      "title": "Bezel Charts",
+      "subtitle": "Charts that look finished the moment you add them",
+      "narration": "Meet Bezel Charts: charts that look finished the moment you add them."
+    },
+    {
+      "id": "why",
+      "type": "quote",
+      "quote": "I wanted charts that are fully customisable and easy to drop into any project, and a way to give something back to the developer community.",
+      "attribution": "Shaz Moghaddam, creator",
+      "narration": "It started with a simple wish: customisable charts that drop into any project, and a way to give back to the developer community."
+    },
+    {
+      "id": "london",
+      "type": "map",
+      "heading": "Born in London",
+      "focus": "United Kingdom",
+      "pins": [
+        {
+          "place": "London",
+          "label": "London"
+        }
+      ],
+      "narration": "Bezel Charts was born in London."
+    },
+    {
+      "id": "one-tag",
+      "type": "code",
+      "language": "html",
+      "code": "<script type=\"module\" src=\"https://cdn.jsdelivr.net/gh/ShazMoghaddam/bezel-charts@1/dist/bezel-charts.min.js\"></script>\n\n<bezel-bars heading=\"Sales\" values=\"4,9,6\" labels=\"Jan,Feb,Mar\"></bezel-bars>",
+      "caption": "One tag. One finished, labelled, animated chart.",
+      "narration": "Every chart is a single HTML tag. Add one line to any page, and you get a finished, animated chart."
+    },
+    {
+      "id": "light",
+      "type": "stat",
+      "value": "26 kB",
+      "label": "for all sixteen charts, gzipped",
+      "context": "No dependencies. No build step.",
+      "narration": "All sixteen come to about twenty-six kilobytes, with no dependencies."
+    },
+    {
+      "id": "growth",
+      "type": "chart",
+      "chart": {
+        "type": "bars",
+        "heading": "Chart types, release by release",
+        "values": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          16
+        ],
+        "labels": [
+          "v1.0",
+          "v1.4",
+          "v1.5",
+          "v1.6",
+          "v1.7",
+          "v1.9"
+        ],
+        "options": {
+          "color": "#4C8DFF,#FF5D73,#2EC4B6,#FFB020,#9B5DE5,#7BD389",
+          "show-values": true
+        }
+      },
+      "narration": "Version one launched with ten charts. Two weeks later, there were sixteen."
+    },
+    {
+      "id": "releases",
+      "type": "chart",
+      "chart": {
+        "type": "line",
+        "heading": "Bezel Charts releases so far",
+        "values": [
+          1,
+          2,
+          3,
+          4,
+          10,
+          14,
+          15,
+          16
+        ],
+        "labels": [
+          "26 Oct",
+          "28 Oct",
+          "2 Nov",
+          "7 Nov",
+          "9 Nov",
+          "10 Nov",
+          "11 Nov",
+          "16 Nov"
+        ],
+        "options": {
+          "color": "#FF5D73",
+          "markers": true,
+          "notes": "26 Oct:v1.0;16 Nov:v1.11",
+          "zero": true
+        }
+      },
+      "narration": "Track change over time, like sixteen releases in three weeks."
+    },
+    {
+      "id": "mountains",
+      "type": "chart",
+      "chart": {
+        "type": "bars",
+        "heading": "Highest mountains",
+        "suffix": " m",
+        "values": [
+          8849,
+          8611,
+          8586,
+          8516,
+          8485
+        ],
+        "labels": [
+          "Everest",
+          "K2",
+          "Kangchenjunga",
+          "Lhotse",
+          "Makalu"
+        ],
+        "options": {
+          "horizontal": true,
+          "color": "#4C8DFF,#FF5D73,#2EC4B6,#FFB020,#9B5DE5",
+          "show-values": true
+        }
+      },
+      "narration": "Rank anything, like the world's highest mountains."
+    },
+    {
+      "id": "reefs",
+      "type": "chart",
+      "chart": {
+        "type": "donut",
+        "heading": "Countries with the most coral reef",
+        "suffix": " km²",
+        "values": [
+          51020,
+          48960,
+          25060,
+          14280,
+          13840
+        ],
+        "labels": [
+          "Indonesia",
+          "Australia",
+          "Philippines",
+          "France",
+          "Papua New Guinea"
+        ],
+        "options": {
+          "color": "#2EC4B6,#4C8DFF,#9B5DE5,#FFB020,#FF5D73",
+          "center-label": "km² of reef",
+          "compact": true
+        }
+      },
+      "narration": "Show how a total splits, like the countries with the most coral reef."
+    },
+    {
+      "id": "share",
+      "type": "chart",
+      "chart": {
+        "type": "gauge",
+        "heading": "Indonesia's share of the world's coral reefs",
+        "suffix": "%",
+        "values": [
+          18
+        ],
+        "labels": [
+          "About 18% of all reefs"
+        ],
+        "options": {
+          "color": "#2EC4B6"
+        }
+      },
+      "narration": "Or one reading at a glance, like Indonesia's share of the world's reefs."
+    },
+    {
+      "id": "style",
+      "type": "points",
+      "heading": "Yours to style",
+      "points": [
+        "Any colour, one per bar or series",
+        "Light and dark themes that follow the viewer",
+        "Rounder or squarer corners, framed or not",
+        "Numbers and dates in any language",
+        "Works with a keyboard and a screen reader"
+      ],
+      "narration": "Style it your way: any colour, light or dark, numbers in any language, from English and French to Persian and Japanese. And it works with a keyboard and a screen reader."
+    },
+    {
+      "id": "where",
+      "type": "points",
+      "heading": "Where to get it",
+      "points": [
+        "npm install bezel-charts",
+        "pip install bezel-charts",
+        "The Studio: build one with no code",
+        "Open source on GitHub"
+      ],
+      "narration": "Get it on npm, or on PyPI for Python. Or build one in the Studio, no code needed."
+    },
+    {
+      "id": "try",
+      "type": "outro",
+      "title": "Try Bezel Charts",
+      "narration": "Try it, share what you build, and open an issue if anything isn't quite right.",
+      "links": [
+        "npm install bezel-charts",
+        "pip install bezel-charts",
+        "github.com/ShazMoghaddam/bezel-charts"
+      ]
+    },
+    {
+      "id": "signature",
+      "type": "outro",
+      "title": "Designed and developed by Shaz Moghaddam · London",
+      "narration": "Designed and developed by Shaz Moghaddam.",
+      "links": [
+        "shazmoghaddam.github.io",
+        "linkedin.com/in/shazmoghaddam"
+      ]
+    }
+  ]
+}

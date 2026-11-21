@@ -1159,6 +1159,17 @@
                 "type": "string",
                 "minLength": 1,
                 "maxLength": 80
+              },
+              "links": {
+                "description": "Up to 4 links or commands, shown as slightly tilted stickers, e.g. [\"npm install my-lib\", \"github.com/me/my-lib\"].",
+                "minItems": 1,
+                "maxItems": 4,
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 60
+                }
               }
             },
             "required": [

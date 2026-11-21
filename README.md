@@ -112,7 +112,7 @@ A film is a few settings plus a list of scenes. Only `spec`, `title`, `style` an
 }
 ```
 
-Each scene lasts as long as its narration, so the voice and visuals always line up. See the full [example film](examples/northside-coffee/film.json).
+Each scene lasts as long as its narration, so the voice and visuals always line up. See the full [example film](examples/northside-coffee/film.json), a [product story](examples/northside-story/film.json) with a timeline, map and roadmap, and the [Bezel Charts film](examples/bezel-charts/film.json), a real project told in about a minute.
 
 #### Scene types
 
@@ -127,7 +127,7 @@ Each scene lasts as long as its narration, so the voice and visuals always line 
 | `map` | Places, countries and routes on a world map | `heading`, `focus`, `pins`, `countries`, `arcs`, `legend` |
 | `code` | A short code snippet | `language`, `code`, `highlight` |
 | `quote` | A quote or testimonial | `quote`, `attribution` |
-| `outro` | Closing card and call to action | `title`, `url`, `cta` |
+| `outro` | Closing card and call to action | `title`, `url`, `cta`, `links` (up to 4 stickers) |
 | `custom` | Your own canvas scene | `module`, `props` |
 
 Every scene can also take `narration`, `duration`, `transition`, `motion` and `id`.

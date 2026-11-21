@@ -5,6 +5,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+### Added
+
+- `outro` scenes take `links`: up to four links or commands shown as slightly tilted yellow stickers, popping in one after another, e.g. an npm and a PyPI install command side by side.
+- A third example film, `examples/bezel-charts`: Bezel Charts told in under a minute and a half for LinkedIn, from why it was made to where to get it, showing off six chart types. Its figures come from the Bezel Charts README and changelog, and from the researched data in World in Charts.
+
+### Fixed
+
+- Headings revealed word by word now keep words joined by a non-breaking space together, so a name such as "Shaz Moghaddam · London" can't be split across lines.
+
 ### Security
 
 - The repository now uses sharp 0.35.5, which fixes high-severity issues in the image libraries it bundles (libvips, libheif and librsvg). sharp comes in through the voice engine (kokoro-js and Hugging Face transformers), which still ask for 0.34, so an npm override moves it up. Bezel Film never gives sharp an image to open, so installed copies were not exposed.

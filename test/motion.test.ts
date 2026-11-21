@@ -104,6 +104,22 @@ describe("motion in the film", async () => {
     expect(calm).toContain('class="rise display"');
   });
 
+  it("keeps words joined by a non-breaking space together", () => {
+    const html = page(film([{ type: "title", title: "By Shaz Moghaddam\u00a0·\u00a0London", duration: 3 }]));
+    expect(html.match(/class="word"/g)).toHaveLength(3);
+    expect(html).toContain(">Moghaddam\u00a0·\u00a0London</span>");
+  });
+
+  it("shows outro links as tilted stickers that pop in one by one", () => {
+    const html = page(film([{ type: "outro", title: "Try it", links: ["npm install x", "pip install <x>"], duration: 4 }]));
+    const stickers = [...html.matchAll(/class="sticker pop" style="--d:(\d+)ms;--tilt:(-?[\d.]+)deg"/g)];
+    expect(stickers).toHaveLength(2);
+    expect(Number(stickers[1]![1])).toBeGreaterThan(Number(stickers[0]![1]));
+    expect(stickers[0]![2]).not.toBe(stickers[1]![2]);
+    expect(html).toContain("pip install &lt;x&gt;");
+    expect(validateFilm({ spec: 1, title: "T", style: "data-story", scenes: [{ type: "outro", title: "T", links: ["a", "b", "c", "d", "e"] }] }).ok).toBe(false);
+  });
+
   it("escapes every word", () => {
     const html = page(film([{ type: "title", title: "<b>Bold</b> & brave", duration: 3 }]));
     expect(html).toContain("&lt;b&gt;Bold&lt;/b&gt;");
