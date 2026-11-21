@@ -5,6 +5,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.5.2] - 2026-11-21
+
+Stickers for closing cards, and a third example film.
+
 ### Added
 
 - `outro` scenes take `links`: up to four links or commands shown as slightly tilted yellow stickers, popping in one after another, e.g. an npm and a PyPI install command side by side.
@@ -194,7 +198,8 @@ The first release: describe a film in one JSON file, and Bezel Film renders it t
 
 - CI checks on every push and pull request, including a render smoke test, plus Dependabot.
 
-[Unreleased]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.5.1...HEAD
+[Unreleased]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.5.2...HEAD
+[0.5.2]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.5.1...v0.5.2
 [0.5.1]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.4.3...v0.5.0
 [0.4.3]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.4.2...v0.4.3
