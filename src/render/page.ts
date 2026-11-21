@@ -29,11 +29,12 @@ export function motionLevel(film: Film, scene: Scene, style: Style): MotionLevel
 
 /**
  * Big text that appears word by word in the livelier motion levels. The words keep
- * the spaces between them, so the heading wraps and balances as before.
+ * the spaces between them, so the heading wraps and balances as before. A
+ * non-breaking space joins words into one, so "Moghaddam\u00a0·\u00a0London" never splits.
  */
 function words(text: string, tag: string, classes: string, startMs: number, feel: MotionFeel): string {
   if (!feel.words) return `<${tag} class="rise ${classes}" ${delay(startMs)}>${escapeHtml(text)}</${tag}>`;
-  const parts = text.split(/\s+/).filter(Boolean);
+  const parts = text.split(/[ \t\r\n]+/).filter(Boolean);
   const gap = wordStagger(feel, parts.length);
   const spans = parts.map((word, i) => `<span class="word" ${delay(startMs + i * gap)}>${escapeHtml(word)}</span>`).join(" ");
   return `<${tag} class="${classes}">${spans}</${tag}>`;
@@ -131,13 +132,26 @@ function sceneBody(timed: TimedScene, style: Style, feel: MotionFeel, cue: Cue =
       return `<div class="center">
         ${words(scene.title, "h1", "display", 0, feel)}
         ${scene.cta ? `<div class="pop" ${sound(stagger * 4, "pop", { pitch: 2 })}><span class="cta">${escapeHtml(scene.cta)}</span></div>` : ""}
-        ${scene.url ? `<p class="rise url" ${sound(stagger * 6, "click", { pitch: 5, gain: 0.8 })}>${escapeHtml(scene.url.replace(/^https?:\/\//, ""))}</p>` : ""}
+        ${
+          scene.links
+            ? `<div class="stickers">${scene.links
+                .map((link, i) => {
+                  const at = stagger * (scene.cta ? 5 : 4) + i * stagger * 1.4;
+                  return `<span class="sticker pop" ${sound(at, "pop", { pitch: 2 + i * 2 }, `--tilt:${STICKER_TILTS[i % STICKER_TILTS.length]}deg`)}>${escapeHtml(link)}</span>`;
+                })
+                .join("")}</div>`
+            : ""
+        }
+        ${scene.url ? `<p class="rise url" ${sound(stagger * (scene.links ? 5 + scene.links.length * 1.4 : 6), "click", { pitch: 5, gain: 0.8 })}>${escapeHtml(scene.url.replace(/^https?:\/\//, ""))}</p>` : ""}
       </div>`;
 
     case "custom":
       throw new Error(`Custom scenes aren't supported by the renderer yet (scene ${timed.index + 1}).`);
   }
 }
+
+/** Each sticker leans a little, one way then the other, like tags stuck on by hand. */
+const STICKER_TILTS = [-3, 2.2, -1.6, 2.8];
 
 type Sound = (ms: number, name: SoundName, how?: Omit<SceneCue, "ms" | "sound">, extra?: string) => string;
 
@@ -279,6 +293,8 @@ function shapeCss(frame: Layout): string {
 .code pre{font-size:calc(var(--u)*3)}
 .cta{font-size:calc(var(--u)*3.8)}
 .url{font-size:calc(var(--u)*3.2)}
+.stickers{flex-direction:column}
+.sticker{font-size:calc(var(--u)*3.9)}
 .caption span{font-size:calc(var(--u)*3.4)}`;
 }
 
@@ -405,6 +421,10 @@ ${motionCss(style, levels)}
 .quote{font-family:var(--heading);font-weight:600;font-size:calc(var(--u)*5.6);line-height:1.2;letter-spacing:-.015em;text-wrap:balance}
 .cta{display:inline-block;padding:calc(var(--u)*1.6) calc(var(--u)*4);border-radius:99px;font-weight:600;font-size:calc(var(--u)*3);color:var(--bg);background:var(--accent)}
 .url{white-space:nowrap;max-width:100%;font-family:var(--mono);font-size:calc(var(--u)*2.6);color:var(--muted)}
+.stickers{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:calc(var(--u)*1.8) calc(var(--u)*2.4);max-width:100%}
+.sticker{display:inline-block;rotate:var(--tilt,0deg);white-space:nowrap;font-family:var(--mono);font-weight:600;font-size:calc(var(--u)*3.2);letter-spacing:.05em;
+  padding:calc(var(--u)*.9) calc(var(--u)*1.7);border-radius:calc(var(--u)*.35);color:#15161A;background:var(--sticker,#FFE15A);
+  box-shadow:0 calc(var(--u)*.5) calc(var(--u)*1.6) rgb(0 0 0 / .35)}
 .caption{position:absolute;left:var(--cl);right:var(--cr);bottom:var(--cb);margin:0 auto;width:fit-content;max-width:var(--cw);text-align:center;opacity:0}
 .caption span{display:inline;padding:calc(var(--u)*.5) calc(var(--u)*1.6);border-radius:calc(var(--u)*1);font-weight:600;font-size:calc(var(--u)*2.8);line-height:1.6;
   background:rgb(0 0 0/.62);box-decoration-break:clone;-webkit-box-decoration-break:clone}

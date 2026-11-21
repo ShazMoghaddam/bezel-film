@@ -259,12 +259,21 @@ const quoteScene = z.object({
   attribution: text(80).optional(),
 });
 
+/** Stickers on an outro: enough for a few ways in, never a wall of links. */
+export const MAX_LINKS = 4;
+
 const outroScene = z.object({
   ...sceneBase,
   type: z.literal("outro"),
   title: text(120),
   url: z.string().url().optional(),
   cta: text(80).optional().describe("Call to action, e.g. \"Star it on GitHub\"."),
+  links: z
+    .array(text(60))
+    .min(1)
+    .max(MAX_LINKS)
+    .optional()
+    .describe(`Up to ${MAX_LINKS} links or commands, shown as slightly tilted stickers, e.g. ["npm install my-lib", "github.com/me/my-lib"].`),
 });
 
 const customScene = z.object({
