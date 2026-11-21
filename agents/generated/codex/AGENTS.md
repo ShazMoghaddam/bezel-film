@@ -80,7 +80,7 @@ Pick a mood that suits the story if the user has no preference: `calm` for most 
 | `map` | Places and routes on a map | `pins`, `countries`, `arcs`, `focus` |
 | `code` | A short code snippet | `language`, `code`, `highlight` |
 | `quote` | A quote or testimonial | `quote`, `attribution` |
-| `outro` | Closing card and call to action | `title`, `url`, `cta` |
+| `outro` | Closing card and call to action | `title`, `url`, `cta`, `links` (up to 4 stickers) |
 | `custom` | Your own canvas scene (advanced) | `module`, `props` |
 
 Every scene can also have `id`, `narration`, `duration` (seconds), `transition` (`cut`, `fade`, `slide`, `wipe`) and `motion`. Each needs `narration` or `duration`.
