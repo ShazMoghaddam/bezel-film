@@ -3,6 +3,8 @@ import { existsSync } from "node:fs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { parseArgs } from "node:util";
 import { basename, dirname, extname, join, relative, resolve } from "node:path";
+import { FONT_PAIRINGS } from "./spec/fonts.js";
+import { STYLE_INFO } from "./spec/styles.js";
 import { lengthNotes, PLATFORMS, PRESETS, readPresetList, type PresetName } from "./spec/formats.js";
 import { estimateFilmSeconds, validateFilm } from "./spec/validate.js";
 
@@ -15,6 +17,7 @@ Usage
   bezel-film validate <film.json>   Check a film file and show a summary
   bezel-film render <film.json>     Render the film to an MP4
   bezel-film formats                List the platform presets, e.g. tiktok, linkedin-mobile
+  bezel-film styles                 List the styles and font pairings
   bezel-film voices                 Hear a short line in each recommended voice
   bezel-film setup                  Do the one-time downloads now (browser, voice and music)
   bezel-film schema                 Print the film file's JSON Schema
@@ -71,7 +74,7 @@ async function validate(path: string | undefined): Promise<number> {
   const { film } = result;
   console.log(`✓ ${path} is a valid film`);
   const preset = film.format.preset ? ` · for ${PLATFORMS[film.format.preset].label}` : "";
-  console.log(`  "${film.title}" · ${film.style} · ${film.format.aspect} ${film.format.resolution} ${film.format.fps}fps${preset}`);
+  console.log(`  "${film.title}" · ${film.style}${film.font ? ` · ${film.font} fonts` : ""} · ${film.format.aspect} ${film.format.resolution} ${film.format.fps}fps${preset}`);
   const scenes = film.scenes.length;
   const seconds = estimateFilmSeconds(film);
   console.log(`  ${scenes} scene${scenes === 1 ? "" : "s"} · about ${formatSeconds(seconds)}`);
@@ -122,6 +125,23 @@ function formats(): number {
   for (const name of PRESETS) {
     const { label, aspect, why } = PLATFORMS[name];
     console.log(`  ${name.padEnd(width)}  ${aspect.padEnd(4)}  ${label}: ${why}`);
+  }
+  return 0;
+}
+
+function styles(): number {
+  console.log("Styles. Put one in your film file (\"style\": \"data-story\").\n");
+  const styleWidth = Math.max(...STYLE_INFO.map((style) => style.name.length));
+  for (const { name, label, description, theme, font } of STYLE_INFO) {
+    console.log(`  ${name.padEnd(styleWidth)}  ${label}: ${description}`);
+    console.log(`  ${"".padEnd(styleWidth)}  ${theme}, ${font} fonts`);
+  }
+  console.log("\nFont pairings. Each style has a default; choose another with \"font\": \"editorial\".\n");
+  const pairings = Object.values(FONT_PAIRINGS);
+  const fontWidth = Math.max(...pairings.map((pairing) => pairing.name.length));
+  for (const { name, description, heading, body } of pairings) {
+    const fonts = heading.family === body.family ? heading.family : `${heading.family} and ${body.family}`;
+    console.log(`  ${name.padEnd(fontWidth)}  ${fonts}: ${description}`);
   }
   return 0;
 }
@@ -296,6 +316,8 @@ async function main(argv: string[]): Promise<number> {
       });
     case "formats":
       return formats();
+    case "styles":
+      return styles();
     case "init": {
       const { init } = await import("./init.js");
       const { AGENT_IDS } = await import("./agents.js");

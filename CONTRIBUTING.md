@@ -23,13 +23,14 @@ To render the example film: `npx tsx src/cli.ts render examples/northside-coffee
 
 | Folder | What lives there |
 | --- | --- |
-| `src/spec/` | The film spec (`schema.ts`), the platform presets and their safe zones (`formats.ts`), and validation. `schema.ts` is the source of truth for the film file. |
+| `src/spec/` | The film spec (`schema.ts`), the platform presets and their safe zones (`formats.ts`), the font pairings (`fonts.ts`), and validation. `schema.ts` is the source of truth for the film file. `styles.ts` is built from `styles/` by `npm run styles`; don't edit it by hand. |
 | `src/render/` | The renderer: voice (`voice.ts`), timing (`timeline.ts`), the scene page and its layouts (`page.ts`, `runtime.ts`, `layout.ts`), map scenes (`map.ts`), music (`music.ts`, `colours.ts`, `nature.ts`, `instruments.ts`, `soundtrack.ts`), frame capture and ffmpeg (`index.ts`). |
 | `src/geo.ts` | Place names and the world map: finds cities, countries and regions, and draws the world. |
 | `src/repo.ts`, `src/draft.ts` | `bezel-film draft`: gathering facts about a project, and turning them into a first film. |
 | `src/cli.ts` | The `bezel-film` command. |
 | `src/init.ts`, `src/agents.ts` | `bezel-film init`, and the list of coding agents and where their instructions go. |
-| `styles/` | One folder per style: colours, fonts and motion. |
+| `styles/` | One folder per style: its settings (`style.json`) and look (`style.css`). See [styles/README.md](styles/README.md) to make one. |
+| `fonts/` | The fonts films use. Built by `npm run fonts` from the Fontsource packages; don't edit by hand. |
 | `agents/instructions.md` | The single source for every agent's instructions. |
 | `agents/generated/` | Built from the source. Don't edit these by hand. |
 | `schema/` | JSON Schema built from `src/spec/schema.ts`. Don't edit by hand. |

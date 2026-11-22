@@ -49,9 +49,9 @@ It installs Bezel Film, adds these instructions and downloads about 230 MB once 
 
 Only `spec`, `title`, `style` and `scenes` are required. Everything else has a sensible default.
 
-<!-- compact: Answers to settings: male voice `"voice": { "gender": "male" }`, no voice `"voice": { "engine": "none" }`, no captions `"captions": false`, a mood `"music": { "mood": "upbeat" }`, no music `"music": { "source": "none" }`, no sound effects `"sfx": { "volume": 0 }`. -->
+<!-- compact: Answers to settings: male voice `"voice": { "gender": "male" }`, no voice `"voice": { "engine": "none" }`, no captions `"captions": false`, a mood `"music": { "mood": "upbeat" }`, no music `"music": { "source": "none" }`, no sound effects `"sfx": { "volume": 0 }`, other fonts `"font": "editorial"`. -->
 <!-- full -->
-Map the user's answers to settings: a male voice is `"voice": { "gender": "male" }`, no voiceover is `"voice": { "engine": "none" }`, no captions is `"captions": false`, a music mood is `"music": { "mood": "upbeat" }`, no music is `"music": { "source": "none" }`, and no sound effects is `"sfx": { "volume": 0 }`.
+Map the user's answers to settings: a male voice is `"voice": { "gender": "male" }`, no voiceover is `"voice": { "engine": "none" }`, no captions is `"captions": false`, a music mood is `"music": { "mood": "upbeat" }`, no music is `"music": { "source": "none" }`, no sound effects is `"sfx": { "volume": 0 }`, and other fonts are a pairing such as `"font": "editorial"` (`npx bezel-film styles` lists them).
 <!-- /full -->
 
 ## Platforms
@@ -105,5 +105,5 @@ Every scene can also have `id`, `narration`, `duration` (seconds), `transition` 
 <!-- full -->
 - **Maps:** name places as people say them (`"Nairobi"`, `"Paris, France"`, `"UK"`), or give `{ "lat", "lon", "name" }`. Run `validate` to check every name. Maps work at country and region scale, so don't pin several places in one city.
 <!-- /full -->
-- **Use the style's defaults** for colour, type and motion. Set `motion` (`calm`, `lively`, `punchy`) only if asked.
-- **Only the `data-story` style renders today.** `product-launch`, `whiteboard` and `custom` scenes are coming, so don't use them yet.
+- **Use the style's defaults** for colour, fonts and motion. Set `font` or `motion` (`calm`, `lively`, `punchy`) only if asked.
+- **Styles and fonts:** `npx bezel-film styles` lists them. Pick the style that suits the story. `custom` scenes are coming, so don't use them yet.

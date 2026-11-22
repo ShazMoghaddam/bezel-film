@@ -18,9 +18,22 @@
     "style": {
       "type": "string",
       "enum": [
-        "data-story",
-        "product-launch",
-        "whiteboard"
+        "data-story"
+      ],
+      "description": "The film's look. data-story: Clean, confident and chart-led. Big numbers, bold colour per series, springy motion."
+    },
+    "font": {
+      "description": "The film's fonts, as a pairing chosen to suit each other. grotesk: Modern and confident. Tech, data and product stories. editorial: A magazine serif. Considered, classic and calm. condensed: Tall and narrow, like a news headline. Fits long titles. bold: Heavy, poster-like headings with a clean body. technical: Precise and engineered. Plans, systems and specs. friendly: Soft and rounded. Warm explainers for everyone. handwritten: Written by hand, like a whiteboard or a notebook. mono: Typewriter and terminal. Best with short headings. Defaults to the style's choice.",
+      "type": "string",
+      "enum": [
+        "grotesk",
+        "editorial",
+        "condensed",
+        "bold",
+        "technical",
+        "friendly",
+        "handwritten",
+        "mono"
       ]
     },
     "format": {
