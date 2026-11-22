@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { validateFilm, type Film } from "../src/index.js";
 import { encodeWav, mixToWav } from "../src/render/audio.js";
-import { buildPage, escapeHtml } from "../src/render/page.js";
+import { buildPage, escapeHtml, runtimeData, sceneCues } from "../src/render/page.js";
 import { layoutFor } from "../src/render/layout.js";
 import { loadStyle } from "../src/render/style.js";
 import {
@@ -123,9 +123,45 @@ describe("buildPage", async () => {
     for (const type of ["title", "stat", "chart", "points", "code", "quote", "outro"]) expect(html).toContain(`scene-${type}`);
   });
 
-  it("says clearly that custom scenes aren't supported yet", () => {
-    const f = film([{ type: "custom", module: "./my-scene.js", duration: 2 }]);
-    expect(() => buildPage(f, style, buildTimeline(f), layoutFor(f))).toThrow(/Custom scenes aren't supported/);
+  it("gives a custom scene a full-frame layer, the kit and its own file, before the runtime", () => {
+    const f = film([
+      { type: "title", title: "T", duration: 2 },
+      { type: "custom", file: "scenes/steps.js", props: { steps: ["a"] }, narration: "One. Two." },
+    ]);
+    const html = buildPage(f, style, buildTimeline(f), layoutFor(f));
+    expect(html).toContain('<div class="custom-root" data-custom="1"></div>');
+    const kit = html.indexOf('<script src="/kit.js">');
+    const scene = html.indexOf('<script src="/scenes/1.js" data-scene="1">');
+    expect(kit).toBeGreaterThan(-1);
+    expect(scene).toBeGreaterThan(kit);
+    expect(html.indexOf('<script src="/runtime.js">')).toBeGreaterThan(scene);
+  });
+
+  it("tells a custom scene its narration's timing from its own start, and its props", () => {
+    const f = film([
+      { type: "title", title: "T", duration: 2 },
+      { type: "custom", file: "scenes/steps.js", props: { steps: ["a"] }, narration: "One. Two." },
+    ]);
+    const timeline = buildTimeline(f);
+    const data = runtimeData(f, style, timeline, layoutFor(f));
+    expect(data.customs).toHaveLength(1);
+    const custom = data.customs[0]!;
+    expect(custom).toMatchObject({ scene: 1, file: "scenes/steps.js", props: { steps: ["a"] } });
+    expect(custom.lines.map((l) => l.text)).toEqual(["One.", "Two."]);
+    expect(custom.lines[0]!.start).toBeGreaterThanOrEqual(0);
+    expect(custom.lines[0]!.start).toBeLessThan(1);
+    expect(custom.duration).toBeCloseTo(timeline.scenes[1]!.end - timeline.scenes[1]!.start);
+  });
+
+  it("leaves pages without custom scenes alone", () => {
+    const f = film([{ type: "title", title: "T", duration: 2 }]);
+    expect(buildPage(f, style, buildTimeline(f), layoutFor(f))).not.toContain("/kit.js");
+  });
+
+  it("plays a custom scene's sounds when it says", () => {
+    const f = film([{ type: "custom", file: "a.js", duration: 3, sounds: [{ at: 1.5, sound: "pop", gain: 0.8 }, { at: 0.2, sound: "tap" }] }]);
+    const cues = sceneCues(f, buildTimeline(f).scenes[0]!, style);
+    expect(cues).toEqual([{ ms: 200, sound: "tap" }, { ms: 1500, sound: "pop", gain: 0.8 }].map((c) => expect.objectContaining(c)));
   });
 });
 
@@ -237,5 +273,17 @@ describe("sampleVoices", async () => {
 
   it("only lists voices Kokoro grades C or better", () => {
     expect(VOICE_SHORTLIST.every((voice) => /^[ABC]/.test(voice.grade))).toBe(true);
+  });
+});
+
+describe("custom scene files", () => {
+  const check = (file: string) => validateFilm({ spec: 1, title: "T", style: "data-story", scenes: [{ type: "custom", file, duration: 2 }] }).ok;
+
+  it("takes a .js file in the film's folder", () => {
+    for (const file of ["scenes/intro.js", "intro.js", "scenes/part-2/map_view.js"]) expect(check(file), file).toBe(true);
+  });
+
+  it("refuses paths that leave the folder, absolute paths and other file types", () => {
+    for (const file of ["../intro.js", "scenes/../../x.js", "/home/me/x.js", "C:x.js", "C:\\x.js", "scenes/intro.ts", "scenes/my scene.js"]) expect(check(file), file).toBe(false);
   });
 });

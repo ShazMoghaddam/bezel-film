@@ -41,6 +41,8 @@ export const MUSIC_TRACKS = [
   "romantic-inspiration",
 ] as const;
 export const NATURE_SOUNDS = ["rain", "waves", "stream", "wind"] as const;
+/** The recorded sound effects (see sounds/). */
+export const SOUND_EFFECTS = ["whoosh", "sweep", "swish", "tap", "pop", "click", "tick", "ding"] as const;
 
 /** Chart types that map one to one onto Bezel Charts' `<bezel-chart type="...">`. */
 export const CHART_TYPES = [
@@ -279,11 +281,33 @@ const outroScene = z.object({
     .describe(`Up to ${MAX_LINKS} links or commands, shown as slightly tilted stickers, e.g. ["npm install my-lib", "github.com/me/my-lib"].`),
 });
 
+/** A scene file's path: relative to the film file, inside its folder, ending in .js. */
+const sceneFile = z
+  .string()
+  .max(200)
+  .regex(/^(?!\/)(?![a-zA-Z]:)(?!.*(^|[\\/])\.\.([\\/]|$))[\w\-./\\]+\.js$/, "use a .js file in the film's folder, e.g. scenes/intro.js")
+  .describe("Your scene's code, relative to the film file, e.g. scenes/intro.js. Run `npx bezel-film guide scenes` to see how to write one.");
+
 const customScene = z.object({
   ...sceneBase,
   type: z.literal("custom"),
-  module: text(200).describe("Path to your own scene module, relative to the film file."),
-  props: z.record(z.string(), z.unknown()).optional(),
+  file: sceneFile,
+  props: z
+    .record(z.string(), z.unknown())
+    .optional()
+    .describe("Anything your scene's code needs, such as labels or numbers. It reads them as kit.props."),
+  sounds: z
+    .array(
+      z.object({
+        at: z.number().min(0).max(120).describe("Seconds into the scene."),
+        sound: z.enum(SOUND_EFFECTS),
+        gain: z.number().min(0).max(2).optional().describe("Relative loudness, 1 by default."),
+        pitch: z.number().min(-12).max(12).optional().describe("Semitones above or below the sound's usual pitch."),
+      }),
+    )
+    .max(40)
+    .optional()
+    .describe("Sound effects to land with your scene's movement: whoosh, sweep, swish, tap, pop, click, tick, ding."),
 });
 
 export const sceneSchema = z.discriminatedUnion("type", [

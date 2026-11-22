@@ -7,7 +7,7 @@
  * so a tap always lands on the frame its element does.
  */
 import { fileURLToPath } from "node:url";
-import type { Film } from "../spec/schema.js";
+import { SOUND_EFFECTS, type Film } from "../spec/schema.js";
 import { decodeAudio } from "./ffmpeg.js";
 import { COUNT_PATTERN, MOTION_FEELS, countFor } from "./motion.js";
 import { MUSIC_SAMPLE_RATE } from "./music.js";
@@ -25,7 +25,7 @@ import type { Line, Timeline } from "./timeline.js";
  * tick: a tiny click, many of them, while a number counts up.
  * ding: a small chime as a number lands.
  */
-export const SOUNDS = ["whoosh", "sweep", "swish", "tap", "pop", "click", "tick", "ding"] as const;
+export const SOUNDS = SOUND_EFFECTS;
 export type SoundName = (typeof SOUNDS)[number];
 
 /** A sound an entrance makes, `ms` into its scene. */

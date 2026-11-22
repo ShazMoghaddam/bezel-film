@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { existsSync } from "node:fs";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import { parseArgs } from "node:util";
 import { basename, dirname, extname, join, relative, resolve } from "node:path";
 import { FONT_PAIRINGS } from "./spec/fonts.js";
@@ -15,20 +15,26 @@ Usage
   bezel-film draft <source>         Draft a film about a project from its folder, README
                                     or GitHub repository (e.g. owner/repo)
   bezel-film validate <film.json>   Check a film file and show a summary
+  bezel-film preview <film.json>    Stills of every scene and checks on custom scenes,
+                                    in seconds. Look before you render
   bezel-film render <film.json>     Render the film to an MP4
   bezel-film formats                List the platform presets, e.g. tiktok, linkedin-mobile
   bezel-film styles                 List the styles and font pairings
+  bezel-film guide [name]           Read a guide for agents: director, scenes
   bezel-film voices                 Hear a short line in each recommended voice
   bezel-film setup                  Do the one-time downloads now (browser, voice and music)
   bezel-film schema                 Print the film file's JSON Schema
 
 Options
   -o, --output <path>   Where render saves the video (default: next to the film file),
-                        where draft saves the film (default: film.json), or where
-                        voices saves its samples (default: voice-samples)
+                        where draft saves the film (default: film.json), where
+                        preview saves its stills (default: <film>-preview next to
+                        the film file), or where voices saves its samples
+                        (default: voice-samples)
   --for <list>          render: make a version for each platform, e.g. tiktok,reels,x
                         (or "all"). -o is then a folder.
                         draft: the platform the film is for, e.g. tiktok
+                        preview: the platform to see the film on, e.g. tiktok
   --show-safe-zones     render: shade the parts each platform's app covers
   --quality high        render: true motion blur, for final versions. About five
                         times slower (default: standard)
@@ -72,6 +78,13 @@ async function validate(path: string | undefined): Promise<number> {
     return 1;
   }
   const { film } = result;
+  // Custom scenes' files live next to the film file, so check they're there.
+  const missing = film.scenes.flatMap((scene, i) => (scene.type === "custom" && !existsSync(join(dirname(path!), scene.file)) ? [`scenes.${i}.file: can't find ${scene.file} next to the film file`] : []));
+  if (missing.length) {
+    console.error(`✗ ${path} has ${missing.length} problem${missing.length === 1 ? "" : "s"}:`);
+    for (const error of missing) console.error(`  • ${error}`);
+    return 1;
+  }
   console.log(`✓ ${path} is a valid film`);
   const preset = film.format.preset ? ` · for ${PLATFORMS[film.format.preset].label}` : "";
   console.log(`  "${film.title}" · ${film.style}${film.font ? ` · ${film.font} fonts` : ""} · ${film.format.aspect} ${film.format.resolution} ${film.format.fps}fps${preset}`);
@@ -144,6 +157,57 @@ function styles(): number {
     console.log(`  ${name.padEnd(fontWidth)}  ${fonts}: ${description}`);
   }
   return 0;
+}
+
+async function preview(path: string | undefined, output: string | undefined, preset: string | undefined): Promise<number> {
+  const result = validateFilm(await loadFilmFile(path));
+  if (!result.ok) {
+    console.error(`✗ ${path} has ${result.errors.length} problem${result.errors.length === 1 ? "" : "s"}. Run bezel-film validate ${path} to see them.`);
+    return 1;
+  }
+  const presets = preset ? parsePresets(preset) : [];
+  if (presets.length > 1) throw new UsageError("preview takes one platform at a time, e.g. --for tiktok");
+  const outDir = output ?? join(dirname(path!), `${basename(path!, extname(path!))}-preview`);
+  const { previewFilm } = await import("./render/preview.js");
+  const { describeProblems } = await import("./render/check.js");
+  const status = statusLine();
+  try {
+    const done = await previewFilm(result.film, { baseDir: dirname(path!), outDir, preset: presets[0], onProgress: status.update });
+    status.done();
+    console.log(`✓ ${done.stills.length} stills in ${relative(process.cwd(), outDir) || "."}`);
+    console.log(`  All of them on one page: ${relative(process.cwd(), done.sheet)}`);
+    console.log("  Timing is estimated from the narration's words, so moments can be a little off from the final film.");
+    if (done.problems.length) {
+      console.log(`\n${done.problems.length} thing${done.problems.length === 1 ? "" : "s"} to fix:`);
+      for (const line of describeProblems(done.problems)) console.log(`  ${line}`);
+    } else if (result.film.scenes.some((scene) => scene.type === "custom")) {
+      console.log("  Custom scenes passed their checks.");
+    }
+    return done.problems.some((p) => p.level === "error") ? 1 : 0;
+  } catch (error) {
+    status.done();
+    throw error;
+  }
+}
+
+/** The guides agents read: in guides/, or a style's own guide.md. */
+async function guide(name: string | undefined): Promise<number> {
+  const available = (await readdir(new URL("guides/", root))).filter((f) => f.endsWith(".md")).map((f) => f.replace(/\.md$/, ""));
+  if (!name) {
+    console.log("Guides for agents. Read one with bezel-film guide <name>.\n");
+    for (const g of available) console.log(`  ${g}`);
+    console.log("\nStyles with their own guide are listed by bezel-film styles.");
+    return 0;
+  }
+  if (!/^[a-z0-9-]+$/.test(name)) throw new UsageError(`There's no guide called "${name}".`);
+  const candidates = [new URL(`guides/${name}.md`, root), new URL(`styles/${name}/guide.md`, root)];
+  for (const url of candidates) {
+    if (existsSync(url)) {
+      process.stdout.write(await readFile(url, "utf8"));
+      return 0;
+    }
+  }
+  throw new UsageError(`There's no guide called "${name}". Guides: ${available.join(", ")}.`);
 }
 
 async function render(path: string | undefined, flags: RenderFlags): Promise<number> {
@@ -306,6 +370,10 @@ async function main(argv: string[]): Promise<number> {
       return draft(file, values.output ?? "film.json", values.for);
     case "validate":
       return validate(file);
+    case "preview":
+      return preview(file, values.output, values.for);
+    case "guide":
+      return guide(file);
     case "render":
       return render(file, {
         output: values.output,
@@ -353,7 +421,10 @@ main(process.argv.slice(2)).then(
     process.exitCode = code;
   },
   (error: unknown) => {
-    console.error(error instanceof Error ? error.message : String(error));
+    // Errors from inside the film page arrive wrapped with the browser's call stack,
+    // which only matters to us. Show the message itself.
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(message.replace(/^page\.evaluate: (Error: )?/, "").replace(/\n\s+at [\s\S]*$/, ""));
     process.exitCode = error instanceof UsageError ? 2 : 1;
   },
 );

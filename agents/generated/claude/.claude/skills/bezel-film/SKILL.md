@@ -8,7 +8,7 @@ description: Make short narrated films from a repo, README or dataset with Bezel
 
 # Making a film with Bezel Film
 
-Bezel Film turns a repo, README or dataset into a short narrated film. You describe the film in one JSON file, and Bezel Film renders it. You never write animation code yourself unless the user asks for a custom scene.
+Bezel Film turns a repo, README or dataset into a short narrated film. You describe the film in one JSON file, and Bezel Film renders it. Ready-made scenes cover most films. For anything they can't show, you write a `custom` scene in code.
 
 ## Setting up
 
@@ -31,7 +31,7 @@ It installs Bezel Film, adds these instructions and downloads about 230 MB once 
    - Music: calm, upbeat, dramatic, epic, ambient, reflective, or none? (default calm)
 2. **Gather the material.** Read the README, the code or the dataset. Only use facts and numbers from the material or the user. Never invent figures. For a code project, `npx bezel-film draft <folder or owner/repo> -o films/<short-name>/film.json` writes a first draft: rewrite it to tell the story, don't just tidy it.
 3. **Write the film file** at `films/<short-name>/film.json` (e.g. `films/sales-2026/film.json`), following the rules below. Start it with `"$schema": "../../node_modules/bezel-film/schema/film.schema.json"` so editors can check it. `films/welcome/film.json` is a working example.
-4. **Check it** with `npx bezel-film validate films/<short-name>/film.json` and fix every problem it reports.
+4. **Check it** with `npx bezel-film validate films/<short-name>/film.json`, then `npx bezel-film preview films/<short-name>/film.json`. Look at the contact sheet it saves and fix what you see and every problem it reports.
 5. **Render** with `npx bezel-film render films/<short-name>/film.json`. The video is saved next to the film file as `film.mp4`, with a cover image as `film-cover.png`. Tell the user where they are.
 
 ## The film file
@@ -86,7 +86,7 @@ Pick a mood that suits the story if the user has no preference: `calm` for most 
 | `code` | A short code snippet | `language`, `code`, `highlight` |
 | `quote` | A quote or testimonial | `quote`, `attribution` |
 | `outro` | Closing card and call to action | `title`, `url`, `cta`, `links` (up to 4 stickers) |
-| `custom` | Your own canvas scene (advanced) | `module`, `props` |
+| `custom` | Anything else, drawn by your own code | `file`, `props`, `sounds`. Read `npx bezel-film guide scenes` first |
 
 Every scene can also have `id`, `narration`, `duration` (seconds), `transition` (`cut`, `fade`, `slide`, `wipe`) and `motion`. Each needs `narration` or `duration`.
 
@@ -100,5 +100,6 @@ Every scene can also have `id`, `narration`, `duration` (seconds), `transition` 
 - **Six items at most** in points, timelines and roadmaps; split more across two scenes. On tall formats, four or five read best, with few `detail` lines.
 - **Maps:** name places as people say them (`"Nairobi"`, `"Paris, France"`, `"UK"`), or give `{ "lat", "lon", "name" }`. Run `validate` to check every name. Maps work at country and region scale, so don't pin several places in one city.
 - **Use the style's defaults** for colour, fonts and motion. Set `font` or `motion` (`calm`, `lively`, `punchy`) only if asked.
-- **Styles and fonts:** `npx bezel-film styles` lists them. Pick the style that suits the story. `custom` scenes are coming, so don't use them yet.
+- **Styles and fonts:** `npx bezel-film styles` lists them. Pick the style that suits the story.
+- **For a film that has to be great, or any custom scene,** read `npx bezel-film guide director` first and follow it.
 <!-- bezel-film:end -->

@@ -1,7 +1,8 @@
-import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, readFile, realpath, rm, stat, writeFile } from "node:fs/promises";
 import { createRequire } from "node:module";
+import { Script } from "node:vm";
 import { availableParallelism, tmpdir } from "node:os";
-import { dirname, join } from "node:path";
+import { dirname, extname, join, relative, resolve, sep } from "node:path";
 import { lengthNotes, PLATFORMS, type Platform, type PresetName } from "../spec/formats.js";
 import type { Film } from "../spec/schema.js";
 import { clipSeconds, encodeStereoWav, mixToWav } from "./audio.js";
@@ -14,6 +15,8 @@ import { findFfmpeg, startEncoder } from "./ffmpeg.js";
 import { drawScale, layoutFor, videoSize } from "./layout.js";
 import { buildPage, type PageOptions } from "./page.js";
 import { RUNTIME_JS } from "./runtime.js";
+import { KIT_JS } from "./kit.js";
+import { checkCustomScenes, describeProblems } from "./check.js";
 import { fontAssets, pairingFor } from "./fonts.js";
 import { loadStyle, type Style } from "./style.js";
 import { buildTimeline, overlongNarration, splitSentences, type Timeline } from "./timeline.js";
@@ -108,7 +111,10 @@ function assetFiles(film: Film, style: Style): Record<string, string> {
   };
 }
 
-const CONTENT_TYPES: Record<string, string> = { ".woff2": "font/woff2", ".js": "text/javascript", ".html": "text/html" };
+const CONTENT_TYPES: Record<string, string> = {
+  ".woff2": "font/woff2", ".js": "text/javascript", ".html": "text/html", ".json": "application/json", ".svg": "image/svg+xml",
+  ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".webp": "image/webp", ".gif": "image/gif", ".txt": "text/plain", ".csv": "text/csv",
+};
 const contentType = (path: string) => CONTENT_TYPES[path.slice(path.lastIndexOf("."))] ?? "application/octet-stream";
 
 /**
@@ -117,12 +123,13 @@ const contentType = (path: string) => CONTENT_TYPES[path.slice(path.lastIndexOf(
  */
 export async function openFilmPage(browser: Browser, film: Film, style: Style, timeline: Timeline, options: PageOptions = {}): Promise<Page> {
   const layout = layoutFor(film);
+  const customs = await customSceneFiles(film, options.baseDir ?? process.cwd());
   const context = await browser.newContext({
     viewport: { width: layout.width, height: layout.height },
     deviceScaleFactor: drawScale(layout),
     reducedMotion: "no-preference",
   });
-  const files: Record<string, string> = { "/index.html": buildPage(film, style, timeline, layout, options), "/runtime.js": RUNTIME_JS };
+  const files: Record<string, string> = { "/index.html": buildPage(film, style, timeline, layout, options), "/runtime.js": RUNTIME_JS, "/kit.js": KIT_JS };
   const disk = assetFiles(film, style);
   await context.route("**/*", async (route) => {
     const url = new URL(route.request().url());
@@ -130,17 +137,72 @@ export async function openFilmPage(browser: Browser, film: Film, style: Style, t
     if (url.origin !== ORIGIN) return route.abort("blockedbyclient");
     if (path in files) return route.fulfill({ body: files[path]!, contentType: contentType(path) });
     if (path in disk) return route.fulfill({ body: await readFile(disk[path]!), contentType: contentType(path) });
+    const scene = /^\/scenes\/(\d+)\.js$/.exec(path);
+    if (scene && customs.has(Number(scene[1]))) return route.fulfill({ body: await readFile(customs.get(Number(scene[1]))!), contentType: "text/javascript" });
+    if (path.startsWith("/files/")) {
+      const file = await filmFile(options.baseDir ?? process.cwd(), decodeURIComponent(path.slice("/files/".length)));
+      if (file) return route.fulfill({ body: await readFile(file), contentType: contentType(file) });
+    }
     return route.fulfill({ status: 404, body: "Not found" });
   });
 
   const page = await context.newPage();
   const pageErrors: string[] = [];
-  page.on("pageerror", (error) => pageErrors.push(error.message));
+  // The message, and where it happened if the browser says.
+  page.on("pageerror", (error) => pageErrors.push([error.message, /at .*$/m.exec(error.stack ?? "")?.[0]].filter(Boolean).join(" ")));
   await page.goto(`${ORIGIN}/index.html`);
-  await page.evaluate(() => (globalThis as unknown as BezelPage).__bezel.ready());
-  if (pageErrors.length) throw new Error(`The film page hit an error: ${pageErrors[0]}`);
+  // Name scene files by their own paths in errors, not the address the page loads them from.
+  const named = (message: string) =>
+    message.replace(new RegExp(`${ORIGIN.replace(/\./g, "\\.")}/scenes/(\\d+)\\.js`, "g"), (_, i: string) => film.scenes[Number(i)]?.type === "custom" ? (film.scenes[Number(i)] as { file: string }).file : `scene ${Number(i) + 1}`);
+  try {
+    await page.evaluate(() => (globalThis as unknown as BezelPage).__bezel.ready());
+  } catch (error) {
+    const reason = pageErrors[0] ?? (error instanceof Error ? error.message.replace(/^page\.evaluate: (Error: )?/, "").split("\n")[0]! : String(error));
+    await context.close();
+    throw new Error(named(reason));
+  }
+  if (pageErrors.length) throw new Error(`The film page hit an error: ${named(pageErrors[0]!)}`);
 
   return page;
+}
+
+/** Each custom scene's file on disk, by scene index. Fails clearly if one is missing. */
+async function customSceneFiles(film: Film, baseDir: string): Promise<Map<number, string>> {
+  const files = new Map<number, string>();
+  for (const [i, scene] of film.scenes.entries()) {
+    if (scene.type !== "custom") continue;
+    const file = await filmFile(baseDir, scene.file);
+    if (!file) throw new Error(`Scene ${i + 1}: can't find ${scene.file} next to the film file.`);
+    // Compile it here, without running it, so a typo is reported with its file and line.
+    try {
+      new Script(await readFile(file, "utf8"), { filename: scene.file });
+    } catch (error) {
+      const line = /:(\d+)\n/.exec((error as Error).stack ?? "")?.[1];
+      throw new Error(`Scene ${i + 1} (${scene.file}) has a mistake${line ? ` on line ${line}` : ""}: ${(error as Error).message}`);
+    }
+    files.set(i, file);
+  }
+  return files;
+}
+
+/** File types a scene may load from the film's folder. */
+const FILM_FILE_TYPES = new Set([".js", ".json", ".svg", ".png", ".jpg", ".jpeg", ".webp", ".gif", ".woff2", ".txt", ".csv"]);
+
+/**
+ * A file inside the film's folder, or null. Paths can't climb out of the folder,
+ * even through a link, and only picture, data, font and script files are served.
+ */
+async function filmFile(baseDir: string, path: string): Promise<string | null> {
+  if (!FILM_FILE_TYPES.has(extname(path).toLowerCase())) return null;
+  try {
+    const base = await realpath(baseDir);
+    const file = await realpath(resolve(base, path));
+    const inside = relative(base, file);
+    if (!inside || inside.startsWith("..") || inside.includes(`..${sep}`) || resolve(base, inside) !== file) return null;
+    return (await stat(file)).isFile() ? file : null;
+  } catch {
+    return null;
+  }
 }
 
 /** One page per spare CPU core, up to four. Each extra page draws every Nth frame. */
@@ -289,14 +351,26 @@ export async function renderFilm(film: Film, options: RenderOptions): Promise<Re
     const fps = film.format.fps;
     const frames = Math.round(timeline.duration * fps);
     const videos: RenderedVideo[] = [];
+    const warned = new Set<string>();
 
     for (const [n, target] of targets.entries()) {
       const label = targets.length > 1 ? `${PLATFORMS[target.preset!].label} (${n + 1} of ${targets.length}): ` : "";
       const snapshots = options.quality === "high" ? HIGH_QUALITY_SNAPSHOTS : 1;
       // The page draws its own blur unless the snapshots are blended instead.
-      const pageOptions = { showSafeZones: options.showSafeZones, trueBlur: snapshots > 1 };
+      const pageOptions = { showSafeZones: options.showSafeZones, trueBlur: snapshots > 1, baseDir: options.baseDir };
       const layout = layoutFor(target.film);
       const page = await openFilmPage(browser, target.film, style, timeline, pageOptions);
+      if (target.film.scenes.some((scene) => scene.type === "custom")) {
+        onProgress?.(`${label}Checking custom scenes`);
+        const problems = await checkCustomScenes(page, target.film, timeline);
+        const errors = problems.filter((p) => p.level === "error");
+        if (errors.length) {
+          await page.context().close();
+          throw new Error(`Custom scenes need fixing before rendering:\n${describeProblems(errors).join("\n")}`);
+        }
+        // Each warning once, even when several formats find it.
+        for (const line of describeProblems(problems)) if (!warned.has(line)) (warned.add(line), onWarning?.(line.replace(/^! /, "")));
+      }
       const limit = target.preset ? (PLATFORMS[target.preset] as Platform).maxMegabytes : undefined;
       encoder = startEncoder({
         ffmpeg,

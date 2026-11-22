@@ -7,6 +7,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ### Added
 
+- Custom scenes: an agent can write a whole scene in code, in a small file next to the film (`"type": "custom", "file": "scenes/intro.js"`), with `props` for its words and numbers and `sounds` to land with its movement. Custom and ready-made scenes mix in one film.
+- The scene kit every custom scene builds with: the safe area, the style's colours and fonts, when each sentence is spoken, springs and easing, and lines and words that draw themselves, with an optional marker pen following the tip.
+- `bezel-film preview`: stills of every scene and a contact sheet in seconds, so an agent can look at its work before rendering.
+- Checks on custom scenes, in `preview` and before every render: the same moment must always draw the same picture, words stay inside the safe area and readable, and frames draw quickly. Each problem names the scene, the file and the fix. A typo is reported with its file and line.
+- `bezel-film guide`: a director's guide to planning a film (hook, script, shots, sound and a quality bar), and the scene kit's reference.
+- A fourth example film, `examples/custom-scenes`: hand-drawn custom scenes around a real Bezel Charts chart.
+
+### Changed
+
+- The `custom` scene, listed but never rendered before, now takes `file` (a `.js` file in the film's folder) instead of `module`.
+- `init` adds the preview folders to `.gitignore`.
+
+### Added
+
 - A `font` setting with eight font pairings: `grotesk`, `editorial`, `condensed`, `bold`, `technical`, `friendly`, `handwritten` and `mono`. Each style has its own pairing, and a film can choose another. A pairing is a heading and a body font chosen to suit each other.
 - Fonts now cover Latin Extended as well as Latin, so names such as Ştefan, Zoë and Łódź show in the film's own font.
 - `bezel-film styles` lists the styles and font pairings.
