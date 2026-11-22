@@ -1,5 +1,5 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { PRESETS, readPresetList } from "../src/spec/formats.js";
 import { validateFilm } from "../src/spec/validate.js";
 import { launchBrowser } from "../src/render/browser.js";
@@ -30,7 +30,7 @@ try {
   for (const preset of presets) {
     const film = filmFor(result.film, preset);
     const timeline = buildTimeline(film);
-    const page = await openFilmPage(browser, film, style, timeline, { showSafeZones });
+    const page = await openFilmPage(browser, film, style, timeline, { showSafeZones, baseDir: dirname(file) });
     for (const scene of timeline.scenes) {
       const paced = ["points", "timeline", "roadmap", "map"].includes(scene.scene.type);
       const t = paced ? scene.end - 0.3 : Math.min(scene.end - 0.05, scene.start + 2.2);

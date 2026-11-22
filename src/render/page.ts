@@ -148,7 +148,9 @@ function sceneBody(timed: TimedScene, style: Style, feel: MotionFeel, cue: Cue =
       </div>`;
 
     case "custom":
-      throw new Error(`Custom scenes aren't supported by the renderer yet (scene ${timed.index + 1}).`);
+      // The scene's own code draws everything inside this, full frame. Its sounds are listed in the film.
+      for (const s of scene.sounds ?? []) cue(s.at * 1000, s.sound, { gain: s.gain, pitch: s.pitch });
+      return `<div class="custom-root" data-custom="${timed.index}"></div>`;
   }
 }
 
@@ -421,6 +423,9 @@ ${motionCss(style, levels)}
 .sticker{display:inline-block;rotate:var(--tilt,0deg);white-space:nowrap;font-family:var(--mono);font-weight:600;font-size:calc(var(--u)*3.2);letter-spacing:.05em;
   padding:calc(var(--u)*.9) calc(var(--u)*1.7);border-radius:calc(var(--u)*.35);color:#15161A;background:var(--sticker,#FFE15A);
   box-shadow:0 calc(var(--u)*.5) calc(var(--u)*1.6) rgb(0 0 0 / .35)}
+/* Custom scenes: the scene's code draws in a full-frame layer. The section keeps its
+   padding, which tells the kit where the safe area is. */
+.custom-root{position:absolute;inset:0;overflow:hidden}
 .caption{position:absolute;left:var(--cl);right:var(--cr);bottom:var(--cb);margin:0 auto;width:fit-content;max-width:var(--cw);text-align:center;opacity:0}
 .caption span{display:inline;padding:calc(var(--u)*.5) calc(var(--u)*1.6);border-radius:calc(var(--u)*1);font-weight:600;font-size:calc(var(--u)*2.8);line-height:1.6;
   background:rgb(0 0 0/.62);box-decoration-break:clone;-webkit-box-decoration-break:clone}
@@ -466,6 +471,21 @@ export function runtimeData(film: Film, style: Style, timeline: Timeline, frame:
         ...mapCamera(timed.scene as Extract<Scene, { type: "map" }>, MOTION_FEELS[motionLevel(film, timed.scene, style)]),
       })),
     lines: timeline.scenes.flatMap((timed) => timed.lines.map((line) => ({ ...line, scene: timed.index }))),
+    // What each custom scene's kit tells it: its length, its narration and its props.
+    customs: timeline.scenes
+      .filter((timed) => timed.scene.type === "custom")
+      .map((timed) => {
+        const scene = timed.scene as Extract<Scene, { type: "custom" }>;
+        return {
+          scene: timed.index,
+          file: scene.file,
+          duration: timed.end - timed.start,
+          props: scene.props ?? {},
+          lines: timed.lines.map((line) => ({ text: line.text, start: line.start - timed.start, end: line.end - timed.start })),
+        };
+      }),
+    theme: style.theme,
+    colours: style.colours,
     charts: timeline.scenes
       .filter((timed) => timed.scene.type === "chart")
       .map((timed) => {
@@ -500,6 +520,8 @@ export function runtimeData(film: Film, style: Style, timeline: Timeline, frame:
 }
 
 export interface PageOptions {
+  /** The film file's folder, where custom scene files and their pictures are. Defaults to the current folder. */
+  baseDir?: string;
   /** Shade the parts of the frame the platform covers. */
   showSafeZones?: boolean;
   /**
@@ -507,6 +529,13 @@ export interface PageOptions {
    * (`--quality high`), instead of drawing it on the page.
    */
   trueBlur?: boolean;
+}
+
+/** The kit, then each custom scene's own file, loaded in order before the runtime. */
+function customScripts(timeline: Timeline): string {
+  const customs = timeline.scenes.filter((timed) => timed.scene.type === "custom");
+  if (!customs.length) return "";
+  return ['<script src="/kit.js"></script>', ...customs.map((timed) => `<script src="/scenes/${timed.index}.js" data-scene="${timed.index}"></script>`)].join("\n");
 }
 
 export function buildPage(film: Film, style: Style, timeline: Timeline, frame: Layout, options: PageOptions = {}): string {
@@ -540,6 +569,7 @@ ${scenes}
 ${options.showSafeZones ? safeOverlay(frame) : ""}
 <script>window.__BEZEL_DATA__ = ${safeJson(runtimeData(film, style, timeline, frame, options))};</script>
 <script src="/bezel-charts.js"></script>
+${customScripts(timeline)}
 <script src="/runtime.js"></script>
 </body>
 </html>`;

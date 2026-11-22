@@ -31,7 +31,7 @@ export interface InitOptions {
 
 const packageRoot = fileURLToPath(new URL("..", import.meta.url));
 const WELCOME_FOLDER = "films/welcome";
-const IGNORE_LINES = ["# Bezel Film", "films/**/*.mp4", "films/**/*-cover.png", "voice-samples/"];
+const IGNORE_LINES = ["# Bezel Film", "films/**/*.mp4", "films/**/*-cover.png", "films/**/*-preview/", "voice-samples/"];
 
 async function readText(path: string): Promise<string | null> {
   return existsSync(path) ? readFile(path, "utf8") : null;

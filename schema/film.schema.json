@@ -1233,23 +1233,69 @@
                 "type": "string",
                 "const": "custom"
               },
-              "module": {
+              "file": {
                 "type": "string",
-                "minLength": 1,
                 "maxLength": 200,
-                "description": "Path to your own scene module, relative to the film file."
+                "pattern": "^(?!\\/)(?![a-zA-Z]:)(?!.*(^|[\\\\/])\\.\\.([\\\\/]|$))[\\w\\-./\\\\]+\\.js$",
+                "description": "Your scene's code, relative to the film file, e.g. scenes/intro.js. Run `npx bezel-film guide scenes` to see how to write one."
               },
               "props": {
+                "description": "Anything your scene's code needs, such as labels or numbers. It reads them as kit.props.",
                 "type": "object",
                 "propertyNames": {
                   "type": "string"
                 },
                 "additionalProperties": {}
+              },
+              "sounds": {
+                "description": "Sound effects to land with your scene's movement: whoosh, sweep, swish, tap, pop, click, tick, ding.",
+                "maxItems": 40,
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "at": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 120,
+                      "description": "Seconds into the scene."
+                    },
+                    "sound": {
+                      "type": "string",
+                      "enum": [
+                        "whoosh",
+                        "sweep",
+                        "swish",
+                        "tap",
+                        "pop",
+                        "click",
+                        "tick",
+                        "ding"
+                      ]
+                    },
+                    "gain": {
+                      "description": "Relative loudness, 1 by default.",
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 2
+                    },
+                    "pitch": {
+                      "description": "Semitones above or below the sound's usual pitch.",
+                      "type": "number",
+                      "minimum": -12,
+                      "maximum": 12
+                    }
+                  },
+                  "required": [
+                    "at",
+                    "sound"
+                  ]
+                }
               }
             },
             "required": [
               "type",
-              "module"
+              "file"
             ]
           }
         ]

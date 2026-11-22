@@ -1,0 +1,47 @@
+{
+  "$schema": "../../schema/film.schema.json",
+  "spec": 1,
+  "title": "Northside Coffee: from click to cup",
+  "style": "data-story",
+  "format": { "aspect": "16:9", "resolution": "1080p", "fps": 30 },
+  "voice": { "engine": "kokoro", "gender": "female" },
+  "music": { "source": "generated", "mood": "calm" },
+  "scenes": [
+    {
+      "id": "title",
+      "type": "custom",
+      "file": "scenes/title.js",
+      "props": { "title": "From click to cup", "subtitle": "How Northside Coffee gets to your door" },
+      "narration": "Here's how a Northside coffee gets from your phone to your door.",
+      "sounds": [{ "at": 1.9, "sound": "swish" }]
+    },
+    {
+      "id": "steps",
+      "type": "custom",
+      "file": "scenes/steps.js",
+      "props": { "steps": ["You order", "We make it", "At your door"] },
+      "narration": "You order in the app. A barista makes it fresh. And a rider brings it round, still hot.",
+      "sounds": [{ "at": 0.2, "sound": "tap" }]
+    },
+    {
+      "id": "minutes",
+      "type": "chart",
+      "chart": {
+        "type": "bars",
+        "heading": "Faster every month",
+        "values": [19, 16, 14, 12],
+        "labels": ["Jan", "Feb", "Mar", "Apr"],
+        "suffix": " min"
+      },
+      "narration": "Deliveries got quicker every month, down to twelve minutes by April."
+    },
+    {
+      "id": "promise",
+      "type": "custom",
+      "file": "scenes/promise.js",
+      "props": { "value": "12", "unit": "minutes", "note": "or your next one's on us" },
+      "narration": "So here's our promise: twelve minutes, or your next one's on us.",
+      "sounds": [{ "at": 0.5, "sound": "pop" }, { "at": 1.6, "sound": "swish" }]
+    }
+  ]
+}

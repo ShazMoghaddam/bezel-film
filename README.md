@@ -58,6 +58,7 @@ It reads the README, `package.json` or `pyproject.toml`, the changelog and (for 
 - **Music for every mood.** Six moods, each with a few hand-picked pieces: public-domain recordings, or music composed for the film and played on recorded orchestral instruments. It dips whenever the voice speaks. Or bring your own track.
 - **Made for every platform.** TikTok, Reels, Shorts, LinkedIn, X, WhatsApp and YouTube, each in the right shape with text kept clear of the app's buttons. Write one film and get every version, plus a cover image for each.
 - **Fonts to suit the story.** Eight pairings, from a magazine serif to handwriting, shipped inside the package. See them with `npx bezel-film styles`.
+- **Scenes your agent draws.** Beyond the ready-made scenes, your agent can write whole scenes in code: drawings that draw themselves, characters, anything. Bezel Film gives it a kit to build with, a director's guide, and checks that catch mistakes before you render.
 - **Charts that move.** Drawn with [Bezel Charts](https://github.com/ShazMoghaddam/bezel-charts), in bold colours.
 - **Works with your agent.** Claude Code, Codex, Gemini CLI, Cursor, GitHub Copilot, Windsurf, and any agent that reads `AGENTS.md`.
 - **Private and offline.** After the one-time download, nothing leaves your computer.
@@ -75,9 +76,11 @@ Everything below is for when you want to go further or edit films by hand.
 | --- | --- |
 | `npx bezel-film init` | Sets up a folder: installs Bezel Film, adds agent instructions, makes a welcome film |
 | `npx bezel-film draft <source>` | Drafts a film about a project from its folder, README or GitHub repository (`owner/repo`). Saves `film.json` (`-o` to choose another path, `--for` to set the platform) |
+| `npx bezel-film preview <film.json>` | Saves stills of every scene and a contact sheet in seconds, and checks custom scenes. Look before you render (`--for` to see one platform) |
 | `npx bezel-film render <film.json>` | Renders a film to an MP4 and a cover image next to the film file (`-o` to choose another path) |
 | `npx bezel-film formats` | Lists the platform presets |
 | `npx bezel-film styles` | Lists the styles and font pairings |
+| `npx bezel-film guide [name]` | Prints a guide for agents: `director` (planning a film) or `scenes` (writing custom scenes) |
 | `npx bezel-film validate <film.json>` | Checks a film file and shows a summary |
 | `npx bezel-film voices` | Records a short line in eight recommended voices |
 | `npx bezel-film setup` | Does the one-time downloads (voice and browser) |
@@ -178,6 +181,23 @@ Maps work at country and region scale, so places in the same city sit on top of 
 | `sfx.volume` | `0` to `1`, where `0` turns them off. See [Sound effects](#sound-effects) | `0.5` |
 | `captions` | `true`, `false` | `true` |
 | `motion` | `calm`, `lively`, `punchy`, see [Motion](#motion) | the style's choice (`lively`) |
+
+### Custom scenes
+
+When the ready-made scenes can't show something, a `custom` scene can. Your agent writes its code in a small file next to the film, and the film file says where it goes:
+
+```json
+{ "type": "custom", "file": "scenes/steps.js", "props": { "steps": ["You order", "We make it", "At your door"] },
+  "narration": "You order in the app. A barista makes it fresh. And a rider brings it round.",
+  "sounds": [{ "at": 0.2, "sound": "tap" }] }
+```
+
+The scene draws everything in its part of the film, while Bezel Film adds the voice, captions, music, transitions and every platform's format around it. Custom and ready-made scenes mix freely, so a hand-drawn scene can lead into a real chart. See `examples/custom-scenes` for a working film.
+
+- **A kit to build with.** Every scene gets the frame's safe area, the style's colours and fonts, when each sentence is spoken, springs and easing, and lines and words that draw themselves, with an optional marker pen following the tip.
+- **Guides.** `npx bezel-film guide director` walks an agent through planning a film like a director: the hook, the script, the shots, the sound and a quality check. `npx bezel-film guide scenes` is the kit's reference.
+- **Checks.** `preview` and `render` check every custom scene: it must draw the same picture every time it's asked for the same moment, keep its words inside the safe area, keep them readable, and draw quickly. Each problem names the scene and how to fix it, so your agent can fix it without you.
+- **Safe and offline.** Scene code runs in the same sealed browser as everything else: every outside request is blocked, and it can only load files from the film's own folder. Your agent uses its usual connection to write the code; Bezel Film itself never goes online.
 
 ### Styles and fonts
 

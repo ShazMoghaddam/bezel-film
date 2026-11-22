@@ -44,6 +44,7 @@
   "files": [
     "dist",
     "schema",
+    "guides",
     "styles",
     "fonts",
     "agents/generated",
@@ -67,7 +68,7 @@
     "styles:check": "tsx scripts/build-styles.ts --check",
     "agents": "tsx scripts/build-agents.ts",
     "agents:check": "tsx scripts/build-agents.ts --check",
-    "example": "tsx src/cli.ts validate examples/northside-coffee/film.json && tsx src/cli.ts validate examples/northside-story/film.json && tsx src/cli.ts validate examples/bezel-charts/film.json",
+    "example": "tsx src/cli.ts validate examples/northside-coffee/film.json && tsx src/cli.ts validate examples/northside-story/film.json && tsx src/cli.ts validate examples/bezel-charts/film.json && tsx src/cli.ts validate examples/custom-scenes/film.json",
     "check": "npm run typecheck && npm test && npm run styles:check && npm run schema:check && npm run agents:check && npm run example",
     "prepublishOnly": "npm run check",
     "smoke": "tsx scripts/smoke-render.ts",

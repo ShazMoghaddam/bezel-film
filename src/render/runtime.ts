@@ -202,6 +202,42 @@ export const RUNTIME_JS = String.raw`
       animation.pause();
       animation.currentTime = Math.max(0, local * 1000 - offset);
     }
+    const custom = customs.get(Number(section.dataset.index));
+    if (custom) drawCustom(custom, local);
+  }
+
+  // Custom scenes: each one's own code, built once in ready() and drawn from the time alone.
+  const customs = new Map();
+  function drawCustom(custom, local) {
+    // Held at its last moment while the next scene fades in over it.
+    const t = Math.max(0, Math.min(local, custom.duration + data.transitionSeconds));
+    try {
+      custom.draw(t);
+    } catch (error) {
+      throw new Error("Scene " + (custom.scene + 1) + " (" + custom.file + ") failed while drawing at " + t.toFixed(2) + "s: " + (error && error.message || error));
+    }
+  }
+  function buildCustoms() {
+    const css = getComputedStyle(document.documentElement);
+    const fonts = { heading: css.getPropertyValue("--heading").trim(), body: css.getPropertyValue("--body").trim(), mono: css.getPropertyValue("--mono").trim() };
+    for (const info of data.customs) {
+      const where = "Scene " + (info.scene + 1) + " (" + info.file + ")";
+      const make = window.__bezelKit.makers.get(info.scene);
+      if (!make) throw new Error(where + " didn't call Bezel.scene(...). Check it loads without errors.");
+      const root = document.querySelector('[data-custom="' + info.scene + '"]');
+      const kit = window.__bezelKit.create(info.scene, root, {
+        ...info, fps: data.fps, captions: data.captions, zoned: data.zoned, theme: data.theme, colours: data.colours, fonts,
+      });
+      let made;
+      try {
+        made = make(root, kit);
+      } catch (error) {
+        throw new Error(where + " failed while setting up: " + (error && error.message || error));
+      }
+      const draw = typeof made === "function" ? made : made && typeof made.draw === "function" ? made.draw.bind(made) : null;
+      if (!draw) throw new Error(where + " must return a draw function from Bezel.scene: return (t) => { ... }");
+      customs.set(info.scene, { ...info, draw, kit });
+    }
   }
 
   function styleScene(section, opacity, transform = "", clip = "") {
@@ -422,6 +458,7 @@ export const RUNTIME_JS = String.raw`
   // smaller, then wraps its long lines, so it stays readable.
   function fitText() {
     for (const el of document.querySelectorAll(".display, .heading, .stat-value, .quote, .url, .code pre")) {
+      if (el.closest(".scene-custom")) continue;
       const code = el.matches(".code pre");
       const room = () => Math.min(el.clientWidth, contentBox(el.closest(".scene")).width);
       let size = parseFloat(getComputedStyle(el).fontSize);
@@ -439,7 +476,7 @@ export const RUNTIME_JS = String.raw`
   function fitScenes() {
     for (const scene of sections) {
       const block = scene.firstElementChild;
-      if (!block) continue;
+      if (!block || scene.classList.contains("scene-custom")) continue;
       const box = contentBox(scene);
       const scale = Math.min(1, box.height / block.offsetHeight, box.width / block.offsetWidth);
       if (scale < 0.995) block.style.transform = "scale(" + scale + ")";
@@ -487,10 +524,33 @@ export const RUNTIME_JS = String.raw`
     fitText();
     fitScenes();
     setupMaps();
+    if (data.customs.length) {
+      if (!window.__bezelKit) throw new Error("The scene kit didn't load");
+      buildCustoms();
+    }
     await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
     seek(0);
   }
 
-  window.__bezel = { seek, ready };
+  // For the checks before a render: a custom scene's safe area and every piece of text
+  // in it that can be seen, with where it is and what colour it's drawn in.
+  function inspect(index) {
+    const custom = customs.get(index);
+    if (!custom) return null;
+    const texts = [];
+    for (const el of custom.kit.root.querySelectorAll("*")) {
+      const own = [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim());
+      if (!own || el.closest(".bf-pen")) continue;
+      if (!el.checkVisibility({ opacityProperty: true, visibilityProperty: true })) continue;
+      let opacity = 1;
+      for (let node = el; node && node !== document.body; node = node.parentElement) opacity *= Number(getComputedStyle(node).opacity);
+      const r = el.getBoundingClientRect();
+      if (opacity < 0.5 || r.width < 1 || r.height < 1) continue;
+      texts.push({ text: el.textContent.trim().slice(0, 40), colour: getComputedStyle(el).color, rect: { x: r.left, y: r.top, width: r.width, height: r.height } });
+    }
+    return { safe: custom.kit.safe, texts };
+  }
+
+  window.__bezel = { seek, ready, inspect };
 })();
 `;
