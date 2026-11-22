@@ -130,8 +130,47 @@ describe("buildPage", async () => {
 });
 
 describe("loadStyle", () => {
-  it("names the styles that are ready when one isn't built yet", async () => {
-    await expect(loadStyle("whiteboard")).rejects.toThrow('The "whiteboard" style isn\'t built yet. Ready now: data-story.');
+  it("names the styles there are when one doesn't exist", async () => {
+    await expect(loadStyle("watercolour")).rejects.toThrow('There\'s no "watercolour" style. Choose from: data-story.');
+  });
+
+  it("loads the style's own CSS", async () => {
+    const style = await loadStyle("data-story");
+    expect(style.css).toContain(".backdrop");
+  });
+});
+
+describe("fonts on the page", async () => {
+  const style = await loadStyle("data-story");
+  const page = (extra: object = {}) => {
+    const f = film([{ type: "title", title: "T", duration: 2 }], extra);
+    return buildPage(f, style, buildTimeline(f), layoutFor(f));
+  };
+
+  it("uses the style's pairing unless the film picks one", () => {
+    expect(page()).toContain("/fonts/space-grotesk/space-grotesk-latin-700-normal.woff2");
+    const html = page({ font: "editorial" });
+    expect(html).toContain("/fonts/fraunces/fraunces-latin-700-normal.woff2");
+    expect(html).not.toContain("space-grotesk");
+  });
+
+  it("includes Latin Extended, loaded only for the characters that need it", () => {
+    expect(page()).toMatch(/inter-latin-ext-400-normal\.woff2\) format\("woff2"\);unicode-range:U\+0100/);
+  });
+
+  it("scales fonts that are drawn small", () => {
+    expect(page({ font: "handwritten" })).toMatch(/caveat-latin-700-normal\.woff2[^}]*size-adjust:135%/);
+  });
+
+  it("gives one font two roles without mixing up their weights", () => {
+    const html = page({ font: "friendly" });
+    expect(html).toContain('font-family:"bf-heading";font-weight:700;font-display:block;src:url(/fonts/nunito/nunito-latin-800-normal.woff2)');
+    expect(html).toContain('font-family:"bf-body";font-weight:600;font-display:block;src:url(/fonts/nunito/nunito-latin-600-normal.woff2)');
+  });
+
+  it("rejects a pairing that doesn't exist", () => {
+    const result = validateFilm({ spec: 1, title: "T", style: "data-story", font: "comic", scenes: [{ type: "title", title: "T", duration: 2 }] });
+    expect(result.ok).toBe(false);
   });
 });
 

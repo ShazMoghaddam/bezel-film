@@ -14,6 +14,7 @@ import { findFfmpeg, startEncoder } from "./ffmpeg.js";
 import { drawScale, layoutFor, videoSize } from "./layout.js";
 import { buildPage, type PageOptions } from "./page.js";
 import { RUNTIME_JS } from "./runtime.js";
+import { fontAssets, pairingFor } from "./fonts.js";
 import { loadStyle, type Style } from "./style.js";
 import { buildTimeline, overlongNarration, splitSentences, type Timeline } from "./timeline.js";
 import { voiceForFilm, type Clip, type Progress, type Voice } from "./voice.js";
@@ -100,16 +101,9 @@ interface BezelPage {
 const ORIGIN = "https://bezel-film.local";
 
 /** Files the page may load, mapped to where they are on disk. Everything else is blocked. */
-function assetFiles(style: Style): Record<string, string> {
-  const font = (pkg: string, file: string) => require.resolve(`@fontsource/${pkg}/files/${file}`);
-  const fontPackage = (name: string) => name.toLowerCase().replace(/\s+/g, "-");
-  const [heading, body, mono] = [style.fonts.heading, style.fonts.body, style.fonts.mono].map(fontPackage);
+function assetFiles(film: Film, style: Style): Record<string, string> {
   return {
-    "/fonts/heading-600.woff2": font(heading!, `${heading}-latin-600-normal.woff2`),
-    "/fonts/heading-700.woff2": font(heading!, `${heading}-latin-700-normal.woff2`),
-    "/fonts/body-400.woff2": font(body!, `${body}-latin-400-normal.woff2`),
-    "/fonts/body-600.woff2": font(body!, `${body}-latin-600-normal.woff2`),
-    "/fonts/mono-400.woff2": font(mono!, `${mono}-latin-400-normal.woff2`),
+    ...fontAssets(pairingFor(film, style)),
     "/bezel-charts.js": join(dirname(require.resolve("bezel-charts")), "bezel-charts.iife.js"),
   };
 }
@@ -129,7 +123,7 @@ export async function openFilmPage(browser: Browser, film: Film, style: Style, t
     reducedMotion: "no-preference",
   });
   const files: Record<string, string> = { "/index.html": buildPage(film, style, timeline, layout, options), "/runtime.js": RUNTIME_JS };
-  const disk = assetFiles(style);
+  const disk = assetFiles(film, style);
   await context.route("**/*", async (route) => {
     const url = new URL(route.request().url());
     const path = url.pathname;

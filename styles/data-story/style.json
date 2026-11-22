@@ -2,18 +2,23 @@
   "name": "data-story",
   "label": "Data story",
   "description": "Clean, confident and chart-led. Big numbers, bold colour per series, springy motion.",
+  "theme": "dark",
+  "font": "grotesk",
   "colours": {
     "background": "#0B1020",
     "surface": "#151B2E",
     "text": "#F5F7FB",
     "muted": "#9AA3B8",
     "accent": "#FFB020",
-    "palette": ["#4C8DFF", "#FF5D73", "#2EC4B6", "#FFB020", "#9B5DE5", "#7BD389", "#FF8A3D"]
-  },
-  "fonts": {
-    "heading": "Space Grotesk",
-    "body": "Inter",
-    "mono": "JetBrains Mono"
+    "palette": [
+      "#4C8DFF",
+      "#FF5D73",
+      "#2EC4B6",
+      "#FFB020",
+      "#9B5DE5",
+      "#7BD389",
+      "#FF8A3D"
+    ]
   },
   "motion": {
     "level": "lively",

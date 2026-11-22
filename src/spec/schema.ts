@@ -1,5 +1,7 @@
 import { z } from "zod";
+import { FONT_NAMES, FONT_PAIRINGS } from "./fonts.js";
 import { ASPECTS, PLATFORMS, PRESETS, RESOLUTIONS, type Aspect, type Resolution } from "./formats.js";
+import { STYLE_INFO, STYLES } from "./styles.js";
 
 export { ASPECTS, PRESETS, RESOLUTIONS } from "./formats.js";
 
@@ -14,7 +16,8 @@ export { ASPECTS, PRESETS, RESOLUTIONS } from "./formats.js";
 /** Bump this only for breaking changes to the file format. */
 export const SPEC_VERSION = 1;
 
-export const STYLES = ["data-story", "product-launch", "whiteboard"] as const;
+export { FONT_NAMES } from "./fonts.js";
+export { STYLES } from "./styles.js";
 export const FRAME_RATES = [24, 30, 60] as const;
 export const TRANSITIONS = ["cut", "fade", "slide", "wipe"] as const;
 export const MOTION_LEVELS = ["calm", "lively", "punchy"] as const;
@@ -369,7 +372,13 @@ export const filmSchema = z
     $schema: z.string().optional(),
     spec: z.literal(SPEC_VERSION).describe("Version of the film spec format."),
     title: text(120),
-    style: z.enum(STYLES),
+    style: z
+      .enum(STYLES)
+      .describe(`The film's look. ${STYLE_INFO.map((s) => `${s.name}: ${s.description}`).join(" ")}`),
+    font: z
+      .enum(FONT_NAMES)
+      .optional()
+      .describe(`The film's fonts, as a pairing chosen to suit each other. ${Object.values(FONT_PAIRINGS).map((p) => `${p.name}: ${p.description}`).join(" ")} Defaults to the style's choice.`),
     format: formatSchema.prefault({}),
     voice: voiceSchema.prefault({}),
     music: musicSchema.prefault({}),

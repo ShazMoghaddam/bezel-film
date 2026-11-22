@@ -1,0 +1,7 @@
+/* Data story: soft glows of the palette drifting behind the scenes, under a fine dot grain. */
+.backdrop{background:
+  radial-gradient(40% 45% at 20% 25%,color-mix(in srgb,var(--p0) 16%,transparent),transparent 70%),
+  radial-gradient(35% 40% at 85% 75%,color-mix(in srgb,var(--p1) 13%,transparent),transparent 70%),
+  radial-gradient(30% 35% at 70% 15%,color-mix(in srgb,var(--p2) 10%,transparent),transparent 70%)}
+.grain{background-image:radial-gradient(color-mix(in srgb,var(--text) 5%,transparent) 1px,transparent 1px);background-size:calc(var(--u)*2.4) calc(var(--u)*2.4);
+  mask-image:radial-gradient(ellipse at center,#000 30%,transparent 80%);opacity:.5;will-change:transform}

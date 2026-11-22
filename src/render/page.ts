@@ -1,6 +1,8 @@
 import type { Film, MotionLevel, Scene } from "../spec/schema.js";
 import { MOTION_FEELS, countFor, motionVars, wordStagger, type MotionFeel } from "./motion.js";
 import type { SceneCue, SoundName } from "./sfx.js";
+import type { FontPairing } from "../spec/fonts.js";
+import { fontFaceCss, fontVars, pairingFor } from "./fonts.js";
 import type { Style } from "./style.js";
 import type { Layout } from "./layout.js";
 import type { Timeline, TimedScene } from "./timeline.js";
@@ -317,26 +319,20 @@ function motionCss(style: Style, levels: Set<MotionLevel>): string {
   return [...levels].map((level) => `.m-${level}{${motionVars(level, style.motion)}}`).join("\n");
 }
 
-function css(style: Style, frame: Layout, captions: boolean, levels: Set<MotionLevel>): string {
-  const { colours, fonts, motion, layout } = style;
+function css(style: Style, fonts: FontPairing, frame: Layout, captions: boolean, levels: Set<MotionLevel>): string {
+  const { colours, motion, layout } = style;
   const palette = colours.palette.map((colour, i) => `--p${i}:${colour};`).join("");
   return `
-@font-face{font-family:"${fonts.heading}";font-weight:600;src:url(/fonts/heading-600.woff2) format("woff2")}
-@font-face{font-family:"${fonts.heading}";font-weight:700;src:url(/fonts/heading-700.woff2) format("woff2")}
-@font-face{font-family:"${fonts.body}";font-weight:400;src:url(/fonts/body-400.woff2) format("woff2")}
-@font-face{font-family:"${fonts.body}";font-weight:600;src:url(/fonts/body-600.woff2) format("woff2")}
-@font-face{font-family:"${fonts.mono}";font-weight:400;src:url(/fonts/mono-400.woff2) format("woff2")}
-:root{--bg:${colours.background};--surface:${colours.surface};--text:${colours.text};--muted:${colours.muted};--accent:${colours.accent};${palette}
+${fontFaceCss(fonts)}
+:root{color-scheme:${style.theme};--bg:${colours.background};--surface:${colours.surface};--text:${colours.text};--muted:${colours.muted};--accent:${colours.accent};${palette}
   --u:calc(min(100vw,100vh)/100);--safe:${layout.safeArea * 100}vmin;${safeVars(frame, captions)}--ease:${motion.easing};--enter:${motion.enterMs}ms;
-  --heading:"${fonts.heading}",system-ui,sans-serif;--body:"${fonts.body}",system-ui,sans-serif;--mono:"${fonts.mono}",ui-monospace,monospace}
+  ${fontVars()}}
 *{box-sizing:border-box;margin:0;padding:0;animation-play-state:paused!important}
 html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:var(--body);-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision}
-.backdrop,.grain{will-change:transform}
-.backdrop{position:absolute;inset:-20%;background:
-  radial-gradient(40% 45% at 20% 25%,color-mix(in srgb,var(--p0) 16%,transparent),transparent 70%),
-  radial-gradient(35% 40% at 85% 75%,color-mix(in srgb,var(--p1) 13%,transparent),transparent 70%),
-  radial-gradient(30% 35% at 70% 15%,color-mix(in srgb,var(--p2) 10%,transparent),transparent 70%)}
-.grain{position:absolute;inset:0;background-image:radial-gradient(color-mix(in srgb,var(--text) 5%,transparent) 1px,transparent 1px);background-size:calc(var(--u)*2.4) calc(var(--u)*2.4);mask-image:radial-gradient(ellipse at center,#000 30%,transparent 80%);opacity:.5}
+/* The backdrop and grain are empty layers each style paints in its style.css.
+   The backdrop is oversized because the runtime drifts it slowly. */
+.backdrop{position:absolute;inset:-20%;will-change:transform}
+.grain{position:absolute;inset:0;pointer-events:none}
 #stage{position:absolute;inset:0}
 .scene{position:absolute;inset:0;padding:var(--st) var(--sr) var(--sb) var(--sl);display:flex;align-items:center;justify-content:center;opacity:0;--c:var(--p0)}
 .center{display:flex;flex-direction:column;align-items:center;text-align:center;gap:calc(var(--u)*2.6);max-width:84%}
@@ -431,7 +427,9 @@ ${motionCss(style, levels)}
 .safe-overlay i{position:absolute;background:rgb(255 45 85/.3);outline:2px dashed rgb(255 45 85/.85);outline-offset:-2px}
 .progress{position:absolute;left:0;top:0;height:calc(var(--u)*.45);width:0;background:linear-gradient(90deg,var(--p0),var(--p1),var(--p3))}
 ${MAP_CSS}
-${shapeCss(frame)}`;
+${shapeCss(frame)}
+/* The ${style.name} style */
+${style.css}`;
 }
 
 /**
@@ -485,7 +483,7 @@ export function runtimeData(film: Film, style: Style, timeline: Timeline, frame:
             suffix: chart.suffix,
           },
           attributes: {
-            theme: "dark",
+            theme: style.theme,
             frame: "none",
             background: "transparent",
             color: style.colours.palette.join(","),
@@ -523,15 +521,16 @@ export function buildPage(film: Film, style: Style, timeline: Timeline, frame: L
     .join("\n");
 
   return `<!doctype html>
-<html lang="en" data-theme="dark" class="shape-${frame.shape}">
+<html lang="en" data-theme="${style.theme}" data-style="${style.name}" class="shape-${frame.shape}">
 <head>
 <meta charset="utf-8">
 <title>${escapeHtml(film.title)}</title>
-<style>${css(style, frame, film.captions, levels)}</style>
+<style>${css(style, pairingFor(film, style), frame, film.captions, levels)}</style>
 </head>
 <body>
 <div class="backdrop"></div>
 <div class="grain"></div>
+${style.filters}
 ${timeline.scenes.some((timed) => timed.scene.type === "map") ? mapDefs() : ""}
 <main id="stage">
 ${scenes}

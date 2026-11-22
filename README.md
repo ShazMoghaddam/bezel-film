@@ -57,6 +57,7 @@ It reads the README, `package.json` or `pyproject.toml`, the changelog and (for 
 - **A natural voice.** Female or male, made on your computer. Hear the options with `npx bezel-film voices`.
 - **Music for every mood.** Six moods, each with a few hand-picked pieces: public-domain recordings, or music composed for the film and played on recorded orchestral instruments. It dips whenever the voice speaks. Or bring your own track.
 - **Made for every platform.** TikTok, Reels, Shorts, LinkedIn, X, WhatsApp and YouTube, each in the right shape with text kept clear of the app's buttons. Write one film and get every version, plus a cover image for each.
+- **Fonts to suit the story.** Eight pairings, from a magazine serif to handwriting, shipped inside the package. See them with `npx bezel-film styles`.
 - **Charts that move.** Drawn with [Bezel Charts](https://github.com/ShazMoghaddam/bezel-charts), in bold colours.
 - **Works with your agent.** Claude Code, Codex, Gemini CLI, Cursor, GitHub Copilot, Windsurf, and any agent that reads `AGENTS.md`.
 - **Private and offline.** After the one-time download, nothing leaves your computer.
@@ -76,6 +77,7 @@ Everything below is for when you want to go further or edit films by hand.
 | `npx bezel-film draft <source>` | Drafts a film about a project from its folder, README or GitHub repository (`owner/repo`). Saves `film.json` (`-o` to choose another path, `--for` to set the platform) |
 | `npx bezel-film render <film.json>` | Renders a film to an MP4 and a cover image next to the film file (`-o` to choose another path) |
 | `npx bezel-film formats` | Lists the platform presets |
+| `npx bezel-film styles` | Lists the styles and font pairings |
 | `npx bezel-film validate <film.json>` | Checks a film file and shows a summary |
 | `npx bezel-film voices` | Records a short line in eight recommended voices |
 | `npx bezel-film setup` | Does the one-time downloads (voice and browser) |
@@ -157,7 +159,8 @@ Maps work at country and region scale, so places in the same city sit on top of 
 
 | Setting | Options | Default |
 | --- | --- | --- |
-| `style` | `data-story` (`product-launch` and `whiteboard` are coming) | required |
+| `style` | `data-story`, see [Styles and fonts](#styles-and-fonts) | required |
+| `font` | a pairing, see [Styles and fonts](#styles-and-fonts) | the style's choice |
 | `format.preset` | a platform, see [Platforms](#platforms) | none |
 | `format.aspect` | `16:9`, `9:16`, `4:5`, `1:1` | from the preset, or `16:9` |
 | `format.resolution` | `720p`, `1080p`, `4k` | from the preset, or `1080p` |
@@ -175,6 +178,27 @@ Maps work at country and region scale, so places in the same city sit on top of 
 | `sfx.volume` | `0` to `1`, where `0` turns them off. See [Sound effects](#sound-effects) | `0.5` |
 | `captions` | `true`, `false` | `true` |
 | `motion` | `calm`, `lively`, `punchy`, see [Motion](#motion) | the style's choice (`lively`) |
+
+### Styles and fonts
+
+A style is the film's look: its colours, backdrop, fonts and motion. `data-story` is the first, and more are on the way in v0.6.0.
+
+Each style has its own fonts, and `font` swaps them for another pairing. A pairing is a heading font and a body font chosen to suit each other, so they never clash:
+
+| Pairing | Headings and body | Feel |
+| --- | --- | --- |
+| `grotesk` | Space Grotesk and Inter | Modern and confident. Tech, data and product stories |
+| `editorial` | Fraunces and Source Serif 4 | A magazine serif. Considered, classic and calm |
+| `condensed` | Oswald and Barlow | Tall and narrow, like a news headline. Fits long titles |
+| `bold` | Archivo Black and Inter | Heavy, poster-like headings with a clean body |
+| `technical` | IBM Plex Sans | Precise and engineered. Plans, systems and specs |
+| `friendly` | Nunito | Soft and rounded. Warm explainers for everyone |
+| `handwritten` | Caveat and Patrick Hand | Written by hand, like a whiteboard or a notebook |
+| `mono` | Space Mono and JetBrains Mono | Typewriter and terminal. Best with short headings |
+
+The fonts ship inside the package, so films look the same on every computer. They cover English and other languages written in the Latin alphabet, accents included (Zoë, Ştefan, Łódź). Text in other alphabets, like Persian, Japanese or Greek, falls back to a system font for now.
+
+Chart labels use the system font for now, whatever the pairing.
 
 ### Motion
 
@@ -300,7 +324,9 @@ On Linux, the voice engine also tries to download large GPU files it doesn't nee
 - **v0.4.3 (released):** motion blur
 - **v0.5.0 (released):** product stories: timeline, roadmap and map scenes
 - **v0.5.1 (released):** a draft film from a repo or README
-- **v0.6.0 onwards:** more looks, including product launch, whiteboard and sketch, cinematic, playful and minimal
+- **v0.5.2 (released):** outro links as stickers, and the Bezel Charts example film
+- **v0.6.0:** styles: eight font pairings, then Whiteboard, Dark Keynote, Swiss Grid, Risograph and Blueprint, and richer transitions between scenes
+- **After v0.6.0:** more styles in batches, towards about 30
 
 ## Contributing
 
@@ -308,12 +334,12 @@ Ideas, bug reports and pull requests are welcome. See [CONTRIBUTING.md](CONTRIBU
 
 ## Licence
 
-Bezel Film is [MIT](LICENSE) licensed. It downloads and uses these, each under its own licence:
+Bezel Film is [MIT](LICENSE) licensed. It ships or downloads and uses these, each under its own licence:
 
 - [Kokoro](https://huggingface.co/hexgrad/Kokoro-82M) voice model and [kokoro-js](https://github.com/hexgrad/kokoro): Apache 2.0
 - [Playwright](https://github.com/microsoft/playwright) and Chromium: Apache 2.0 and BSD
 - [ffmpeg](https://ffmpeg.org), via [ffmpeg-static](https://github.com/eugeneware/ffmpeg-static): GPL 3.0. It runs as a separate program and isn't part of Bezel Film's code.
-- Space Grotesk, Inter and JetBrains Mono fonts: SIL Open Font License
+- Fonts from [Fontsource](https://fontsource.org), including Inter, Fraunces, IBM Plex and Nunito: SIL Open Font License. See [fonts/CREDITS.md](fonts/CREDITS.md).
 - Instrument recordings from the [VS Chamber Orchestra: Community Edition](https://github.com/sgossner/VSCO-2-CE) by Versilian Studios: CC0 (public domain). See [instruments/CREDITS.md](instruments/CREDITS.md).
 - Music from [FreePD](https://freepd.com): public domain. See [music/CREDITS.md](music/CREDITS.md).
 - Nature recordings by richwise, cori, kvgarlic, SecureSubset, IceVFX, Extemporalist, Juandev, felix.blume and dbspin: CC0 or public domain. See [nature/CREDITS.md](nature/CREDITS.md).

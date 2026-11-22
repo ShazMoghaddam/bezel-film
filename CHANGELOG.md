@@ -5,6 +5,21 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+### Added
+
+- A `font` setting with eight font pairings: `grotesk`, `editorial`, `condensed`, `bold`, `technical`, `friendly`, `handwritten` and `mono`. Each style has its own pairing, and a film can choose another. A pairing is a heading and a body font chosen to suit each other.
+- Fonts now cover Latin Extended as well as Latin, so names such as Ştefan, Zoë and Łódź show in the film's own font.
+- `bezel-film styles` lists the styles and font pairings.
+- Each style is now a folder with its own CSS (and SVG filters if it needs them), so new styles don't touch the renderer. See `styles/README.md`.
+- Styles say whether they're light or dark, and charts follow.
+- Tests check that every style's text and colours stand out enough from its background (WCAG AA).
+
+### Changed
+
+- Fonts ship inside the package in `fonts/`: only the files films use, about 1.3 MB, each font with its licence. The Fontsource packages are no longer installed with Bezel Film.
+- The `style` list comes from the folders in `styles/`. `product-launch` and `whiteboard`, which were listed but never rendered, are gone from the schema, so `validate` now catches them. Whiteboard returns as a real style.
+- Stickers use the code font's real bold rather than one the browser draws, so their edges are crisper at the same weight.
+
 ## [0.5.2] - 2026-11-21
 
 Stickers for closing cards, and a third example film.

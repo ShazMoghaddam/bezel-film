@@ -49,7 +49,7 @@ It installs Bezel Film, adds these instructions and downloads about 230 MB once 
 
 Only `spec`, `title`, `style` and `scenes` are required. Everything else has a sensible default.
 
-Answers to settings: male voice `"voice": { "gender": "male" }`, no voice `"voice": { "engine": "none" }`, no captions `"captions": false`, a mood `"music": { "mood": "upbeat" }`, no music `"music": { "source": "none" }`, no sound effects `"sfx": { "volume": 0 }`.
+Answers to settings: male voice `"voice": { "gender": "male" }`, no voice `"voice": { "engine": "none" }`, no captions `"captions": false`, a mood `"music": { "mood": "upbeat" }`, no music `"music": { "source": "none" }`, no sound effects `"sfx": { "volume": 0 }`, other fonts `"font": "editorial"`.
 
 ## Platforms
 
@@ -87,6 +87,6 @@ Every scene can also have `id`, `narration`, `duration` (seconds), `transition` 
 - **Keep charts simple:** seven bars or fewer, short labels, one point per chart. Say the takeaway in the narration and in `chart.heading`.
 - **Keep on-screen text short.** Points under ten words. Code under fifteen lines.
 - **Six items at most** in points, timelines and roadmaps; split more across two scenes. On tall formats, four or five read best, with few `detail` lines.
-- **Use the style's defaults** for colour, type and motion. Set `motion` (`calm`, `lively`, `punchy`) only if asked.
-- **Only the `data-story` style renders today.** `product-launch`, `whiteboard` and `custom` scenes are coming, so don't use them yet.
+- **Use the style's defaults** for colour, fonts and motion. Set `font` or `motion` (`calm`, `lively`, `punchy`) only if asked.
+- **Styles and fonts:** `npx bezel-film styles` lists them. Pick the style that suits the story. `custom` scenes are coming, so don't use them yet.
 <!-- bezel-film:end -->
