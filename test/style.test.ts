@@ -87,3 +87,23 @@ describe("fonts", () => {
     }
   });
 });
+
+describe("styles made for custom scenes", () => {
+  it("have a guide and an example film that uses them", async () => {
+    for (const name of STYLES) {
+      if (!existsSync(`styles/${name}/guide.md`)) continue;
+      const film = JSON.parse(await readFile(`examples/${name}/film.json`, "utf8"));
+      expect(film.style, name).toBe(name);
+      expect(await readFile(`styles/${name}/guide.md`, "utf8"), name).toContain(`examples/${name}`);
+    }
+  });
+});
+
+describe("icons", () => {
+  it("ships the line drawings with their licence", async () => {
+    const icons = JSON.parse(await readFile("icons/icons.json", "utf8")) as Record<string, string[]>;
+    expect(Object.keys(icons).length).toBeGreaterThan(5000);
+    for (const name of ["coffee", "truck-delivery", "pig-money", "device-mobile"]) expect(icons[name]?.length, name).toBeGreaterThan(0);
+    expect(existsSync("icons/LICENSE")).toBe(true);
+  });
+});

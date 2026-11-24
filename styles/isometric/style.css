@@ -1,0 +1,15 @@
+/* Isometric world: a soft, bright day. A gentle sky-to-ground gradient sits behind
+   small worlds built with kit.iso; ready-made scenes get rounded, lifted cards. */
+.backdrop{background:
+  radial-gradient(60% 50% at 50% 30%,#FFFFFF,transparent 75%),
+  linear-gradient(180deg,#F4F6FA,#E6EAF2)}
+.grain{background:radial-gradient(ellipse at center,transparent 60%,rgb(29 36 51/.06))}
+.display{letter-spacing:-.025em}
+.heading{letter-spacing:-.02em}
+.rule{height:calc(var(--u)*.9);width:calc(var(--u)*12);background:var(--accent)}
+.card{background:var(--surface);border:0;border-radius:calc(var(--u)*2.6);
+  box-shadow:0 calc(var(--u)*1.2) 0 color-mix(in oklab,var(--surface),#1D2433 10%),0 calc(var(--u)*3) calc(var(--u)*6) rgb(29 36 51/.12)}
+.dot{box-shadow:0 calc(var(--u)*.4) 0 color-mix(in oklab,var(--c),black 25%)}
+.chip{background:var(--surface);border:0;box-shadow:0 calc(var(--u)*.4) 0 color-mix(in oklab,var(--surface),#1D2433 12%)}
+.cta{box-shadow:0 calc(var(--u)*.8) 0 color-mix(in oklab,var(--accent),black 25%)}
+.progress{background:var(--accent)}

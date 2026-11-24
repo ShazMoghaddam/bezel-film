@@ -130,6 +130,7 @@ export async function openFilmPage(browser: Browser, film: Film, style: Style, t
     reducedMotion: "no-preference",
   });
   const files: Record<string, string> = { "/index.html": buildPage(film, style, timeline, layout, options), "/runtime.js": RUNTIME_JS, "/kit.js": KIT_JS };
+  if (customs.size) files["/icons.js"] = await iconsScript();
   const disk = assetFiles(film, style);
   await context.route("**/*", async (route) => {
     const url = new URL(route.request().url());
@@ -164,6 +165,13 @@ export async function openFilmPage(browser: Browser, film: Film, style: Style, t
   if (pageErrors.length) throw new Error(`The film page hit an error: ${named(pageErrors[0]!)}`);
 
   return page;
+}
+
+/** The line drawings for kit.icon(), as a script that sets window.__bezelIcons. Read once. */
+let icons: Promise<string> | undefined;
+function iconsScript(): Promise<string> {
+  icons ??= readFile(new URL("../../icons/icons.json", import.meta.url), "utf8").then((json) => `window.__bezelIcons=${json};`);
+  return icons;
 }
 
 /** Each custom scene's file on disk, by scene index. Fails clearly if one is missing. */

@@ -20,7 +20,9 @@ Usage
   bezel-film render <film.json>     Render the film to an MP4
   bezel-film formats                List the platform presets, e.g. tiktok, linkedin-mobile
   bezel-film styles                 List the styles and font pairings
-  bezel-film guide [name]           Read a guide for agents: director, scenes
+  bezel-film guide [name]           Read a guide for agents: director, scenes,
+                                    or a style's own guide, e.g. whiteboard
+  bezel-film icons <word>           Find line drawings for custom scenes, e.g. coffee
   bezel-film voices                 Hear a short line in each recommended voice
   bezel-film setup                  Do the one-time downloads now (browser, voice and music)
   bezel-film schema                 Print the film file's JSON Schema
@@ -147,7 +149,9 @@ function styles(): number {
   const styleWidth = Math.max(...STYLE_INFO.map((style) => style.name.length));
   for (const { name, label, description, theme, font } of STYLE_INFO) {
     console.log(`  ${name.padEnd(styleWidth)}  ${label}: ${description}`);
-    console.log(`  ${"".padEnd(styleWidth)}  ${theme}, ${font} fonts`);
+    // Styles made for custom scenes have a guide for agents.
+    const guided = existsSync(new URL(`styles/${name}/guide.md`, root));
+    console.log(`  ${"".padEnd(styleWidth)}  ${theme}, ${font} fonts${guided ? `. Guide: bezel-film guide ${name}` : ""}`);
   }
   console.log("\nFont pairings. Each style has a default; choose another with \"font\": \"editorial\".\n");
   const pairings = Object.values(FONT_PAIRINGS);
@@ -188,6 +192,36 @@ async function preview(path: string | undefined, output: string | undefined, pre
     status.done();
     throw error;
   }
+}
+
+/** Search the line drawings kit.icon() can draw, by name and tags. */
+async function iconsSearch(words: string | undefined): Promise<number> {
+  const tags = JSON.parse(await readFile(new URL("icons/tags.json", root), "utf8")) as Record<string, string>;
+  if (!words) throw new UsageError("Say what to look for, e.g. bezel-film icons coffee");
+  const terms = words.toLowerCase().split(/[\s,]+/).filter(Boolean);
+  // Names that contain the word first, then drawings tagged with it.
+  const scored = Object.entries(tags)
+    .map(([name, tagText]) => {
+      let score = 0;
+      for (const term of terms) {
+        if (name === term) score += 10;
+        else if (name.split("-").includes(term)) score += 6;
+        else if (name.includes(term)) score += 3;
+        else if (tagText.split(" ").includes(term)) score += 2;
+        else return [name, 0] as const;
+      }
+      return [name, score - name.length / 100] as const;
+    })
+    .filter(([, score]) => score > 0)
+    .sort((a, b) => b[1] - a[1]);
+  if (!scored.length) {
+    console.log(`No drawings for "${words}". Try a simpler or different word.`);
+    return 1;
+  }
+  const shown = scored.slice(0, 40).map(([name]) => name);
+  console.log(`${scored.length} drawing${scored.length === 1 ? "" : "s"} for "${words}"${scored.length > 40 ? ", best 40" : ""}. Draw one with kit.icon("name").\n`);
+  console.log(`  ${shown.join("\n  ")}`);
+  return 0;
 }
 
 /** The guides agents read: in guides/, or a style's own guide.md. */
@@ -374,6 +408,8 @@ async function main(argv: string[]): Promise<number> {
       return preview(file, values.output, values.for);
     case "guide":
       return guide(file);
+    case "icons":
+      return iconsSearch(positionals.slice(1).join(" ") || undefined);
     case "render":
       return render(file, {
         output: values.output,

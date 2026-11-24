@@ -31,13 +31,14 @@ To render the example film: `npx tsx src/cli.ts render examples/northside-coffee
 | `src/init.ts`, `src/agents.ts` | `bezel-film init`, and the list of coding agents and where their instructions go. |
 | `styles/` | One folder per style: its settings (`style.json`) and look (`style.css`). See [styles/README.md](styles/README.md) to make one. |
 | `fonts/` | The fonts films use. Built by `npm run fonts` from the Fontsource packages; don't edit by hand. |
+| `icons/` | The line drawings for `kit.icon()`. Built by `npm run icons` from Tabler Icons; don't edit by hand. |
 | `guides/` | The guides agents read with `bezel-film guide`: directing a film, and writing custom scenes. Keep `scenes.md` in step with `src/render/kit.ts`. |
 | `agents/instructions.md` | The single source for every agent's instructions. |
 | `agents/generated/` | Built from the source. Don't edit these by hand. |
 | `schema/` | JSON Schema built from `src/spec/schema.ts`. Don't edit by hand. |
 | `instruments/` | Recorded instruments for the music. Built by `npm run instruments`; don't edit by hand. |
 | `maps/` | World outlines and places from Natural Earth. Built by `npm run maps`, from a pinned version with checked fingerprints; don't edit by hand. |
-| `examples/` | Example films, checked in CI. |
+| `examples/` | Example films, checked in CI. Each style made for custom scenes has one, named after it. |
 | `docs/` | The README banner and social preview, built from `docs/banner.html` by `npm run banner`, and the demo (`welcome.gif`, `welcome.mp4`), built by `npm run demo`. |
 
 ## Trying `init`

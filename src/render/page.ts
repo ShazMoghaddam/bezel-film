@@ -428,7 +428,7 @@ ${motionCss(style, levels)}
 .custom-root{position:absolute;inset:0;overflow:hidden}
 .caption{position:absolute;left:var(--cl);right:var(--cr);bottom:var(--cb);margin:0 auto;width:fit-content;max-width:var(--cw);text-align:center;opacity:0}
 .caption span{display:inline;padding:calc(var(--u)*.5) calc(var(--u)*1.6);border-radius:calc(var(--u)*1);font-weight:600;font-size:calc(var(--u)*2.8);line-height:1.6;
-  background:rgb(0 0 0/.62);box-decoration-break:clone;-webkit-box-decoration-break:clone}
+  color:#FFFFFF;background:rgb(0 0 0/.62);box-decoration-break:clone;-webkit-box-decoration-break:clone}
 .safe-overlay i{position:absolute;background:rgb(255 45 85/.3);outline:2px dashed rgb(255 45 85/.85);outline-offset:-2px}
 .progress{position:absolute;left:0;top:0;height:calc(var(--u)*.45);width:0;background:linear-gradient(90deg,var(--p0),var(--p1),var(--p3))}
 ${MAP_CSS}
@@ -535,7 +535,7 @@ export interface PageOptions {
 function customScripts(timeline: Timeline): string {
   const customs = timeline.scenes.filter((timed) => timed.scene.type === "custom");
   if (!customs.length) return "";
-  return ['<script src="/kit.js"></script>', ...customs.map((timed) => `<script src="/scenes/${timed.index}.js" data-scene="${timed.index}"></script>`)].join("\n");
+  return ['<script src="/icons.js"></script>', '<script src="/kit.js"></script>', ...customs.map((timed) => `<script src="/scenes/${timed.index}.js" data-scene="${timed.index}"></script>`)].join("\n");
 }
 
 export function buildPage(film: Film, style: Style, timeline: Timeline, frame: Layout, options: PageOptions = {}): string {

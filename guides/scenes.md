@@ -106,11 +106,24 @@ return (t) => plan.draw(t);
 
 `line` works with any SVG shape that has a stroke: `path`, `line`, `polyline`, `circle`, `rect`. With `pen: true`, a marker pen follows the tip as it draws, lifting between strokes. Leave the pen out for a cleaner look.
 
+**Drawing kit**
+
+| | |
+| --- | --- |
+| `kit.stage()` | A full-frame SVG layer whose units are the frame's pixels. Put shapes from the parts below on it |
+| `kit.text(parent, words, { x, y, size, font, colour, align })` | Words placed by a point: `align` is `"left"`, `"center"` or `"right"`. `size` is in `kit.u`; `font` is `"heading"`, `"body"` or `"mono"` |
+| `kit.icon(name, { x, y, size, colour })` | A line drawing from the bundled set of 5,491 (Tabler Icons). Returns `{ svg, paths }`; draw it in with `plan.sequence(at, icon.paths)`. Find names with `npx bezel-film icons coffee` |
+| `kit.rough` | Hand-drawn path data: `line`, `rect`, `ellipse`, `underline`, and `arrow` (which returns `{ shaft, head }`). Each takes a `seed`, so it's drawn the same way every time |
+| `kit.figure(stage, { x, y, height, face })` | A stick figure standing at `(x, y)`. `.pose("wave")`, `.pose("stand", "cheer", p)` to blend, `.walk(t)`, `.move(x, y)`, `.face("sad")`, `.hand("right")`. Poses: `stand`, `wave`, `point`, `present`, `think`, `cheer`, `shrug`, `hold`, `sad`, `sit`, `walkA`, `walkB` |
+| `kit.iso({ x, y, unit })` | Isometric drawing: `.box(stage, { x, y, z, w, d, h, colour })` (change it later with `.set({ h })`), `.tile`, `.tree`, `.grid`, and `.at(x, y, z)` for a screen point |
+| `kit.dimension(stage, x1, y1, x2, y2, { label, offset })` | A measurement, as on a technical drawing. Returns `{ paths, label }` to draw in |
+
 ## Good practice
 
 - **Lay out from `kit.safe` and `kit.u`**, never fixed pixel numbers, so the scene works from TikTok to a wide LinkedIn video. Check every format the film is for with `preview --for`.
 - **Keep words big**: at least `kit.u * 3.5` for body text, more for headings.
 - **Use the style's colours and fonts** from the kit, so your scene belongs to the film.
+- **Move first, draw the pen last.** In your draw function, pose figures and move shapes first, then call `plan.draw(t)`. The pen follows lines as they are at that moment, so if it goes first it trails a frame behind, and `preview` will say the scene draws differently each time.
 - **Build once, move in draw.** Making elements inside `draw` is slow and is the most common mistake.
 - **Own work only.** Draw your own pictures with SVG paths and shapes, or use files the user gave you. Don't copy drawings, logos or characters from elsewhere.
 - **Nothing from the internet.** Rendering is offline and every outside request is blocked. Put pictures and fonts in the film's folder and load them with `kit.asset`.

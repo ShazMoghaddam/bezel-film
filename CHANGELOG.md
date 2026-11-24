@@ -7,6 +7,22 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ### Added
 
+- Four styles made for custom scenes, each with a guide for agents (`bezel-film guide <style>`) and an example film:
+  - **Whiteboard**: a marker pen draws and writes each idea as it's spoken.
+  - **Stick figures**: stick people act the idea out on notebook paper.
+  - **Isometric world**: a small world where blocks rise and things move through it.
+  - **Blueprint**: technical drawings plotted in white on blue paper.
+- More in the scene kit: `kit.icon()` with 5,491 line drawings (Tabler Icons, MIT), hand-drawn shapes (`kit.rough`), posable stick figures (`kit.figure`), isometric blocks, tiles and trees (`kit.iso`), technical measurements (`kit.dimension`), plus `kit.stage()` and `kit.text()` for laying things out.
+- `bezel-film icons <word>` finds line drawings by name and tag.
+- `bezel-film styles` says which styles have a guide.
+
+### Fixed
+
+- Captions keep white text in light styles, where they used to take the style's dark text colour.
+- Handwritten words drawn in by the pen are no longer clipped at their last letter.
+
+### Added
+
 - Custom scenes: an agent can write a whole scene in code, in a small file next to the film (`"type": "custom", "file": "scenes/intro.js"`), with `props` for its words and numbers and `sounds` to land with its movement. Custom and ready-made scenes mix in one film.
 - The scene kit every custom scene builds with: the safe area, the style's colours and fonts, when each sentence is spoken, springs and easing, and lines and words that draw themselves, with an optional marker pen following the tip.
 - `bezel-film preview`: stills of every scene and a contact sheet in seconds, so an agent can look at its work before rendering.

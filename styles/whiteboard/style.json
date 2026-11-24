@@ -1,0 +1,35 @@
+{
+  "name": "whiteboard",
+  "label": "Whiteboard",
+  "description": "Explainers drawn live in marker: the pen writes headings, sketches each idea as it's spoken and joins them with arrows.",
+  "theme": "light",
+  "font": "handwritten",
+  "colours": {
+    "background": "#F6F6F1",
+    "surface": "#FFFFFF",
+    "text": "#1E2430",
+    "muted": "#4F5666",
+    "accent": "#D7263D",
+    "palette": [
+      "#1D4ED8",
+      "#D7263D",
+      "#15803D",
+      "#7C3AED",
+      "#C2410C",
+      "#0E7490",
+      "#1E2430"
+    ]
+  },
+  "motion": {
+    "level": "calm",
+    "easing": "cubic-bezier(0.22, 1, 0.36, 1)",
+    "enterMs": 600,
+    "staggerMs": 90,
+    "transition": "fade",
+    "transitionMs": 400
+  },
+  "layout": {
+    "safeArea": 0.08,
+    "captionPosition": "bottom"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "name": "isometric",
+  "label": "Isometric world",
+  "description": "A small world seen from above at an angle: blocks rise, roads unroll and things move through it to show how it works.",
+  "theme": "light",
+  "font": "friendly",
+  "colours": {
+    "background": "#EEF1F6",
+    "surface": "#FFFFFF",
+    "text": "#1D2433",
+    "muted": "#4E5A72",
+    "accent": "#4C6FFF",
+    "palette": [
+      "#4C6FFF",
+      "#E5533D",
+      "#1E9467",
+      "#B7770A",
+      "#8A4FD8",
+      "#0E7C9A",
+      "#D6336C"
+    ]
+  },
+  "motion": {
+    "level": "lively",
+    "easing": "cubic-bezier(0.22, 1, 0.36, 1)",
+    "enterMs": 600,
+    "staggerMs": 90,
+    "transition": "fade",
+    "transitionMs": 450
+  },
+  "layout": {
+    "safeArea": 0.08,
+    "captionPosition": "bottom"
+  }
+}

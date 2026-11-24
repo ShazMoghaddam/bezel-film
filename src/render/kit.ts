@@ -136,6 +136,10 @@ export const KIT_JS = String.raw`
      * Lines that draw themselves, and words that write themselves, in order, with an
      * optional marker pen following the tip. Add marks, then call plan.draw(t) in draw.
      */
+    // How much of a line of text shows as it's written. Handwriting leans and loops past
+    // its box, so the reveal starts a little before it and ends a little after.
+    const reveal = (p) => "inset(-40% " + ((1 - p) * 125 - 15).toFixed(2) + "% -40% -15%)";
+
     function drawing({ pen = false, penColour } = {}) {
       const marks = [];
       let penEl = null;
@@ -156,7 +160,7 @@ export const KIT_JS = String.raw`
         },
         /** Text that writes itself left to right, as if by hand. */
         write(node, { at = 0, duration = 0.8, how = "linear" } = {}) {
-          node.style.clipPath = "inset(-40% 100% -40% -10%)";
+          node.style.clipPath = reveal(0);
           marks.push({ kind: "text", node, at, duration, how });
           return plan;
         },
@@ -183,7 +187,7 @@ export const KIT_JS = String.raw`
           for (const m of marks) {
             const p = progress(t, m.at, m.duration, m.how);
             if (m.kind === "line") m.node.style.strokeDashoffset = String(m.length * (1 - p));
-            else m.node.style.clipPath = "inset(-40% " + (1 - p) * 100 + "% -40% -10%)";
+            else m.node.style.clipPath = reveal(p);
           }
           if (penEl) placePen(t);
         },
@@ -239,6 +243,311 @@ export const KIT_JS = String.raw`
       return plan;
     }
 
+    /**
+     * A full-frame SVG layer whose units are the frame's own pixels, so shapes from
+     * kit.rough, kit.figure, kit.iso and kit.dimension can be placed with kit.safe.
+     */
+    function stage(parent = root) {
+      return svg("svg", { viewBox: "0 0 " + width + " " + height, width, height,
+        style: "position:absolute;left:0;top:0;overflow:visible" }, parent);
+    }
+
+    /** Text placed by its anchor point: align "left", "center" or "right", like a label on a drawing. */
+    function text(parent, content, { x = 0, y = 0, size = 4, font = "body", weight, colour, align = "left", maxWidth, style: extra } = {}) {
+      const family = info.fonts[font] || font;
+      const node = el("div", { text: content, style: {
+        position: "absolute", left: x + "px", top: y + "px", font: (weight || (font === "heading" ? 700 : 500)) + " " + size * u + "px/1.15 " + family,
+        color: colour || info.colours.text, whiteSpace: maxWidth ? "normal" : "nowrap", width: maxWidth ? maxWidth + "px" : "",
+        translate: align === "center" ? "-50% 0" : align === "right" ? "-100% 0" : "0 0", textAlign: align, ...(extra || {}) } }, parent);
+      return node;
+    }
+
+    /**
+     * A line drawing from the bundled set (Tabler Icons, 24 by 24, MIT). Returns the SVG
+     * and its strokes, so plan.sequence(at, icon.paths) draws it in stroke by stroke.
+     */
+    function icon(name, { parent = root, x = 0, y = 0, size = u * 12, colour, width: px = u * 0.55 } = {}) {
+      const strokes = window.__bezelIcons && window.__bezelIcons[name];
+      if (!strokes) {
+        const all = window.__bezelIcons ? Object.keys(window.__bezelIcons) : [];
+        const word = String(name).split("-")[0];
+        const near = all.filter((n) => n.includes(word)).slice(0, 6);
+        throw new Error('There\'s no drawing called "' + name + '".' + (near.length ? " Close ones: " + near.join(", ") + "." : "") + " Search with: npx bezel-film icons <word>");
+      }
+      const box = svg("svg", { viewBox: "0 0 24 24", width: size, height: size, fill: "none", stroke: colour || info.colours.text,
+        "stroke-width": (px * 24) / size, "stroke-linecap": "round", "stroke-linejoin": "round",
+        style: "position:absolute;left:" + x + "px;top:" + y + "px;overflow:visible" }, parent);
+      const paths = strokes.map((d) => svg("path", { d }, box));
+      return { svg: box, paths };
+    }
+
+    // Hand-drawn shapes: lines that bow a little, corners that overshoot, loops that
+    // don't quite close. Each takes a seed, so the same shape is drawn the same way.
+    const wob = (rand, amount) => (rand() - 0.5) * 2 * amount;
+    const rough = {
+      line(x1, y1, x2, y2, { wobble = 1, seed = 1 } = {}) {
+        const rand = seeded(seed * 7919 + Math.round(x1 + y2 * 3));
+        const len = Math.hypot(x2 - x1, y2 - y1) || 1;
+        const w = Math.min(u * 0.9, len * 0.04) * wobble;
+        const nx = -(y2 - y1) / len, ny = (x2 - x1) / len;
+        const bow = wob(rand, w * 1.4);
+        const c1 = [x1 + (x2 - x1) * 0.3 + nx * bow + wob(rand, w), y1 + (y2 - y1) * 0.3 + ny * bow + wob(rand, w)];
+        const c2 = [x1 + (x2 - x1) * 0.7 + nx * bow + wob(rand, w), y1 + (y2 - y1) * 0.7 + ny * bow + wob(rand, w)];
+        return "M" + (x1 + wob(rand, w * 0.5)) + " " + (y1 + wob(rand, w * 0.5)) + " C" + c1 + " " + c2 + " " + (x2 + wob(rand, w * 0.5)) + " " + (y2 + wob(rand, w * 0.5));
+      },
+      /** A box drawn as four strokes, each corner overshooting slightly. */
+      rect(x, y, w, h, { wobble = 1, seed = 1 } = {}) {
+        const o = u * 0.6 * wobble;
+        return [
+          rough.line(x - o, y, x + w + o * 0.5, y, { wobble, seed }),
+          rough.line(x + w, y - o * 0.5, x + w, y + h + o, { wobble, seed: seed + 1 }),
+          rough.line(x + w + o * 0.4, y + h, x - o * 0.6, y + h, { wobble, seed: seed + 2 }),
+          rough.line(x, y + h + o * 0.4, x, y - o, { wobble, seed: seed + 3 }),
+        ].join(" ");
+      },
+      /** A loop drawn in one go that overshoots where it started, as a hand does. */
+      ellipse(cx, cy, rx, ry, { wobble = 1, seed = 1, turns = 1.06 } = {}) {
+        const rand = seeded(seed * 104729 + Math.round(cx));
+        const steps = 64, start = rand() * Math.PI * 2, drift = wob(rand, 0.05) * wobble;
+        let d = "";
+        for (let i = 0; i <= steps; i++) {
+          const a = start + (i / steps) * Math.PI * 2 * turns;
+          const k = 1 + drift * (i / steps) + Math.sin(a * 3 + start) * 0.012 * wobble;
+          const px = cx + Math.cos(a) * rx * k, py = cy + Math.sin(a) * ry * k;
+          d += (i ? " L" : "M") + px.toFixed(1) + " " + py.toFixed(1);
+        }
+        return d;
+      },
+      /** An arrow that curves, with an open head. Returns { shaft, head } path data. */
+      arrow(x1, y1, x2, y2, { curve = 0.18, head = u * 2.4, seed = 1 } = {}) {
+        const rand = seeded(seed * 31 + Math.round(x2));
+        const len = Math.hypot(x2 - x1, y2 - y1) || 1;
+        const nx = -(y2 - y1) / len, ny = (x2 - x1) / len;
+        const mx = (x1 + x2) / 2 + nx * len * curve, my = (y1 + y2) / 2 + ny * len * curve;
+        const shaft = "M" + x1 + " " + y1 + " Q" + mx + " " + my + " " + x2 + " " + y2;
+        const ang = Math.atan2(y2 - my, x2 - mx), spread = 0.5 + wob(rand, 0.06);
+        const hx1 = x2 - Math.cos(ang - spread) * head, hy1 = y2 - Math.sin(ang - spread) * head;
+        const hx2 = x2 - Math.cos(ang + spread) * head, hy2 = y2 - Math.sin(ang + spread) * head;
+        return { shaft, head: "M" + hx1 + " " + hy1 + " L" + x2 + " " + y2 + " L" + hx2 + " " + hy2 };
+      },
+      /** A quick underline, slightly rising, with a small hook at the end. */
+      underline(x, y, w, { seed = 1 } = {}) {
+        const rand = seeded(seed * 13 + Math.round(w));
+        const rise = wob(rand, u * 0.5) - u * 0.3;
+        return "M" + x + " " + (y + wob(rand, u * 0.3)) + " C" + (x + w * 0.35) + " " + (y - u * 0.5) + " " + (x + w * 0.7) + " " + (y + u * 0.4) + " " + (x + w) + " " + (y + rise);
+      },
+    };
+
+    /**
+     * A stick figure, posed by its joints. f.pose("wave") sets a pose; f.pose("stand",
+     * "cheer", p) blends two; f.walk(t) walks on the spot. Move it with f.move(x, y) or
+     * f.group's transform. f.paths draws it in with kit.drawing.
+     */
+    const POSES = {
+      // Seen from the front. Angles in degrees: 0 hangs straight down, positive swings
+      // to the figure's right (our right), negative to its left. Elbows and knees bend
+      // from the limb above. The arms start at the shoulders, below the head.
+      stand: { lean: 0, head: 0, ls: -14, le: 4, rs: 14, re: -4, lh: -7, lk: 1, rh: 7, rk: -1 },
+      wave: { lean: -2, head: -5, ls: -14, le: 4, rs: 118, re: 42, lh: -7, lk: 1, rh: 7, rk: -1 },
+      point: { lean: 3, head: 6, ls: -14, le: 6, rs: 88, re: 2, lh: -8, lk: 1, rh: 9, rk: -1 },
+      present: { lean: 0, head: 8, ls: -16, le: 6, rs: 58, re: 34, lh: -7, lk: 1, rh: 8, rk: -1 },
+      think: { lean: 0, head: -10, ls: -12, le: 4, rs: 38, re: 118, lh: -6, lk: 1, rh: 6, rk: -1 },
+      cheer: { lean: 0, head: 0, ls: -132, le: -14, rs: 132, re: 14, lh: -13, lk: 2, rh: 13, rk: -2 },
+      shrug: { lean: 0, head: 10, ls: -62, le: -88, rs: 62, re: 88, lh: -7, lk: 1, rh: 7, rk: -1 },
+      hold: { lean: 0, head: 4, ls: -34, le: 76, rs: 34, re: -76, lh: -7, lk: 1, rh: 7, rk: -1 },
+      sad: { lean: 5, head: 18, ls: -5, le: 2, rs: 5, re: -2, lh: -5, lk: 1, rh: 5, rk: -1 },
+      // Side-on poses, facing right: flip the figure to face left.
+      sit: { lean: -4, head: 0, ls: 16, le: 50, rs: 24, re: 56, lh: 86, lk: -86, rh: 90, rk: -90 },
+      walkA: { lean: 4, head: 0, ls: -24, le: 14, rs: 24, re: 18, lh: 24, lk: -6, rh: -20, rk: -24 },
+      walkB: { lean: 4, head: 0, ls: 24, le: 18, rs: -24, re: 14, lh: -20, lk: -24, rh: 24, rk: -6 },
+    };
+    const JOINTS = ["lean", "head", "ls", "le", "rs", "re", "lh", "lk", "rh", "rk"];
+    function figure(parent, { x = width / 2, y = height * 0.8, height: h = u * 30, colour, width: px = u * 0.7, face = "happy", flip = false } = {}) {
+      const ink = colour || info.colours.text;
+      const group = svg("g", { fill: "none", stroke: ink, "stroke-width": px, "stroke-linecap": "round", "stroke-linejoin": "round" }, parent);
+      const inner = svg("g", {}, group);
+      const part = () => svg("path", {}, inner);
+      const head = part(), body = part(), armL = part(), armR = part(), legL = part(), legR = part();
+      const faceGroup = svg("g", { fill: ink, stroke: "none" }, inner);
+      const eyeL = svg("circle", { r: h * 0.012 }, faceGroup), eyeR = svg("circle", { r: h * 0.012 }, faceGroup);
+      const mouth = svg("path", { fill: "none", stroke: ink, "stroke-width": px * 0.7 }, faceGroup);
+      const L = { headR: h * 0.085, neck: h * 0.035, torso: h * 0.33, upper: h * 0.16, fore: h * 0.15, thigh: h * 0.22, shin: h * 0.21 };
+      const rad = (deg) => (deg * Math.PI) / 180;
+      // A limb from a joint: angle 0 hangs straight down.
+      const from = (p, len, deg) => ({ x: p.x + Math.sin(rad(deg)) * len, y: p.y + Math.cos(rad(deg)) * len });
+      let current = { ...POSES.stand };
+      let pos = { x, y };
+      const resolve = (p) => (typeof p === "string" ? POSES[p] || (() => { throw new Error('No pose called "' + p + '". Poses: ' + Object.keys(POSES).join(", ")); })() : { ...POSES.stand, ...p });
+
+      function render() {
+        const p = current;
+        const hip = { x: 0, y: -(L.thigh + L.shin) };
+        const top = from(hip, -L.torso, p.lean); // up the torso
+        const shoulder = { x: hip.x + (top.x - hip.x) * 0.86, y: hip.y + (top.y - hip.y) * 0.86 };
+        const neckTop = from(top, -L.neck, p.lean);
+        const headC = from(neckTop, -L.headR, p.lean + p.head * 0.6);
+        head.setAttribute("d", "M" + (headC.x + L.headR) + " " + headC.y + " a" + L.headR + " " + L.headR + " 0 1 0 " + -2 * L.headR + " 0 a" + L.headR + " " + L.headR + " 0 1 0 " + 2 * L.headR + " 0");
+        body.setAttribute("d", "M" + neckTop.x + " " + neckTop.y + " L" + hip.x + " " + hip.y);
+        const limb = (start, a1, l1, a2, l2) => {
+          const mid = from(start, l1, a1);
+          const end = from(mid, l2, a1 + a2);
+          return "M" + start.x + " " + start.y + " L" + mid.x + " " + mid.y + " L" + end.x + " " + end.y;
+        };
+        armL.setAttribute("d", limb(shoulder, p.ls, L.upper, p.le, L.fore));
+        armR.setAttribute("d", limb(shoulder, p.rs, L.upper, p.re, L.fore));
+        legL.setAttribute("d", limb(hip, p.lh, L.thigh, p.lk, L.shin));
+        legR.setAttribute("d", limb(hip, p.rh, L.thigh, p.rk, L.shin));
+        // A simple face, looking the way the head tilts.
+        const look = Math.sin(rad(p.head)) * L.headR * 0.3;
+        eyeL.setAttribute("cx", headC.x - L.headR * 0.32 + look + L.headR * 0.18);
+        eyeR.setAttribute("cx", headC.x + L.headR * 0.32 + look + L.headR * 0.18);
+        eyeL.setAttribute("cy", headC.y - L.headR * 0.12);
+        eyeR.setAttribute("cy", headC.y - L.headR * 0.12);
+        const mx = headC.x + look + L.headR * 0.18, my = headC.y + L.headR * 0.38, mw = L.headR * 0.34;
+        const curve = face === "happy" ? L.headR * 0.22 : face === "sad" ? -L.headR * 0.2 : face === "surprised" ? 0 : L.headR * 0.04;
+        mouth.setAttribute("d", face === "surprised" ? "M" + (mx + L.headR * 0.09) + " " + my + " a" + L.headR * 0.09 + " " + L.headR * 0.11 + " 0 1 0 0.01 0"
+          : "M" + (mx - mw) + " " + (my - curve * 0.3) + " Q" + mx + " " + (my + curve) + " " + (mx + mw) + " " + (my - curve * 0.3));
+        faceGroup.style.display = face === "none" ? "none" : "";
+        inner.setAttribute("transform", flip ? "scale(-1 1)" : "");
+        group.setAttribute("transform", "translate(" + pos.x + " " + pos.y + ")");
+      }
+
+      const api = {
+        group,
+        /** The figure's strokes in drawing order: head, body, arms, legs. */
+        paths: [head, body, armL, armR, legL, legR],
+        poses: Object.keys(POSES),
+        /** Set a pose, or blend from a to b by p (0 to 1). Poses are names or joint angles. */
+        pose(a, b, p) {
+          const from = resolve(a);
+          if (b === undefined) current = { ...from };
+          else {
+            const to = resolve(b), k = clamp(p ?? 0);
+            current = {};
+            for (const j of JOINTS) current[j] = lerp(from[j] ?? 0, to[j] ?? 0, k);
+          }
+          render();
+          return api;
+        },
+        /** Walk on the spot: call with t, and move the figure yourself for it to go somewhere. */
+        walk(t, { stepsPerSecond = 2 } = {}) {
+          const k = (Math.sin(t * Math.PI * stepsPerSecond) + 1) / 2;
+          return api.pose("walkA", "walkB", k);
+        },
+        move(nx, ny) {
+          pos = { x: nx, y: ny ?? pos.y };
+          render();
+          return api;
+        },
+        face(kind) {
+          face = kind;
+          render();
+          return api;
+        },
+        /** Where a hand is now, in the stage's pixels: for something to hold or point at. */
+        hand(side = "right") {
+          const d = (side === "right" ? armR : armL).getAttribute("d").split(" L");
+          const [hx, hy] = d[d.length - 1].split(" ").map(Number);
+          return { x: pos.x + (flip ? -hx : hx), y: pos.y + hy };
+        },
+      };
+      render();
+      return api;
+    }
+
+    /**
+     * Isometric drawing: points, boxes and tiles on a grid seen from above at 30°.
+     * kit.iso({ x, y, unit }) puts grid point (0, 0, 0) at (x, y); one grid step is unit pixels.
+     */
+    function iso({ x: ox = width / 2, y: oy = height / 2, unit = u * 6 } = {}) {
+      const c = Math.cos(Math.PI / 6), s = Math.sin(Math.PI / 6);
+      const at = (gx, gy, gz = 0) => ({ x: ox + (gx - gy) * c * unit, y: oy + (gx + gy) * s * unit - gz * unit });
+      const pts = (list) => list.map((p) => p.x.toFixed(1) + "," + p.y.toFixed(1)).join(" ");
+      const shade = (colour, amount) => "color-mix(in oklab, " + colour + ", " + (amount > 0 ? "white " + amount * 100 : "black " + -amount * 100) + "%)";
+      return {
+        at,
+        /**
+         * A box from (x, y, z), w along x, d along y and h tall. Faces are lit from the
+         * top left. box.set({ h, z, ... }) changes it, e.g. to grow a bar from the ground.
+         */
+        box(parent, { x = 0, y = 0, z = 0, w = 1, d = 1, h = 1, colour = info.colours.accent, stroke = "none", strokeWidth = u * 0.25, edges = true } = {}) {
+          const g = svg("g", { "stroke-linejoin": "round", stroke, "stroke-width": strokeWidth }, parent);
+          const left = svg("polygon", { fill: shade(colour, -0.12) }, g);
+          const right = svg("polygon", { fill: shade(colour, -0.32) }, g);
+          // A thin light edge round the top catches the light, the way a real block does.
+          const top = svg("polygon", { fill: shade(colour, 0.22), ...(edges && stroke === "none" ? { stroke: shade(colour, 0.55), "stroke-width": Math.max(1, u * 0.12) } : {}) }, g);
+          let b = { x, y, z, w, d, h };
+          const draw = () => {
+            const { x, y, z, w, d, h } = b;
+            const H = Math.max(0, h);
+            top.setAttribute("points", pts([at(x, y, z + H), at(x + w, y, z + H), at(x + w, y + d, z + H), at(x, y + d, z + H)]));
+            left.setAttribute("points", pts([at(x, y + d, z), at(x + w, y + d, z), at(x + w, y + d, z + H), at(x, y + d, z + H)]));
+            right.setAttribute("points", pts([at(x + w, y, z), at(x + w, y + d, z), at(x + w, y + d, z + H), at(x + w, y, z + H)]));
+          };
+          draw();
+          return { group: g, top, left, right, set(next) { b = { ...b, ...next }; draw(); return this; }, get box() { return { ...b }; } };
+        },
+        /** A flat tile on the ground (or at height z): floors, roads, water. */
+        tile(parent, { x = 0, y = 0, z = 0, w = 1, d = 1, colour = info.colours.surface, stroke = "none", shadow = false } = {}) {
+          return svg("polygon", { points: pts([at(x, y, z), at(x + w, y, z), at(x + w, y + d, z), at(x, y + d, z)]), fill: colour, stroke,
+            // A ground with a soft shadow under it looks like a model on a table.
+            ...(shadow ? { style: "filter:drop-shadow(0 " + unit * 0.5 + "px " + unit * 0.8 + "px rgb(29 36 51 / .18))" } : {}) }, parent);
+        },
+        /** A round tree: a short trunk and a two-tone crown. tree.set({ grow }) grows it from 0 to 1. */
+        tree(parent, { x = 0, y = 0, size = 1, colour = "#3FA66B" } = {}) {
+          const g = svg("g", {}, parent);
+          const trunk = this.box(g, { x: x - 0.08 * size, y: y - 0.08 * size, w: 0.16 * size, d: 0.16 * size, h: 0.5 * size, colour: "#8A5A3C", edges: false });
+          const c = at(x, y, 0.95 * size);
+          const r = unit * 0.5 * size;
+          const crown = svg("circle", { cx: c.x, cy: c.y, r, fill: colour }, g);
+          const light = svg("circle", { cx: c.x - r * 0.28, cy: c.y - r * 0.3, r: r * 0.55, fill: shade(colour, 0.25) }, g);
+          const base = at(x, y, 0);
+          return {
+            group: g,
+            set({ grow = 1 } = {}) {
+              g.style.transformOrigin = base.x + "px " + base.y + "px";
+              g.style.transform = "scale(" + Math.max(0, grow) + ")";
+              return this;
+            },
+          };
+        },
+        /** A grid of lines on the ground, from (0, 0) to (cols, rows). */
+        grid(parent, { cols = 8, rows = 8, colour = info.colours.muted, width: px = 1, opacity = 0.35 } = {}) {
+          const g = svg("g", { stroke: colour, "stroke-width": px, opacity }, parent);
+          for (let i = 0; i <= cols; i++) { const a = at(i, 0), b = at(i, rows); svg("line", { x1: a.x, y1: a.y, x2: b.x, y2: b.y }, g); }
+          for (let j = 0; j <= rows; j++) { const a = at(0, j), b = at(cols, j); svg("line", { x1: a.x, y1: a.y, x2: b.x, y2: b.y }, g); }
+          return g;
+        },
+      };
+    }
+
+    /**
+     * A dimension line, as on a technical drawing: extension marks at both ends, arrow
+     * ticks and a label in the middle. Returns { group, paths, label } to draw in.
+     */
+    function dimension(parent, x1, y1, x2, y2, { label = "", offset = u * 3, colour = info.colours.text, width: px = Math.max(1, u * 0.18), size = 2.4 } = {}) {
+      const len = Math.hypot(x2 - x1, y2 - y1) || 1;
+      const nx = -(y2 - y1) / len, ny = (x2 - x1) / len;
+      const ax = x1 + nx * offset, ay = y1 + ny * offset, bx = x2 + nx * offset, by = y2 + ny * offset;
+      const g = svg("g", { fill: "none", stroke: colour, "stroke-width": px, "stroke-linecap": "round" }, parent);
+      const ext1 = svg("path", { d: "M" + x1 + " " + y1 + " L" + (ax + nx * u) + " " + (ay + ny * u) }, g);
+      const ext2 = svg("path", { d: "M" + x2 + " " + y2 + " L" + (bx + nx * u) + " " + (by + ny * u) }, g);
+      const line = svg("path", { d: "M" + ax + " " + ay + " L" + bx + " " + by }, g);
+      const t = u * 1.1, dx = (x2 - x1) / len, dy = (y2 - y1) / len;
+      const ticks = svg("path", { d: "M" + (ax - (dx - nx) * t * 0.7) + " " + (ay - (dy - ny) * t * 0.7) + " L" + (ax + (dx - nx) * t * 0.7) + " " + (ay + (dy - ny) * t * 0.7) +
+        " M" + (bx - (dx - nx) * t * 0.7) + " " + (by - (dy - ny) * t * 0.7) + " L" + (bx + (dx - nx) * t * 0.7) + " " + (by + (dy - ny) * t * 0.7) }, g);
+      let labelEl = null;
+      if (label) {
+        const angle = (Math.atan2(y2 - y1, x2 - x1) * 180) / Math.PI;
+        const upright = angle > 90 || angle < -90 ? angle + 180 : angle;
+        // The label sits on the side of the line away from what it measures.
+        const side = offset >= 0 ? 1 : -1;
+        labelEl = text(root, label, { x: (ax + bx) / 2 + nx * side * u * 2.6, y: (ay + by) / 2 + ny * side * u * 2.6, size, font: "mono", colour, align: "center",
+          style: { translate: "-50% -50%", rotate: upright + "deg", padding: "0 " + u * 0.6 + "px" } });
+      }
+      return { group: g, paths: [ext1, ext2, line, ticks], label: labelEl };
+    }
+
     return {
       root,
       index,
@@ -267,6 +576,13 @@ export const KIT_JS = String.raw`
       drawing,
       /** A file from the film's folder, e.g. kit.asset("pictures/shop.png"). */
       asset: (path) => "/files/" + String(path).split("/").map(encodeURIComponent).join("/"),
+      stage,
+      text,
+      icon,
+      rough,
+      figure,
+      iso,
+      dimension,
     };
   }
 

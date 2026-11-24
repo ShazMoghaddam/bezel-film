@@ -64,7 +64,7 @@ It reads the README, `package.json` or `pyproject.toml`, the changelog and (for 
 - **Private and offline.** After the one-time download, nothing leaves your computer.
 - **Smooth and repeatable.** Every frame is drawn on a frozen clock, so films look the same on any computer, every time.
 
-> **Early days:** there's one visual style so far. More styles are on the [roadmap](#roadmap).
+> **Styles:** five so far: Data story, Whiteboard, Stick figures, Isometric world and Blueprint. About twenty more are on the [roadmap](#roadmap).
 
 ## Reference
 
@@ -80,7 +80,8 @@ Everything below is for when you want to go further or edit films by hand.
 | `npx bezel-film render <film.json>` | Renders a film to an MP4 and a cover image next to the film file (`-o` to choose another path) |
 | `npx bezel-film formats` | Lists the platform presets |
 | `npx bezel-film styles` | Lists the styles and font pairings |
-| `npx bezel-film guide [name]` | Prints a guide for agents: `director` (planning a film) or `scenes` (writing custom scenes) |
+| `npx bezel-film guide [name]` | Prints a guide for agents: `director` (planning a film), `scenes` (writing custom scenes), or a style's own, e.g. `whiteboard` |
+| `npx bezel-film icons <word>` | Finds line drawings for custom scenes, e.g. `coffee` |
 | `npx bezel-film validate <film.json>` | Checks a film file and shows a summary |
 | `npx bezel-film voices` | Records a short line in eight recommended voices |
 | `npx bezel-film setup` | Does the one-time downloads (voice and browser) |
@@ -194,14 +195,24 @@ When the ready-made scenes can't show something, a `custom` scene can. Your agen
 
 The scene draws everything in its part of the film, while Bezel Film adds the voice, captions, music, transitions and every platform's format around it. Custom and ready-made scenes mix freely, so a hand-drawn scene can lead into a real chart. See `examples/custom-scenes` for a working film.
 
-- **A kit to build with.** Every scene gets the frame's safe area, the style's colours and fonts, when each sentence is spoken, springs and easing, and lines and words that draw themselves, with an optional marker pen following the tip.
+- **A kit to build with.** Every scene gets the frame's safe area, the style's colours and fonts, when each sentence is spoken, springs and easing, and lines and words that draw themselves, with an optional marker pen following the tip. It also has 5,491 line drawings to draw with (`npx bezel-film icons coffee` finds them), hand-drawn shapes, posable stick figures, isometric blocks and technical measurements.
 - **Guides.** `npx bezel-film guide director` walks an agent through planning a film like a director: the hook, the script, the shots, the sound and a quality check. `npx bezel-film guide scenes` is the kit's reference.
 - **Checks.** `preview` and `render` check every custom scene: it must draw the same picture every time it's asked for the same moment, keep its words inside the safe area, keep them readable, and draw quickly. Each problem names the scene and how to fix it, so your agent can fix it without you.
 - **Safe and offline.** Scene code runs in the same sealed browser as everything else: every outside request is blocked, and it can only load files from the film's own folder. Your agent uses its usual connection to write the code; Bezel Film itself never goes online.
 
 ### Styles and fonts
 
-A style is the film's look: its colours, backdrop, fonts and motion. `data-story` is the first, and more are on the way in v0.6.0.
+A style is the film's look: its colours, backdrop, fonts and the way things move. Each one is a different kind of film, not just a new colour scheme:
+
+| Style | What you get | Good for |
+| --- | --- | --- |
+| `data-story` | Clean, chart-led scenes with big numbers and bold colour | Data, results, product updates |
+| `whiteboard` | A marker pen draws and writes each idea as it's spoken | Explainers, lessons, how things work |
+| `stick-figures` | Stick people act the idea out on notebook paper | Habits, choices, stories about people |
+| `isometric` | A small 3D-looking world where blocks rise and things move through it | Journeys, systems, how things get made |
+| `blueprint` | Technical drawings plotted in white on blue paper | Products, hardware, specs |
+
+Whiteboard, Stick figures, Isometric world and Blueprint are made for [custom scenes](#custom-scenes): your agent draws each film from scratch in the style, so no two films look alike. Each has a guide for agents (`npx bezel-film guide whiteboard`) and an example film in `examples/`. Ready-made scenes take on their look too.
 
 Each style has its own fonts, and `font` swaps them for another pairing. A pairing is a heading font and a body font chosen to suit each other, so they never clash:
 
@@ -345,8 +356,8 @@ On Linux, the voice engine also tries to download large GPU files it doesn't nee
 - **v0.5.0 (released):** product stories: timeline, roadmap and map scenes
 - **v0.5.1 (released):** a draft film from a repo or README
 - **v0.5.2 (released):** outro links as stickers, and the Bezel Charts example film
-- **v0.6.0:** styles: eight font pairings, then Whiteboard, Dark Keynote, Swiss Grid, Risograph and Blueprint, and richer transitions between scenes
-- **After v0.6.0:** more styles in batches, towards about 30
+- **v0.6.0:** eight font pairings, custom scenes drawn by your agent, and the first styles made for them: Whiteboard, Stick figures, Isometric world and Blueprint
+- **After v0.6.0:** sixteen more styles in batches of four: data on paper, cartoons, manga, pop-up and crayon books, origami, paper lantern, watercolour, Swiss poster, pop art, risograph, neon, dark keynote, pixel game and retro terminal
 
 ## Contributing
 
@@ -360,6 +371,7 @@ Bezel Film is [MIT](LICENSE) licensed. It ships or downloads and uses these, eac
 - [Playwright](https://github.com/microsoft/playwright) and Chromium: Apache 2.0 and BSD
 - [ffmpeg](https://ffmpeg.org), via [ffmpeg-static](https://github.com/eugeneware/ffmpeg-static): GPL 3.0. It runs as a separate program and isn't part of Bezel Film's code.
 - Fonts from [Fontsource](https://fontsource.org), including Inter, Fraunces, IBM Plex and Nunito: SIL Open Font License. See [fonts/CREDITS.md](fonts/CREDITS.md).
+- [Tabler Icons](https://tabler.io/icons), the line drawings custom scenes draw with: MIT. See [icons/CREDITS.md](icons/CREDITS.md).
 - Instrument recordings from the [VS Chamber Orchestra: Community Edition](https://github.com/sgossner/VSCO-2-CE) by Versilian Studios: CC0 (public domain). See [instruments/CREDITS.md](instruments/CREDITS.md).
 - Music from [FreePD](https://freepd.com): public domain. See [music/CREDITS.md](music/CREDITS.md).
 - Nature recordings by richwise, cori, kvgarlic, SecureSubset, IceVFX, Extemporalist, Juandev, felix.blume and dbspin: CC0 or public domain. See [nature/CREDITS.md](nature/CREDITS.md).

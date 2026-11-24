@@ -113,4 +113,7 @@ Every scene can also have `id`, `narration`, `duration` (seconds), `transition` 
 <!-- /full -->
 - **Use the style's defaults** for colour, fonts and motion. Set `font` or `motion` (`calm`, `lively`, `punchy`) only if asked.
 - **Styles and fonts:** `npx bezel-film styles` lists them. Pick the style that suits the story.
-- **For a film that has to be great, or any custom scene,** read `npx bezel-film guide director` first and follow it.
+<!-- compact: - **For a great film or any custom scene,** read `npx bezel-film guide director` and the style's guide (`guide <style>`). -->
+<!-- full -->
+- **For a film that has to be great, or any custom scene,** read `npx bezel-film guide director` first and follow it. Styles made for custom scenes, like `whiteboard`, have their own guide too: read it with `npx bezel-film guide <style>`, and look at the example film it names.
+<!-- /full -->
