@@ -1,0 +1,11 @@
+/* 1950s cartoon: warm cream paper, flat colour, simple shapes. Custom scenes build
+   backgrounds from flat blocks and move characters pose to pose (kit.stepped). */
+.backdrop{background:radial-gradient(70% 60% at 50% 40%,#FBF4E8,transparent 80%)}
+.grain{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.16 0 0 0 0 0.14 0 0 0 0 0.13 0 0 0 0.35 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");opacity:.25;mix-blend-mode:multiply}
+.display,.heading{text-transform:uppercase;letter-spacing:.02em}
+.rule{height:calc(var(--u)*1);width:calc(var(--u)*16);border-radius:99px;background:var(--accent)}
+.card{background:var(--surface);border:calc(var(--u)*.35) solid var(--text);border-radius:calc(var(--u)*2.4);box-shadow:calc(var(--u)*.9) calc(var(--u)*.9) 0 var(--p0)}
+.dot{border:calc(var(--u)*.3) solid var(--text);box-shadow:none}
+.chip{background:var(--p2);color:var(--surface);border:0}
+.stat-value{text-shadow:calc(var(--u)*.6) calc(var(--u)*.6) 0 color-mix(in srgb,var(--p0) 45%,transparent)}
+.progress{background:var(--accent)}

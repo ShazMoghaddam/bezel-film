@@ -1,0 +1,35 @@
+{
+  "name": "manga",
+  "label": "Manga",
+  "description": "A black-and-white comic page: panels open on the beat, with speed lines, screentone and big sound-effect lettering.",
+  "theme": "light",
+  "font": "bold",
+  "colours": {
+    "background": "#FBFBF8",
+    "surface": "#FFFFFF",
+    "text": "#111111",
+    "muted": "#4A4A4A",
+    "accent": "#D7192A",
+    "palette": [
+      "#D7192A",
+      "#111111",
+      "#1E3A8A",
+      "#4A4A4A",
+      "#0F766E",
+      "#7C2D12",
+      "#6D28D9"
+    ]
+  },
+  "motion": {
+    "level": "punchy",
+    "easing": "cubic-bezier(0.22, 1, 0.36, 1)",
+    "enterMs": 600,
+    "staggerMs": 90,
+    "transition": "cut",
+    "transitionMs": 0
+  },
+  "layout": {
+    "safeArea": 0.08,
+    "captionPosition": "bottom"
+  }
+}

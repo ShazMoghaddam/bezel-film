@@ -24,13 +24,19 @@ export interface Problem {
 
 /** Contrast below this, for text of any size, is hard to read. WCAG asks 3 for large text, 4.5 for body text. */
 const MIN_CONTRAST = 3;
+/**
+ * Two draws of the same moment count as the same picture if no more than this share of
+ * pixels clearly differs. The browser can smooth an edge a little differently depending
+ * on where something was the moment before, which changes a few pixels and nothing else.
+ */
+const SAME_PICTURE = 0.0005;
 /** A frame that takes longer than this to draw makes renders slow. */
 const SLOW_MS = 120;
 
 interface BezelPage {
   __bezel: {
     seek(seconds: number, still?: boolean): void;
-    inspect(index: number): { safe: Box & { top: number; right: number; bottom: number; left: number }; texts: { text: string; colour: string; rect: Box }[] } | null;
+    inspect(index: number): { safe: Box & { top: number; right: number; bottom: number; left: number }; texts: { text: string; colour: string; background: string | null; rect: Box }[] } | null;
   };
 }
 interface Box {
@@ -58,7 +64,8 @@ export async function checkCustomScenes(page: Page, film: Film, timeline: Timeli
       const first = await shot(page);
       await seek(page, timed.start + 0.02);
       await seek(page, at);
-      if (!first.equals(await shot(page))) {
+      const second = await shot(page);
+      if (!first.equals(second) && (await changedShare(page, first, second)) > SAME_PICTURE) {
         add(
           "error",
           `draws a different picture each time it's asked for ${(at - timed.start).toFixed(1)}s. Draw each frame from t alone: no Math.random() or Date.now() in draw, and nothing that adds up from one frame to the next.`,
@@ -69,6 +76,8 @@ export async function checkCustomScenes(page: Page, film: Film, timeline: Timeli
 
     // Speed: a few frames across the scene.
     const times = Array.from({ length: 8 }, (_, i) => timed.start + (length * (i + 0.5)) / 8);
+    // One frame first, untimed, so a cold browser doesn't count against the scene.
+    await seek(page, times[0]!);
     const started = performance.now();
     for (const t of times) await seek(page, t);
     const perFrame = (performance.now() - started) / times.length;
@@ -137,13 +146,44 @@ export async function checkCustomScenes(page: Page, film: Film, timeline: Timeli
     );
     texts.forEach((t, i) => {
       const ink = rgb(t.colour);
-      const ground = grounds[i];
+      const ground = (t.background && rgb(t.background)) || grounds[i];
       if (!ink || !ground) return;
       const ratio = contrast(hex(ink), hex(ground));
       if (ratio < MIN_CONTRAST) add("warning", `"${t.text}" is hard to read: its colour stands out from the background by only ${ratio.toFixed(1)} to 1. Aim for at least 4.5 to 1 (kit.colours.text on kit.colours.background is safe).`);
     });
   }
   return problems;
+}
+
+/** The share of pixels that clearly differ between two screenshots (0 to 1), worked out in the page. */
+async function changedShare(page: Page, a: Buffer, b: Buffer): Promise<number> {
+  return page.evaluate(
+    async ([a, b]) => {
+      // Browser code: the page's own Image and canvas (this project's types are for Node).
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const browser = globalThis as any;
+      // No named functions in here: the dev runner wraps them in a helper the page lacks.
+      const [pa, pb] = (await Promise.all(
+        [a!, b!].map(async (data) => {
+          const img = new browser.Image();
+          img.src = "data:image/png;base64," + data;
+          await img.decode();
+          const canvas = browser.document.createElement("canvas");
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const g = canvas.getContext("2d", { willReadFrequently: true });
+          g.drawImage(img, 0, 0);
+          return g.getImageData(0, 0, img.width, img.height).data;
+        }),
+      )) as [Uint8ClampedArray, Uint8ClampedArray];
+      let changed = 0;
+      for (let i = 0; i < pa.length; i += 4) {
+        if (Math.abs(pa[i]! - pb[i]!) + Math.abs(pa[i + 1]! - pb[i + 1]!) + Math.abs(pa[i + 2]! - pb[i + 2]!) > 48) changed++;
+      }
+      return changed / (pa.length / 4);
+    },
+    [a.toString("base64"), b.toString("base64")],
+  );
 }
 
 /** "rgb(12, 34, 56)" or "rgba(...)" as numbers; null for anything else. */

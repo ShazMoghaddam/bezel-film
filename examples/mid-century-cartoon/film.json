@@ -1,0 +1,51 @@
+{
+  "$schema": "../../schema/film.schema.json",
+  "spec": 1,
+  "title": "Better coffee in three steps",
+  "style": "mid-century-cartoon",
+  "format": { "aspect": "16:9", "resolution": "1080p", "fps": 30 },
+  "voice": { "engine": "kokoro", "gender": "male" },
+  "music": { "source": "generated", "mood": "upbeat" },
+  "scenes": [
+    {
+      "id": "title",
+      "type": "custom",
+      "file": "scenes/title.js",
+      "props": { "kicker": "How to make", "title": "Better coffee", "sub": "in three easy steps" },
+      "narration": "Want a better cup of coffee at home? It only takes three easy steps.",
+      "sounds": [{ "at": 1.0, "sound": "pop", "gain": 0.6 }]
+    },
+    {
+      "id": "grind",
+      "type": "custom",
+      "file": "scenes/step.js",
+      "props": { "number": "1", "title": "Grind fresh", "prop": "grinder" },
+      "narration": "One: grind your beans fresh, just before you brew.",
+      "sounds": [{ "at": 1.2, "sound": "tick", "gain": 0.5 }, { "at": 1.5, "sound": "tick", "gain": 0.5 }, { "at": 1.8, "sound": "tick", "gain": 0.5 }]
+    },
+    {
+      "id": "water",
+      "type": "custom",
+      "file": "scenes/step.js",
+      "props": { "number": "2", "title": "Not too hot", "prop": "kettle", "reading": "94°C" },
+      "narration": "Two: let the water rest off the boil, to about ninety-four degrees.",
+      "sounds": [{ "at": 2.2, "sound": "ding", "gain": 0.4 }]
+    },
+    {
+      "id": "wait",
+      "type": "custom",
+      "file": "scenes/step.js",
+      "props": { "number": "3", "title": "Wait four minutes", "prop": "clock" },
+      "narration": "Three: give it four minutes to brew, then press and pour.",
+      "sounds": [{ "at": 1.0, "sound": "tick", "gain": 0.4 }, { "at": 2.0, "sound": "tick", "gain": 0.4 }, { "at": 3.0, "sound": "tick", "gain": 0.4 }]
+    },
+    {
+      "id": "enjoy",
+      "type": "custom",
+      "file": "scenes/enjoy.js",
+      "props": { "title": "Enjoy!" },
+      "narration": "Then sit back, and enjoy it.",
+      "sounds": [{ "at": 0.8, "sound": "pop", "gain": 0.5 }]
+    }
+  ]
+}

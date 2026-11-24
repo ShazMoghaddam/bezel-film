@@ -1,0 +1,35 @@
+{
+  "name": "data-on-paper",
+  "label": "Data on paper",
+  "description": "A data journal on graph paper: charts drawn mark by mark in coloured pencil, hatched fills and handwritten notes.",
+  "theme": "light",
+  "font": "editorial",
+  "colours": {
+    "background": "#FBFAF5",
+    "surface": "#FFFFFF",
+    "text": "#2B2A28",
+    "muted": "#5E5B55",
+    "accent": "#C0392B",
+    "palette": [
+      "#2F5D8A",
+      "#C0392B",
+      "#2E7D4F",
+      "#B35C00",
+      "#6B4C9A",
+      "#0F6E73",
+      "#3A3A3A"
+    ]
+  },
+  "motion": {
+    "level": "calm",
+    "easing": "cubic-bezier(0.22, 1, 0.36, 1)",
+    "enterMs": 600,
+    "staggerMs": 90,
+    "transition": "fade",
+    "transitionMs": 400
+  },
+  "layout": {
+    "safeArea": 0.08,
+    "captionPosition": "bottom"
+  }
+}

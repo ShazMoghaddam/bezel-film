@@ -1,0 +1,15 @@
+/* 1930s cartoon: black ink on warm grey film stock, with a dark vignette and a little
+   grain. Custom scenes add the flicker and the bounce. */
+.backdrop{background:radial-gradient(70% 65% at 50% 45%,#F4EFE2,transparent 80%)}
+.grain{background:
+  radial-gradient(ellipse at center,transparent 50%,rgb(22 20 18/.42) 100%),
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.09 0 0 0 0 0.08 0 0 0 0 0.07 0 0 0 0.6 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity:.9;mix-blend-mode:multiply;
+  /* Over everything, scenes included, the way grain and vignette sit on real old film. */
+  z-index:3}
+.display{letter-spacing:0}
+.rule{height:calc(var(--u)*.5);width:calc(var(--u)*24);background:var(--text)}
+.card{background:var(--surface);border:calc(var(--u)*.4) solid var(--text);border-radius:calc(var(--u)*1.2);box-shadow:none}
+.dot{background:var(--text);box-shadow:none}
+.chip{background:var(--text);color:var(--surface);border:0}
+.progress{background:var(--text)}

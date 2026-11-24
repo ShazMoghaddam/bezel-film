@@ -1,0 +1,11 @@
+/* Manga: clean white paper and black ink. Custom scenes lay out panels with kit.panels,
+   and add speed lines, screentone and sound-effect lettering. */
+.backdrop{background:#FBFBF8}
+.display,.heading{letter-spacing:-.01em}
+.rule{height:calc(var(--u)*.8);width:calc(var(--u)*20);border-radius:0;background:var(--text)}
+.card{background:#FFFFFF;border:calc(var(--u)*.5) solid var(--text);border-radius:0;box-shadow:none}
+.dot{border-radius:0;box-shadow:none}
+.chip{border-radius:0;background:var(--text);color:#FFFFFF;border:0}
+.stat-value{color:var(--text);-webkit-text-stroke:calc(var(--u)*.25) var(--text);paint-order:stroke fill}
+.quote-mark{color:var(--accent)}
+.progress{background:var(--accent)}

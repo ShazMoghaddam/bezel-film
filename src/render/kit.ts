@@ -456,6 +456,203 @@ export const KIT_JS = String.raw`
     }
 
     /**
+     * A cartoon character: a bean-shaped body with a face, arms and legs, posed with the
+     * same poses as kit.figure. kind "rubber" gives bendy hose limbs, white gloves and
+     * big shoes, like 1930s cartoons; kind "flat" gives thin straight limbs and a
+     * rounded box body, like 1950s cartoons. It squashes and stretches with t.squash(k).
+     */
+    function toon(parent, { x = width / 2, y = height * 0.8, height: H = u * 34, colour = "#FFFFFF", ink = "#1A1A1A", kind = "rubber", face: faceKind = "happy", flip = false, tongue: tongueColour = "#D9534F" } = {}) {
+      const rubber = kind !== "flat";
+      const legLen = H * 0.27, armLen = H * 0.3;
+      const bodyH = H * 0.52, bodyW = H * (rubber ? 0.44 : 0.4);
+      const bodyCY = -(legLen + bodyH * 0.48);
+      const lw = Math.max(1.5, H * (rubber ? 0.022 : 0.016));
+      const group = svg("g", {}, parent);
+      const inner = svg("g", {}, group);
+      const limbs = svg("g", { fill: "none", stroke: ink, "stroke-width": rubber ? H * 0.045 : H * 0.022, "stroke-linecap": "round" }, inner);
+      const legL = svg("path", {}, limbs), legR = svg("path", {}, limbs);
+      const shoes = svg("g", { fill: ink }, inner);
+      const shoeL = svg("ellipse", { rx: H * (rubber ? 0.08 : 0.055), ry: H * (rubber ? 0.045 : 0.03) }, shoes);
+      const shoeR = svg("ellipse", { rx: H * (rubber ? 0.08 : 0.055), ry: H * (rubber ? 0.045 : 0.03) }, shoes);
+      const body = rubber
+        ? svg("path", { d: "M0 " + (bodyCY - bodyH / 2) + " C" + bodyW * 0.62 + " " + (bodyCY - bodyH / 2) + " " + bodyW * 0.58 + " " + (bodyCY + bodyH / 2) + " 0 " + (bodyCY + bodyH / 2) +
+            " C" + -bodyW * 0.58 + " " + (bodyCY + bodyH / 2) + " " + -bodyW * 0.62 + " " + (bodyCY - bodyH / 2) + " 0 " + (bodyCY - bodyH / 2) + " Z",
+            fill: colour, stroke: ink, "stroke-width": lw }, inner)
+        : svg("rect", { x: -bodyW / 2, y: bodyCY - bodyH / 2, width: bodyW, height: bodyH, rx: H * 0.09, fill: colour, stroke: ink, "stroke-width": lw }, inner);
+      const arms = svg("g", { fill: "none", stroke: ink, "stroke-width": rubber ? H * 0.04 : H * 0.022, "stroke-linecap": "round" }, inner);
+      const armL = svg("path", {}, arms), armR = svg("path", {}, arms);
+      const hands = svg("g", { fill: rubber ? "#FFFFFF" : ink, stroke: ink, "stroke-width": lw * 0.8 }, inner);
+      const handL = svg("circle", { r: H * (rubber ? 0.05 : 0.022) }, hands), handR = svg("circle", { r: H * (rubber ? 0.05 : 0.022) }, hands);
+      // The face: eyes and a mouth, on the top of the body.
+      const faceG = svg("g", {}, inner);
+      const eyeY = bodyCY - bodyH * 0.16;
+      const eyes = [-1, 1].map((side) => {
+        const g = svg("g", {}, faceG);
+        if (rubber) {
+          svg("ellipse", { cx: side * H * 0.055, cy: eyeY, rx: H * 0.045, ry: H * 0.068, fill: "#FFFFFF", stroke: ink, "stroke-width": lw * 0.8 }, g);
+          // A "pie" pupil: an oval with a small wedge cut out to catch the light.
+          svg("ellipse", { cx: side * H * 0.06, cy: eyeY + H * 0.012, rx: H * 0.026, ry: H * 0.045, fill: ink }, g);
+          svg("path", { d: "M" + (side * H * 0.06 + H * 0.004) + " " + (eyeY - H * 0.004) + " l" + H * 0.022 + " " + -H * 0.026 + " l" + H * 0.004 + " " + H * 0.02 + " Z", fill: "#FFFFFF" }, g);
+        } else {
+          svg("circle", { cx: side * H * 0.06, cy: eyeY, r: H * 0.02, fill: ink }, g);
+          svg("path", { d: "M" + (side * H * 0.06 - H * 0.03) + " " + (eyeY - H * 0.05) + " l" + H * 0.06 + " " + side * H * 0.01, stroke: ink, "stroke-width": lw, "stroke-linecap": "round" }, g);
+        }
+        return g;
+      });
+      const mouth = svg("path", { stroke: ink, "stroke-width": lw, "stroke-linecap": "round", "stroke-linejoin": "round" }, faceG);
+      const tongue = svg("path", { fill: tongueColour }, faceG);
+
+      let current = { ...POSES.stand };
+      let pos = { x, y }, squashK = 0, lookK = 0;
+      const rad = (deg) => (deg * Math.PI) / 180;
+      const from = (p, len, deg) => ({ x: p.x + Math.sin(rad(deg)) * len, y: p.y + Math.cos(rad(deg)) * len });
+      const resolve = (p) => (typeof p === "string" ? POSES[p] || (() => { throw new Error('No pose called "' + p + '". Poses: ' + Object.keys(POSES).join(", ")); })() : { ...POSES.stand, ...p });
+
+      function limb(start, a1, len, a2) {
+        const mid = from(start, len / 2, a1);
+        const end = from(mid, len / 2, a1 + a2);
+        if (!rubber) return { d: "M" + start.x + " " + start.y + " L" + mid.x + " " + mid.y + " L" + end.x + " " + end.y, end };
+        // A hose: one smooth curve that bends through the elbow, never an angle.
+        // Even a straight hose bows a little, outwards from the body, so it never looks stiff.
+        const dx = end.x - start.x, dy = end.y - start.y, l = Math.hypot(dx, dy) || 1;
+        const side = start.x + end.x >= 0 ? 1 : -1;
+        const bow = len * 0.14 * side;
+        const cx = mid.x + (mid.x - (start.x + end.x) / 2) * 0.8 + (dy / l) * bow, cy = mid.y + (mid.y - (start.y + end.y) / 2) * 0.8 - (dx / l) * bow;
+        return { d: "M" + start.x + " " + start.y + " Q" + cx + " " + cy + " " + end.x + " " + end.y, end };
+      }
+
+      function render() {
+        const p = current;
+        const shoulderY = bodyCY + bodyH * 0.02;
+        const sL = { x: -bodyW * 0.46, y: shoulderY }, sR = { x: bodyW * 0.46, y: shoulderY };
+        const hL = { x: -H * 0.08, y: -legLen }, hR = { x: H * 0.08, y: -legLen };
+        // Arms swing out from the body's sides, so a resting arm hangs a little away from it.
+        const aL = limb(sL, p.ls - 14, armLen, p.le), aR = limb(sR, p.rs + 14, armLen, p.re);
+        armL.setAttribute("d", aL.d); armR.setAttribute("d", aR.d);
+        handL.setAttribute("cx", aL.end.x); handL.setAttribute("cy", aL.end.y);
+        handR.setAttribute("cx", aR.end.x); handR.setAttribute("cy", aR.end.y);
+        const lL = limb(hL, p.lh, legLen, p.lk), lR = limb(hR, p.rh, legLen, p.rk);
+        legL.setAttribute("d", lL.d); legR.setAttribute("d", lR.d);
+        // Shoes point outwards, the way cartoon feet do.
+        shoeL.setAttribute("cx", lL.end.x - H * 0.03); shoeL.setAttribute("cy", lL.end.y);
+        shoeR.setAttribute("cx", lR.end.x + H * 0.03); shoeR.setAttribute("cy", lR.end.y);
+        const look = lookK * H * 0.05;
+        faceG.setAttribute("transform", "translate(" + look + " 0)");
+        const my = bodyCY + bodyH * 0.06, mw = H * 0.09;
+        tongue.setAttribute("d", "");
+        if (faceKind === "open" || faceKind === "surprised") {
+          const r = faceKind === "open" ? mw : mw * 0.45;
+          mouth.setAttribute("d", "M" + -r + " " + my + " Q0 " + (my + r * 1.6) + " " + r + " " + my + " Z");
+          mouth.setAttribute("fill", ink);
+          if (faceKind === "open") tongue.setAttribute("d", "M" + -r * 0.5 + " " + (my + r * 0.75) + " Q0 " + (my + r * 0.35) + " " + r * 0.5 + " " + (my + r * 0.75) + " Q0 " + (my + r * 1.3) + " " + -r * 0.5 + " " + (my + r * 0.75) + " Z");
+        } else {
+          const curve = faceKind === "sad" ? -mw * 0.5 : faceKind === "neutral" ? 0 : mw * 0.7;
+          mouth.setAttribute("d", "M" + -mw + " " + (my - curve * 0.2) + " Q0 " + (my + curve) + " " + mw + " " + (my - curve * 0.2));
+          mouth.setAttribute("fill", "none");
+        }
+        const sx = 1 + squashK * 0.14, sy = 1 - squashK * 0.14;
+        inner.setAttribute("transform", (flip ? "scale(-1 1) " : "") + "scale(" + sx + " " + sy + ")");
+        group.setAttribute("transform", "translate(" + pos.x + " " + pos.y + ")");
+      }
+
+      const api = {
+        group,
+        poses: Object.keys(POSES),
+        pose(a, b, p) {
+          const fromP = resolve(a);
+          if (b === undefined) current = { ...fromP };
+          else {
+            const to = resolve(b), k = clamp(p ?? 0);
+            current = {};
+            for (const j of JOINTS) current[j] = lerp(fromP[j] ?? 0, to[j] ?? 0, k);
+          }
+          render();
+          return api;
+        },
+        walk(t, { stepsPerSecond = 2 } = {}) {
+          return api.pose("walkA", "walkB", (Math.sin(t * Math.PI * stepsPerSecond) + 1) / 2);
+        },
+        move(nx, ny) { pos = { x: nx, y: ny ?? pos.y }; render(); return api; },
+        /** Squash (positive, wider and shorter) or stretch (negative), about -1 to 1. */
+        squash(k) { squashK = k; render(); return api; },
+        /** Look left (-1) to right (1). */
+        look(k) { lookK = k; render(); return api; },
+        face(kindName) { faceKind = kindName; render(); return api; },
+        hand(side = "right") {
+          const c = side === "right" ? handR : handL;
+          return { x: pos.x + (flip ? -1 : 1) * Number(c.getAttribute("cx")), y: pos.y + Number(c.getAttribute("cy")) };
+        },
+      };
+      render();
+      return api;
+    }
+
+    /**
+     * Time that moves in steps, like animation drawn "on twos": stepped(t, 12) holds each
+     * pose for a twelfth of a second. Pass it to springs and progress for a hand-made feel.
+     */
+    const stepped = (t, fps = 12) => Math.floor(t * fps + 1e-6) / fps;
+
+    /** Comic panels laid out inside an area (kit.safe by default), with even gutters. Each rect is x, y, w, h as fractions. */
+    function panels(rects, { area = safe, gutter = u * 1.6 } = {}) {
+      return rects.map(([fx, fy, fw, fh]) => ({
+        x: area.x + fx * area.width + (fx > 0 ? gutter / 2 : 0),
+        y: area.y + fy * area.height + (fy > 0 ? gutter / 2 : 0),
+        width: fw * area.width - (fx > 0 ? gutter / 2 : 0) - (fx + fw < 0.999 ? gutter / 2 : 0),
+        height: fh * area.height - (fy > 0 ? gutter / 2 : 0) - (fy + fh < 0.999 ? gutter / 2 : 0),
+      }));
+    }
+
+    /**
+     * Manga speed lines. kind "focus" radiates thin wedges from (cx, cy) towards the edges
+     * of a box; kind "motion" draws parallel streaks at an angle. Returns the group.
+     */
+    function speedLines(parent, { kind = "focus", cx = width / 2, cy = height / 2, box = { x: 0, y: 0, width, height }, count = 90, inner = u * 18, angle = 0, colour = "#111111", seed = 1 } = {}) {
+      const rand = seeded(seed * 977);
+      const g = svg("g", { fill: colour }, parent);
+      const reach = Math.hypot(box.width, box.height);
+      for (let i = 0; i < count; i++) {
+        if (kind === "focus") {
+          const a = (i / count) * Math.PI * 2 + rand() * 0.04;
+          const r0 = inner * (0.8 + rand() * 0.6), w = (0.004 + rand() * 0.01);
+          const p1 = [cx + Math.cos(a - w) * reach, cy + Math.sin(a - w) * reach];
+          const p2 = [cx + Math.cos(a + w) * reach, cy + Math.sin(a + w) * reach];
+          const tip = [cx + Math.cos(a) * r0, cy + Math.sin(a) * r0];
+          svg("polygon", { points: [tip, p1, p2].map((p) => p.join(",")).join(" ") }, g);
+        } else {
+          const rad = (angle * Math.PI) / 180, dx = Math.cos(rad), dy = Math.sin(rad);
+          const off = (rand() - 0.5) * reach, len = reach * (0.2 + rand() * 0.5), at = (rand() - 0.5) * reach;
+          const ox = box.x + box.width / 2 - dy * off + dx * at, oy = box.y + box.height / 2 + dx * off + dy * at;
+          const w = u * (0.08 + rand() * 0.25);
+          svg("polygon", { points: [[ox, oy], [ox + dx * len - dy * w, oy + dy * len + dx * w], [ox + dx * len + dy * w, oy + dy * len - dx * w]].map((p) => p.join(",")).join(" ") }, g);
+        }
+      }
+      // Keep the lines inside their panel.
+      const clipId = "bf-speed-" + index + "-" + seed + "-" + Math.round(box.x);
+      const clip = svg("clipPath", { id: clipId }, svg("defs", {}, parent));
+      svg("rect", { x: box.x, y: box.y, width: box.width, height: box.height }, clip);
+      g.setAttribute("clip-path", "url(#" + clipId + ")");
+      return g;
+    }
+
+    /**
+     * A screentone or hatch to fill shapes with, as in print: kind "dots", "lines" or
+     * "cross". Returns a fill value, e.g. shape.setAttribute("fill", kit.tone(stage)).
+     */
+    let tones = 0;
+    function tone(parent, { kind = "dots", size = u * 1.2, colour = "#111111", weight = 0.35, angle = 45 } = {}) {
+      const id = "bf-tone-" + index + "-" + tones++;
+      const defs = svg("defs", {}, parent);
+      const p = svg("pattern", { id, patternUnits: "userSpaceOnUse", width: size, height: size, patternTransform: "rotate(" + angle + ")" }, defs);
+      if (kind === "dots") svg("circle", { cx: size / 2, cy: size / 2, r: (size / 2) * weight * 1.6, fill: colour }, p);
+      else {
+        svg("rect", { x: 0, y: 0, width: size, height: size * weight * 0.6, fill: colour }, p);
+        if (kind === "cross") svg("rect", { x: 0, y: 0, width: size * weight * 0.6, height: size, fill: colour }, p);
+      }
+      return "url(#" + id + ")";
+    }
+
+    /**
      * Isometric drawing: points, boxes and tiles on a grid seen from above at 30°.
      * kit.iso({ x, y, unit }) puts grid point (0, 0, 0) at (x, y); one grid step is unit pixels.
      */
@@ -583,6 +780,11 @@ export const KIT_JS = String.raw`
       figure,
       iso,
       dimension,
+      toon,
+      stepped,
+      panels,
+      speedLines,
+      tone,
     };
   }
 

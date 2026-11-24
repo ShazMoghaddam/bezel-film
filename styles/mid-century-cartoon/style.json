@@ -1,0 +1,35 @@
+{
+  "name": "mid-century-cartoon",
+  "label": "1950s cartoon",
+  "description": "Flat colour and simple geometric characters, with snappy pose-to-pose movement like classic limited animation.",
+  "theme": "light",
+  "font": "condensed",
+  "colours": {
+    "background": "#F3EBDD",
+    "surface": "#FFF8EC",
+    "text": "#2A2522",
+    "muted": "#5C534A",
+    "accent": "#C8433E",
+    "palette": [
+      "#2E7F80",
+      "#C8433E",
+      "#A66F0F",
+      "#3F6FA8",
+      "#7A5BA6",
+      "#B5532A",
+      "#2A2522"
+    ]
+  },
+  "motion": {
+    "level": "punchy",
+    "easing": "cubic-bezier(0.22, 1, 0.36, 1)",
+    "enterMs": 600,
+    "staggerMs": 90,
+    "transition": "cut",
+    "transitionMs": 0
+  },
+  "layout": {
+    "safeArea": 0.08,
+    "captionPosition": "bottom"
+  }
+}
