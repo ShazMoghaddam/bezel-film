@@ -1,0 +1,35 @@
+{
+  "name": "paper-lantern",
+  "label": "Paper lantern",
+  "description": "Cut paper layers lit from behind at night: silhouettes in deep blues, warm glowing windows and a slow drift between the layers.",
+  "theme": "dark",
+  "font": "editorial",
+  "colours": {
+    "background": "#121A33",
+    "surface": "#1B2547",
+    "text": "#F6EAD4",
+    "muted": "#C2BBD0",
+    "accent": "#FFB547",
+    "palette": [
+      "#FFB547",
+      "#F27A5E",
+      "#7FD1C7",
+      "#9DB4FF",
+      "#E9A3D0",
+      "#C6E07A",
+      "#F6EAD4"
+    ]
+  },
+  "motion": {
+    "level": "calm",
+    "easing": "cubic-bezier(0.22, 1, 0.36, 1)",
+    "enterMs": 700,
+    "staggerMs": 90,
+    "transition": "fade",
+    "transitionMs": 500
+  },
+  "layout": {
+    "safeArea": 0.08,
+    "captionPosition": "bottom"
+  }
+}

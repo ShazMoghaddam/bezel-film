@@ -1,0 +1,35 @@
+{
+  "name": "pop-up-book",
+  "label": "Pop-up book",
+  "description": "A storybook spread where card scenes spring up off the page: thick paper cut-outs with white rims, soft shadows and pull tabs.",
+  "theme": "light",
+  "font": "friendly",
+  "colours": {
+    "background": "#F6EEDC",
+    "surface": "#FFFDF7",
+    "text": "#2A2320",
+    "muted": "#5F544B",
+    "accent": "#C8412A",
+    "palette": [
+      "#2F7D5B",
+      "#C8412A",
+      "#2B6CB0",
+      "#B35A06",
+      "#7A4FA3",
+      "#0E7C86",
+      "#3B3029"
+    ]
+  },
+  "motion": {
+    "level": "lively",
+    "easing": "cubic-bezier(0.22, 1, 0.36, 1)",
+    "enterMs": 600,
+    "staggerMs": 90,
+    "transition": "fade",
+    "transitionMs": 350
+  },
+  "layout": {
+    "safeArea": 0.08,
+    "captionPosition": "bottom"
+  }
+}

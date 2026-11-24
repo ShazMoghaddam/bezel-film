@@ -1,0 +1,11 @@
+/* Crayon book: wax crayon on dark blue sugar paper. The paper's fibres show through;
+   scenes draw with filter #crayon for the waxy edge and #wash for watercolour. */
+.backdrop{background:radial-gradient(80% 70% at 50% 40%,#26335C,transparent 85%)}
+.grain{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.012 0.9' numOctaves='3' seed='4' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.75 0 0 0 0 0.78 0 0 0 0 0.9 0 0 0 0.5 -0.1'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");opacity:.34;mix-blend-mode:screen}
+.display,.heading{letter-spacing:.01em;filter:url(#crayon)}
+.rule{height:calc(var(--u)*1);width:calc(var(--u)*20);border-radius:var(--u);background:var(--accent);filter:url(#crayon)}
+.card{background:rgb(40 53 94/.85);border:calc(var(--u)*.4) solid rgb(247 241 227/.7);border-radius:calc(var(--u)*1.6);box-shadow:none;filter:url(#crayon)}
+.chip{background:transparent;border:calc(var(--u)*.3) solid var(--muted);border-radius:calc(var(--u)*3)}
+.dot{box-shadow:none;filter:url(#crayon)}
+.stat-value{filter:url(#crayon)}
+.progress{background:var(--accent)}

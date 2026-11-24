@@ -122,6 +122,11 @@ return (t) => plan.draw(t);
 | `kit.panels([[x, y, w, h], ...])` | Comic panels inside `kit.safe`, given as fractions, with even gutters |
 | `kit.speedLines(stage, { kind, cx, cy, box })` | Manga speed lines: `"focus"` bursts from a point, `"motion"` streaks at an `angle`. Clipped to `box` |
 | `kit.tone(stage, { kind, size, colour, weight, angle })` | Screentone or hatching to use as a fill: `"dots"`, `"lines"` or `"cross"` |
+| `kit.cutout(parent, d, { fill, edge, shadow })` | A shape cut from card or paper: a path with an optional paper rim (`edge`) and a drop shadow. Returns `{ group, shape }` |
+| `kit.popup(stage, { base, x })` | A pop-up piece hinged at `y = base`. Draw into `.group`, then `.set(p)` each frame: 0 flat, 1 standing. Drive it with `kit.spring` |
+| `kit.scribble(stage, { d, box, colour, angle, seed })` | Crayon colouring-in, clipped to a path or box. `.set(p)` colours it in from 0 to 1 |
+| `kit.fold(parent, { points, crease, front, back })` | An origami flap that folds over its crease line. `.set(p)`: 0 open, 1 folded flat, showing its `back` |
+| `kit.glow(parent, { cx, cy, r, colour, strength })` | A soft round glow, like light through paper. Change its opacity to flicker it |
 
 ## Good practice
 
