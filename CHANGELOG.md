@@ -5,6 +5,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-11-24
+
+Four more kinds of film: hand-drawn data on graph paper, two eras of cartoon and manga. The scene kit gains original cartoon characters, comic panels, speed lines and screentone to build them with.
+
 ### Added
 
 - Four more styles made for custom scenes, each with a guide for agents and an example film:
@@ -19,6 +23,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 - The check that a scene draws the same picture every time no longer fails over a few pixels of edge smoothing, which can differ with what was drawn just before. Real flicker is still caught.
 - The readability check reads words in their own box (a caption, a label, a strip) against that box, not the page behind it.
+- The speed check warms up once before timing, so a slow first frame no longer gives a false warning.
 
 ## [0.6.0] - 2026-11-24
 
@@ -248,7 +253,8 @@ The first release: describe a film in one JSON file, and Bezel Film renders it t
 
 - CI checks on every push and pull request, including a render smoke test, plus Dependabot.
 
-[Unreleased]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.7.0...HEAD
+[0.7.0]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.5.2...v0.6.0
 [0.5.2]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.5.1...v0.5.2
 [0.5.1]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.5.0...v0.5.1
