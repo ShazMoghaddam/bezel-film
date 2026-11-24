@@ -5,6 +5,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-11-24
+
+Four paper and craft kinds of film: a pop-up book, a crayon picture book, origami and cut paper lit from behind. The scene kit gains paper cut-outs, pop-ups, crayon colouring-in, origami folds and soft glows to build them with.
+
 ### Added
 
 - Four paper and craft styles made for custom scenes, each with a guide for agents and an example film:
@@ -262,7 +266,8 @@ The first release: describe a film in one JSON file, and Bezel Film renders it t
 
 - CI checks on every push and pull request, including a render smoke test, plus Dependabot.
 
-[Unreleased]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.8.0...HEAD
+[0.8.0]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.5.2...v0.6.0
 [0.5.2]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.5.1...v0.5.2
