@@ -356,7 +356,7 @@ On Linux, the voice engine also tries to download large GPU files it doesn't nee
 - **v0.5.0 (released):** product stories: timeline, roadmap and map scenes
 - **v0.5.1 (released):** a draft film from a repo or README
 - **v0.5.2 (released):** outro links as stickers, and the Bezel Charts example film
-- **v0.6.0:** eight font pairings, custom scenes drawn by your agent, and the first styles made for them: Whiteboard, Stick figures, Isometric world and Blueprint
+- **v0.6.0 (released):** eight font pairings, custom scenes drawn by your agent, and the first styles made for them: Whiteboard, Stick figures, Isometric world and Blueprint
 - **After v0.6.0:** sixteen more styles in batches of four: data on paper, cartoons, manga, pop-up and crayon books, origami, paper lantern, watercolour, Swiss poster, pop art, risograph, neon, dark keynote, pixel game and retro terminal
 
 ## Contributing

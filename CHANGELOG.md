@@ -5,50 +5,40 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-11-24
+
+Films can now look like different kinds of film. Your agent can draw whole scenes in code, and the first four styles made for it turn any idea into a whiteboard explainer, a stick-figure story, a small isometric world or a technical drawing.
+
 ### Added
 
-- Four styles made for custom scenes, each with a guide for agents (`bezel-film guide <style>`) and an example film:
+- Four new styles, each a different kind of film, with a guide for agents (`bezel-film guide <style>`) and an example film:
   - **Whiteboard**: a marker pen draws and writes each idea as it's spoken.
   - **Stick figures**: stick people act the idea out on notebook paper.
   - **Isometric world**: a small world where blocks rise and things move through it.
   - **Blueprint**: technical drawings plotted in white on blue paper.
-- More in the scene kit: `kit.icon()` with 5,491 line drawings (Tabler Icons, MIT), hand-drawn shapes (`kit.rough`), posable stick figures (`kit.figure`), isometric blocks, tiles and trees (`kit.iso`), technical measurements (`kit.dimension`), plus `kit.stage()` and `kit.text()` for laying things out.
-- `bezel-film icons <word>` finds line drawings by name and tag.
-- `bezel-film styles` says which styles have a guide.
-
-### Fixed
-
-- Captions keep white text in light styles, where they used to take the style's dark text colour.
-- Handwritten words drawn in by the pen are no longer clipped at their last letter.
-
-### Added
-
 - Custom scenes: an agent can write a whole scene in code, in a small file next to the film (`"type": "custom", "file": "scenes/intro.js"`), with `props` for its words and numbers and `sounds` to land with its movement. Custom and ready-made scenes mix in one film.
-- The scene kit every custom scene builds with: the safe area, the style's colours and fonts, when each sentence is spoken, springs and easing, and lines and words that draw themselves, with an optional marker pen following the tip.
+- The scene kit every custom scene builds with: the safe area, the style's colours and fonts, when each sentence is spoken, springs and easing, and lines and words that draw themselves with an optional marker pen. Plus 5,491 line drawings (`kit.icon()`, Tabler Icons, MIT), hand-drawn shapes (`kit.rough`), posable stick figures (`kit.figure`), isometric blocks, tiles and trees (`kit.iso`), technical measurements (`kit.dimension`), and `kit.stage()` and `kit.text()` for layout.
 - `bezel-film preview`: stills of every scene and a contact sheet in seconds, so an agent can look at its work before rendering.
 - Checks on custom scenes, in `preview` and before every render: the same moment must always draw the same picture, words stay inside the safe area and readable, and frames draw quickly. Each problem names the scene, the file and the fix. A typo is reported with its file and line.
-- `bezel-film guide`: a director's guide to planning a film (hook, script, shots, sound and a quality bar), and the scene kit's reference.
-- A fourth example film, `examples/custom-scenes`: hand-drawn custom scenes around a real Bezel Charts chart.
+- `bezel-film guide`: a director's guide to planning a film (hook, script, shots, sound and a quality bar), the scene kit's reference, and each style's own guide.
+- A `font` setting with eight font pairings: `grotesk`, `editorial`, `condensed`, `bold`, `technical`, `friendly`, `handwritten` and `mono`. Each style has its own, and a film can choose another.
+- Fonts cover Latin Extended as well as Latin, so names such as Ştefan, Zoë and Łódź show in the film's own font.
+- `bezel-film styles` lists the styles (and which have a guide) and the font pairings; `bezel-film icons <word>` finds line drawings.
+- Each style is a folder with its own CSS, SVG filters and guide, so new styles don't touch the renderer. Styles say whether they're light or dark, and charts follow. See `styles/README.md`.
+- Tests check every style's text and colours stand out enough from its background (WCAG AA).
+- Example films for custom scenes and each new style in `examples/`, and a custom scene in the CI smoke render.
 
 ### Changed
 
 - The `custom` scene, listed but never rendered before, now takes `file` (a `.js` file in the film's folder) instead of `module`.
+- The `style` list comes from the folders in `styles/`. `product-launch`, which was listed but never rendered, is gone, so `validate` now catches it.
+- Fonts ship inside the package in `fonts/`: only the files films use, about 1.3 MB, each with its licence. The Fontsource packages are no longer installed with Bezel Film.
+- Stickers use the code font's real bold rather than one the browser draws, so their edges are crisper.
 - `init` adds the preview folders to `.gitignore`.
 
-### Added
+### Fixed
 
-- A `font` setting with eight font pairings: `grotesk`, `editorial`, `condensed`, `bold`, `technical`, `friendly`, `handwritten` and `mono`. Each style has its own pairing, and a film can choose another. A pairing is a heading and a body font chosen to suit each other.
-- Fonts now cover Latin Extended as well as Latin, so names such as Ştefan, Zoë and Łódź show in the film's own font.
-- `bezel-film styles` lists the styles and font pairings.
-- Each style is now a folder with its own CSS (and SVG filters if it needs them), so new styles don't touch the renderer. See `styles/README.md`.
-- Styles say whether they're light or dark, and charts follow.
-- Tests check that every style's text and colours stand out enough from its background (WCAG AA).
-
-### Changed
-
-- Fonts ship inside the package in `fonts/`: only the files films use, about 1.3 MB, each font with its licence. The Fontsource packages are no longer installed with Bezel Film.
-- The `style` list comes from the folders in `styles/`. `product-launch` and `whiteboard`, which were listed but never rendered, are gone from the schema, so `validate` now catches them. Whiteboard returns as a real style.
-- Stickers use the code font's real bold rather than one the browser draws, so their edges are crisper at the same weight.
+- Captions keep white text in light styles, where they used to take the style's dark text colour.
 
 ## [0.5.2] - 2026-11-21
 
@@ -243,7 +233,8 @@ The first release: describe a film in one JSON file, and Bezel Film renders it t
 
 - CI checks on every push and pull request, including a render smoke test, plus Dependabot.
 
-[Unreleased]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.5.2...HEAD
+[Unreleased]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.5.2...v0.6.0
 [0.5.2]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.5.1...v0.5.2
 [0.5.1]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.4.3...v0.5.0
