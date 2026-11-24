@@ -5,6 +5,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+### Added
+
+- Four paper and craft styles made for custom scenes, each with a guide for agents and an example film:
+  - **Pop-up book**: card cut-outs with white rims spring up off a storybook page, layer by layer.
+  - **Crayon book**: wax crayon on dark paper, scribbled in as you watch, with soft watercolour washes.
+  - **Origami**: folded paper that folds, crease by crease, into each idea.
+  - **Paper lantern**: cut paper layers lit from behind at night, drifting past each other.
+- More in the scene kit: paper cut-outs with a rim and shadow (`kit.cutout`), pieces that stand up off the page (`kit.popup`), crayon colouring-in (`kit.scribble`), paper flaps that fold over a crease (`kit.fold`) and soft glows (`kit.glow`).
+
 ## [0.7.0] - 2026-11-24
 
 Four more kinds of film: hand-drawn data on graph paper, two eras of cartoon and manga. The scene kit gains original cartoon characters, comic panels, speed lines and screentone to build them with.

@@ -1,0 +1,43 @@
+{
+  "$schema": "../../schema/film.schema.json",
+  "spec": 1,
+  "title": "Northlight: the night train north",
+  "style": "paper-lantern",
+  "format": { "aspect": "16:9", "resolution": "1080p", "fps": 30 },
+  "voice": { "engine": "kokoro", "gender": "male" },
+  "music": { "source": "generated", "mood": "reflective" },
+  "scenes": [
+    {
+      "id": "night",
+      "type": "custom",
+      "file": "scenes/night.js",
+      "props": { "kicker": "Northlight Sleeper", "title": "Some journeys are better by night" },
+      "narration": "Some journeys are better by night.",
+      "sounds": [{ "at": 0.4, "sound": "sweep", "gain": 0.35 }]
+    },
+    {
+      "id": "train",
+      "type": "custom",
+      "file": "scenes/train.js",
+      "props": { "caption": "Board at nine. Wake up somewhere new." },
+      "narration": "Board the sleeper at nine in the evening. Then let the train do the rest.",
+      "sounds": [{ "at": 0.6, "sound": "whoosh", "gain": 0.35 }]
+    },
+    {
+      "id": "cabin",
+      "type": "custom",
+      "file": "scenes/cabin.js",
+      "props": { "caption": "A proper bed, a cup of tea, the hills going by" },
+      "narration": "Inside, there's a proper bed, a cup of tea, and the hills rolling by in the dark.",
+      "sounds": [{ "at": 0.5, "sound": "ding", "gain": 0.25 }]
+    },
+    {
+      "id": "dawn",
+      "type": "custom",
+      "file": "scenes/dawn.js",
+      "props": { "line": "Wake up in the Highlands.", "name": "Northlight Sleeper" },
+      "narration": "And you wake up in the Highlands, just as the sun comes up.",
+      "sounds": [{ "at": 0.4, "sound": "sweep", "gain": 0.4 }, { "at": 2.6, "sound": "ding", "gain": 0.3 }]
+    }
+  ]
+}

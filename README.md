@@ -64,7 +64,7 @@ It reads the README, `package.json` or `pyproject.toml`, the changelog and (for 
 - **Private and offline.** After the one-time download, nothing leaves your computer.
 - **Smooth and repeatable.** Every frame is drawn on a frozen clock, so films look the same on any computer, every time.
 
-> **Styles:** nine so far, from whiteboard explainers and 1930s cartoons to manga. More are on the [roadmap](#roadmap).
+> **Styles:** thirteen so far, from whiteboard explainers and 1930s cartoons to origami and paper lanterns. More are on the [roadmap](#roadmap).
 
 ## Reference
 
@@ -195,7 +195,7 @@ When the ready-made scenes can't show something, a `custom` scene can. Your agen
 
 The scene draws everything in its part of the film, while Bezel Film adds the voice, captions, music, transitions and every platform's format around it. Custom and ready-made scenes mix freely, so a hand-drawn scene can lead into a real chart. See `examples/custom-scenes` for a working film.
 
-- **A kit to build with.** Every scene gets the frame's safe area, the style's colours and fonts, when each sentence is spoken, springs and easing, and lines and words that draw themselves, with an optional marker pen following the tip. It also has 5,491 line drawings to draw with (`npx bezel-film icons coffee` finds them), hand-drawn shapes, posable stick figures, cartoon characters, isometric blocks, technical measurements, comic panels, speed lines and screentone.
+- **A kit to build with.** Every scene gets the frame's safe area, the style's colours and fonts, when each sentence is spoken, springs and easing, and lines and words that draw themselves, with an optional marker pen following the tip. It also has 5,491 line drawings to draw with (`npx bezel-film icons coffee` finds them), hand-drawn shapes, posable stick figures, cartoon characters, isometric blocks, technical measurements, comic panels, speed lines, screentone, paper cut-outs and pop-ups, crayon scribbles, origami folds and soft glows.
 - **Guides.** `npx bezel-film guide director` walks an agent through planning a film like a director: the hook, the script, the shots, the sound and a quality check. `npx bezel-film guide scenes` is the kit's reference.
 - **Checks.** `preview` and `render` check every custom scene: it must draw the same picture every time it's asked for the same moment, keep its words inside the safe area, keep them readable, and draw quickly. Each problem names the scene and how to fix it, so your agent can fix it without you.
 - **Safe and offline.** Scene code runs in the same sealed browser as everything else: every outside request is blocked, and it can only load files from the film's own folder. Your agent uses its usual connection to write the code; Bezel Film itself never goes online.
@@ -215,6 +215,10 @@ A style is the film's look: its colours, backdrop, fonts and the way things move
 | `mid-century-cartoon` | A 1950s cartoon: flat colour, geometric characters, snappy pose-to-pose movement | Friendly how-tos and tips |
 | `rubber-hose-cartoon` | A 1930s cartoon: bendy black-and-white characters bouncing on flickering film | Playful ads, food and drink |
 | `manga` | A comic page: panels slam in, with speed lines, screentone and sound effects | Dramatic launches and reveals |
+| `pop-up-book` | A storybook spread: card cut-outs spring up off the page, layer by layer | Explainers for families, nature, warm brand stories |
+| `crayon-book` | A picture book in wax crayon on dark paper, coloured in as you watch | Gentle "why" questions, science, bedtime stories |
+| `origami` | Folded paper that folds, crease by crease, into each idea | App and product launches, simple steps |
+| `paper-lantern` | Cut paper layers lit from behind at night, drifting past each other | Travel, journeys, calm atmospheric stories |
 
 Every style apart from Data story is made for [custom scenes](#custom-scenes): your agent draws each film from scratch in the style, so no two films look alike. Each has a guide for agents (`npx bezel-film guide whiteboard`) and an example film in `examples/`. Ready-made scenes take on their look too.
 
@@ -362,7 +366,8 @@ On Linux, the voice engine also tries to download large GPU files it doesn't nee
 - **v0.5.2 (released):** outro links as stickers, and the Bezel Charts example film
 - **v0.6.0 (released):** eight font pairings, custom scenes drawn by your agent, and the first styles made for them: Whiteboard, Stick figures, Isometric world and Blueprint
 - **v0.7.0 (released):** four more styles: Data on paper, 1950s cartoon, 1930s cartoon and Manga
-- **After v0.7.0:** twelve more styles in batches of four: pop-up and crayon books, origami, paper lantern, watercolour, Swiss poster, pop art, risograph, neon, dark keynote, pixel game and retro terminal
+- **v0.8.0:** four paper and craft styles: Pop-up book, Crayon book, Origami and Paper lantern
+- **After v0.8.0:** eight more styles in batches of four: watercolour, Swiss poster, pop art, risograph, neon, dark keynote, pixel game and retro terminal
 
 ## Contributing
 

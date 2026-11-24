@@ -653,6 +653,127 @@ export const KIT_JS = String.raw`
     }
 
     /**
+     * A shape cut from card or paper: a path filled with a colour, with an optional
+     * paper rim (edge) round it and a soft drop shadow that lifts it off what's behind.
+     * Returns { group, shape }.
+     */
+    function cutout(parent, d, { fill = info.colours.accent, edge = null, edgeWidth = u * 0.7, shadow = 0.22, lift = u * 0.6, shadowColour = "29 24 18" } = {}) {
+      const g = svg("g", {}, parent);
+      if (edge) svg("path", { d, fill: edge, stroke: edge, "stroke-width": edgeWidth * 2, "stroke-linejoin": "round" }, g);
+      const shape = svg("path", { d, fill }, g);
+      if (shadow > 0) g.style.filter = "drop-shadow(" + lift * 0.4 + "px " + lift + "px " + lift * 1.2 + "px rgb(" + shadowColour + " / " + shadow + "))";
+      return { group: g, shape };
+    }
+
+    /**
+     * A pop-up piece that stands up off the page, hinged along a line at y = base.
+     * Draw into popup.group, then call popup.set(p) each frame: 0 lies flat, 1 stands
+     * upright. Drive p with kit.spring for the springy paper overshoot.
+     */
+    function popup(parent, { base = height * 0.8, x = width / 2, lean = 14 } = {}) {
+      const g = svg("g", {}, parent);
+      return {
+        group: g,
+        set(p) {
+          // Past upright (a spring overshoot) the card leans back a touch, never flips.
+          const k = Math.max(0.001, Math.min(1.08, p));
+          const skew = (1 - Math.min(1, k)) * lean;
+          g.setAttribute("transform", "translate(" + x + " " + base + ") skewX(" + skew.toFixed(2) + ") scale(1 " + k.toFixed(4) + ") translate(" + -x + " " + -base + ")");
+          g.style.opacity = p <= 0.002 ? "0" : "1";
+          return this;
+        },
+      };
+    }
+
+    /**
+     * A crayon scribble that colours in a shape: back-and-forth strokes at an angle,
+     * clipped to the shape (a path's d, or a box). Returns { group, path, set(p) }:
+     * set(p) colours in from 0 (nothing) to 1 (filled).
+     */
+    let scribbles = 0;
+    function scribble(parent, { d = null, box = null, colour = info.colours.accent, gap = u * 1.1, width: px = u * 1.3, angle = -30, seed = 1, opacity = 0.9 } = {}) {
+      const id = "bf-scribble-" + index + "-" + scribbles++;
+      const clip = svg("clipPath", { id }, svg("defs", {}, parent));
+      let b = box;
+      const g = svg("g", { "clip-path": "url(#" + id + ")" }, parent);
+      if (d) {
+        svg("path", { d }, clip);
+        if (!b) {
+          // Measure the shape so the strokes cover it, whatever it is.
+          const probe = svg("path", { d }, parent);
+          const bb = probe.getBBox();
+          probe.remove();
+          b = { x: bb.x, y: bb.y, width: bb.width, height: bb.height };
+        }
+      } else {
+        b = b || { x: 0, y: 0, width, height };
+        svg("rect", { x: b.x, y: b.y, width: b.width, height: b.height }, clip);
+      }
+      const rand = seeded(seed * 613);
+      const cx = b.x + b.width / 2, cy = b.y + b.height / 2;
+      const reach = Math.hypot(b.width, b.height) / 2 + px;
+      const rad = (angle * Math.PI) / 180, dx = Math.cos(rad), dy = Math.sin(rad);
+      let path = "";
+      let row = 0;
+      // Zigzag rows across the box, rotated to the angle, each a little uneven.
+      for (let s = -reach; s <= reach; s += gap, row++) {
+        const side = row % 2 === 0 ? 1 : -1;
+        const a = -reach * side - (rand() - 0.5) * gap * 2, z = reach * side + (rand() - 0.5) * gap * 2;
+        const off = s + (rand() - 0.5) * gap * 0.5;
+        const x1 = cx + dx * a - dy * off, y1 = cy + dy * a + dx * off;
+        const x2 = cx + dx * z - dy * off, y2 = cy + dy * z + dx * off;
+        path += (row === 0 ? "M" : " L") + x1.toFixed(1) + " " + y1.toFixed(1) + " L" + x2.toFixed(1) + " " + y2.toFixed(1);
+      }
+      const stroke = svg("path", { d: path, fill: "none", stroke: colour, "stroke-width": px, "stroke-linecap": "round", "stroke-linejoin": "round", opacity, pathLength: 1000 }, g);
+      stroke.style.strokeDasharray = "1000 1001";
+      return {
+        group: g,
+        path: stroke,
+        set(p) { stroke.style.strokeDashoffset = String(1000 * (1 - clamp(p))); return this; },
+      };
+    }
+
+    /**
+     * A paper flap that folds over a crease, as in origami. points is the flap's outline
+     * [[x, y], ...]; crease is the line it turns on [[x1, y1], [x2, y2]]. front and back
+     * are the two sides of the paper. Returns { group, shape, set(p) }: 0 is unfolded,
+     * 1 is folded flat over the crease.
+     */
+    function fold(parent, { points, crease, front = info.colours.accent, back = info.colours.surface, stroke = "none", strokeWidth = u * 0.15 }) {
+      const g = svg("g", {}, parent);
+      const shape = svg("polygon", { points: points.map((p) => p.join(",")).join(" "), fill: front, stroke, "stroke-width": strokeWidth, "stroke-linejoin": "round" }, g);
+      const [[ax, ay], [bx, by]] = crease;
+      const theta = (Math.atan2(by - ay, bx - ax) * 180) / Math.PI;
+      const mix = (a, b, k) => "color-mix(in oklab, " + a + ", " + b + " " + (k * 100).toFixed(1) + "%)";
+      return {
+        group: g,
+        shape,
+        set(p) {
+          const k = clamp(p);
+          // Seen from straight on, a flap turning over its crease squashes across it.
+          const s = Math.cos(Math.PI * k);
+          g.setAttribute("transform", "translate(" + ax + " " + ay + ") rotate(" + theta + ") scale(1 " + (Math.abs(s) < 0.002 ? 0.002 : s).toFixed(4) + ") rotate(" + -theta + ") translate(" + -ax + " " + -ay + ")");
+          // Paper turned edge-on to the light darkens, then the other side shows.
+          const shade = Math.sin(Math.PI * k) * 0.35;
+          shape.setAttribute("fill", mix(k < 0.5 ? front : back, "#000000", shade));
+          return this;
+        },
+      };
+    }
+
+    /**
+     * A soft round glow, like light through paper or from a lamp. Returns the circle;
+     * change its opacity or r to pulse and flicker it.
+     */
+    let glows = 0;
+    function glow(parent, { cx = width / 2, cy = height / 2, r = u * 20, colour = "#FFC56B", strength = 0.8 } = {}) {
+      const id = "bf-glow-" + index + "-" + glows++;
+      const grad = svg("radialGradient", { id }, svg("defs", {}, parent));
+      [[0, strength], [0.35, strength * 0.55], [0.7, strength * 0.15], [1, 0]].forEach(([o, a]) => svg("stop", { offset: o, "stop-color": colour, "stop-opacity": a }, grad));
+      return svg("circle", { cx, cy, r, fill: "url(#" + id + ")" }, parent);
+    }
+
+    /**
      * Isometric drawing: points, boxes and tiles on a grid seen from above at 30°.
      * kit.iso({ x, y, unit }) puts grid point (0, 0, 0) at (x, y); one grid step is unit pixels.
      */
@@ -785,6 +906,11 @@ export const KIT_JS = String.raw`
       panels,
       speedLines,
       tone,
+      cutout,
+      popup,
+      scribble,
+      fold,
+      glow,
     };
   }
 

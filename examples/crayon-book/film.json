@@ -1,0 +1,43 @@
+{
+  "$schema": "../../schema/film.schema.json",
+  "spec": 1,
+  "title": "Why does the Moon change shape?",
+  "style": "crayon-book",
+  "format": { "aspect": "16:9", "resolution": "1080p", "fps": 30 },
+  "voice": { "engine": "kokoro", "gender": "female" },
+  "music": { "source": "generated", "mood": "calm" },
+  "scenes": [
+    {
+      "id": "title",
+      "type": "custom",
+      "file": "scenes/title.js",
+      "props": { "title": "Why does the Moon change shape?", "kicker": "a crayon picture book" },
+      "narration": "Why does the Moon change shape? Let's draw it and see.",
+      "sounds": [{ "at": 0.4, "sound": "swish", "gain": 0.4 }]
+    },
+    {
+      "id": "light",
+      "type": "custom",
+      "file": "scenes/light.js",
+      "props": { "sun": "Sun", "earth": "Earth", "moon": "Moon", "note": "Half of the Moon is always lit" },
+      "narration": "The Sun always lights up one half of the Moon. As the Moon travels around the Earth, we see more or less of that bright half.",
+      "sounds": [{ "at": 0.3, "sound": "swish", "gain": 0.4 }, { "at": 1.4, "sound": "swish", "gain": 0.3, "pitch": 3 }]
+    },
+    {
+      "id": "phases",
+      "type": "custom",
+      "file": "scenes/phases.js",
+      "props": { "names": ["New", "Crescent", "Half", "Gibbous", "Full"] },
+      "narration": "So it seems to grow, from a thin crescent, to a half, to a full Moon. Then it shrinks back again.",
+      "sounds": [{ "at": 0.6, "sound": "tap", "gain": 0.3 }, { "at": 1.4, "sound": "tap", "gain": 0.3, "pitch": 2 }, { "at": 2.2, "sound": "tap", "gain": 0.3, "pitch": 4 }]
+    },
+    {
+      "id": "end",
+      "type": "custom",
+      "file": "scenes/end.js",
+      "props": { "line": "Same Moon.\nA different view.", "days": "29½", "unit": "days for one full cycle" },
+      "narration": "It's the same Moon all along, just seen from a different angle. One full cycle takes about twenty-nine and a half days.",
+      "sounds": [{ "at": 0.5, "sound": "ding", "gain": 0.35 }]
+    }
+  ]
+}

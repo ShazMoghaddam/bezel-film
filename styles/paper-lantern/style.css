@@ -1,0 +1,12 @@
+/* Paper lantern: layers of cut paper lit from behind at night. A deep blue sky with a
+   warm haze low down; scenes stack silhouettes (kit.cutout) and glows (kit.glow). */
+.backdrop{background:
+  radial-gradient(70% 45% at 50% 100%,rgb(255 181 71/.16),transparent 80%),
+  linear-gradient(#0C1228,#121A33 55%,#1A2247)}
+.grain{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 0.9 0 0 0 0 0.75 0 0 0 0.35 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");opacity:.12;mix-blend-mode:screen;z-index:3}
+.display,.heading{letter-spacing:.005em;text-shadow:0 0 calc(var(--u)*2.4) rgb(255 181 71/.35)}
+.rule{height:calc(var(--u)*.4);width:calc(var(--u)*16);background:var(--accent);box-shadow:0 0 calc(var(--u)*1.6) rgb(255 181 71/.7)}
+.card{background:rgb(27 37 71/.9);border:1px solid rgb(255 181 71/.35);border-radius:calc(var(--u)*.6);box-shadow:0 0 calc(var(--u)*4) rgb(255 181 71/.18)}
+.chip{background:transparent;border:1px solid rgb(255 181 71/.5);border-radius:calc(var(--u)*3)}
+.dot{box-shadow:0 0 calc(var(--u)*1.2) var(--c)}
+.progress{background:var(--accent);box-shadow:0 0 calc(var(--u)*1) var(--accent)}

@@ -19,16 +19,20 @@
       "type": "string",
       "enum": [
         "blueprint",
+        "crayon-book",
         "data-on-paper",
         "data-story",
         "isometric",
         "manga",
         "mid-century-cartoon",
+        "origami",
+        "paper-lantern",
+        "pop-up-book",
         "rubber-hose-cartoon",
         "stick-figures",
         "whiteboard"
       ],
-      "description": "The film's look. blueprint: Technical drawings plotted in white on blue paper: precise lines, measurements and labels in capitals. data-on-paper: A data journal on graph paper: charts drawn mark by mark in coloured pencil, hatched fills and handwritten notes. data-story: Clean, confident and chart-led. Big numbers, bold colour per series, springy motion. isometric: A small world seen from above at an angle: blocks rise, roads unroll and things move through it to show how it works. manga: A black-and-white comic page: panels open on the beat, with speed lines, screentone and big sound-effect lettering. mid-century-cartoon: Flat colour and simple geometric characters, with snappy pose-to-pose movement like classic limited animation. rubber-hose-cartoon: Black-and-white characters with bendy limbs and white gloves, bouncing to the beat on flickering film. stick-figures: Stick people act the idea out on notebook paper: simple characters, big feelings, quick sketches around them. whiteboard: Explainers drawn live in marker: the pen writes headings, sketches each idea as it's spoken and joins them with arrows."
+      "description": "The film's look. blueprint: Technical drawings plotted in white on blue paper: precise lines, measurements and labels in capitals. crayon-book: A picture book drawn in wax crayon on dark paper: scribbled colour, wobbly outlines that boil on twos, and soft watercolour washes. data-on-paper: A data journal on graph paper: charts drawn mark by mark in coloured pencil, hatched fills and handwritten notes. data-story: Clean, confident and chart-led. Big numbers, bold colour per series, springy motion. isometric: A small world seen from above at an angle: blocks rise, roads unroll and things move through it to show how it works. manga: A black-and-white comic page: panels open on the beat, with speed lines, screentone and big sound-effect lettering. mid-century-cartoon: Flat colour and simple geometric characters, with snappy pose-to-pose movement like classic limited animation. origami: Folded paper that unfolds into each idea: flat-shaded facets, crisp creases and flaps that turn over as the story moves on. paper-lantern: Cut paper layers lit from behind at night: silhouettes in deep blues, warm glowing windows and a slow drift between the layers. pop-up-book: A storybook spread where card scenes spring up off the page: thick paper cut-outs with white rims, soft shadows and pull tabs. rubber-hose-cartoon: Black-and-white characters with bendy limbs and white gloves, bouncing to the beat on flickering film. stick-figures: Stick people act the idea out on notebook paper: simple characters, big feelings, quick sketches around them. whiteboard: Explainers drawn live in marker: the pen writes headings, sketches each idea as it's spoken and joins them with arrows."
     },
     "font": {
       "description": "The film's fonts, as a pairing chosen to suit each other. grotesk: Modern and confident. Tech, data and product stories. editorial: A magazine serif. Considered, classic and calm. condensed: Tall and narrow, like a news headline. Fits long titles. bold: Heavy, poster-like headings with a clean body. technical: Precise and engineered. Plans, systems and specs. friendly: Soft and rounded. Warm explainers for everyone. handwritten: Written by hand, like a whiteboard or a notebook. mono: Typewriter and terminal. Best with short headings. Defaults to the style's choice.",

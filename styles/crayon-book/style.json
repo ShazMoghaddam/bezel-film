@@ -1,0 +1,35 @@
+{
+  "name": "crayon-book",
+  "label": "Crayon book",
+  "description": "A picture book drawn in wax crayon on dark paper: scribbled colour, wobbly outlines that boil on twos, and soft watercolour washes.",
+  "theme": "dark",
+  "font": "handwritten",
+  "colours": {
+    "background": "#1F2A4D",
+    "surface": "#28355E",
+    "text": "#F7F1E3",
+    "muted": "#C9C3D8",
+    "accent": "#F5C542",
+    "palette": [
+      "#F5C542",
+      "#F28C6B",
+      "#7ED3A4",
+      "#8EC5FF",
+      "#E7A6F0",
+      "#FFB347",
+      "#F7F1E3"
+    ]
+  },
+  "motion": {
+    "level": "lively",
+    "easing": "cubic-bezier(0.22, 1, 0.36, 1)",
+    "enterMs": 600,
+    "staggerMs": 90,
+    "transition": "fade",
+    "transitionMs": 400
+  },
+  "layout": {
+    "safeArea": 0.08,
+    "captionPosition": "bottom"
+  }
+}
