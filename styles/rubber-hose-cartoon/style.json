@@ -1,0 +1,35 @@
+{
+  "name": "rubber-hose-cartoon",
+  "label": "1930s cartoon",
+  "description": "Black-and-white characters with bendy limbs and white gloves, bouncing to the beat on flickering film.",
+  "theme": "light",
+  "font": "editorial",
+  "colours": {
+    "background": "#ECE6D6",
+    "surface": "#F7F2E6",
+    "text": "#161412",
+    "muted": "#4A453E",
+    "accent": "#A3271F",
+    "palette": [
+      "#161412",
+      "#A3271F",
+      "#3E3A35",
+      "#2F4F6F",
+      "#5A4632",
+      "#1F4D33",
+      "#6A2E5A"
+    ]
+  },
+  "motion": {
+    "level": "lively",
+    "easing": "cubic-bezier(0.22, 1, 0.36, 1)",
+    "enterMs": 600,
+    "staggerMs": 90,
+    "transition": "fade",
+    "transitionMs": 300
+  },
+  "layout": {
+    "safeArea": 0.08,
+    "captionPosition": "bottom"
+  }
+}

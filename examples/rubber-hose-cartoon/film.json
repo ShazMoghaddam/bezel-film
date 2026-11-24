@@ -1,0 +1,43 @@
+{
+  "$schema": "../../schema/film.schema.json",
+  "spec": 1,
+  "title": "Brightside Bakery: the morning loaf",
+  "style": "rubber-hose-cartoon",
+  "format": { "aspect": "16:9", "resolution": "1080p", "fps": 30 },
+  "voice": { "engine": "kokoro", "gender": "male" },
+  "music": { "source": "generated", "mood": "upbeat" },
+  "scenes": [
+    {
+      "id": "card",
+      "type": "custom",
+      "file": "scenes/card.js",
+      "props": { "kicker": "Brightside Bakery presents", "title": "The Morning Loaf" },
+      "narration": "Brightside Bakery presents: the morning loaf!",
+      "sounds": [{ "at": 0.2, "sound": "sweep", "gain": 0.5 }]
+    },
+    {
+      "id": "sunrise",
+      "type": "custom",
+      "file": "scenes/sunrise.js",
+      "props": { "caption": "5 a.m." },
+      "narration": "We bake it fresh at five every morning, while the whole town's still asleep.",
+      "sounds": [{ "at": 1.0, "sound": "ding", "gain": 0.4 }]
+    },
+    {
+      "id": "oven",
+      "type": "custom",
+      "file": "scenes/oven.js",
+      "props": { "loaves": 4 },
+      "narration": "Then out they hop, crusty, golden and warm.",
+      "sounds": [{ "at": 1.0, "sound": "pop", "gain": 0.5 }, { "at": 1.35, "sound": "pop", "gain": 0.5, "pitch": 2 }, { "at": 1.7, "sound": "pop", "gain": 0.5, "pitch": 4 }, { "at": 2.05, "sound": "pop", "gain": 0.5, "pitch": 5 }]
+    },
+    {
+      "id": "end",
+      "type": "custom",
+      "file": "scenes/end.js",
+      "props": { "name": "Brightside Bakery", "line": "Open at seven · Come and say hello" },
+      "narration": "Brightside Bakery. Open at seven. Come and say hello!",
+      "sounds": []
+    }
+  ]
+}

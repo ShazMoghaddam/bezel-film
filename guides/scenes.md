@@ -117,6 +117,11 @@ return (t) => plan.draw(t);
 | `kit.figure(stage, { x, y, height, face })` | A stick figure standing at `(x, y)`. `.pose("wave")`, `.pose("stand", "cheer", p)` to blend, `.walk(t)`, `.move(x, y)`, `.face("sad")`, `.hand("right")`. Poses: `stand`, `wave`, `point`, `present`, `think`, `cheer`, `shrug`, `hold`, `sad`, `sit`, `walkA`, `walkB` |
 | `kit.iso({ x, y, unit })` | Isometric drawing: `.box(stage, { x, y, z, w, d, h, colour })` (change it later with `.set({ h })`), `.tile`, `.tree`, `.grid`, and `.at(x, y, z)` for a screen point |
 | `kit.dimension(stage, x1, y1, x2, y2, { label, offset })` | A measurement, as on a technical drawing. Returns `{ paths, label }` to draw in |
+| `kit.toon(stage, { x, y, height, kind, colour, face })` | A cartoon character: `kind: "rubber"` (1930s: hose limbs, gloves, pie eyes) or `"flat"` (1950s: box body, thin limbs). Same poses as `kit.figure`, plus `.squash(k)`, `.look(k)` and faces `happy`, `open`, `surprised`, `sad`, `neutral` |
+| `kit.stepped(t, fps)` | Time in held steps, like animation drawn on twos: `kit.stepped(t, 12)` |
+| `kit.panels([[x, y, w, h], ...])` | Comic panels inside `kit.safe`, given as fractions, with even gutters |
+| `kit.speedLines(stage, { kind, cx, cy, box })` | Manga speed lines: `"focus"` bursts from a point, `"motion"` streaks at an `angle`. Clipped to `box` |
+| `kit.tone(stage, { kind, size, colour, weight, angle })` | Screentone or hatching to use as a fill: `"dots"`, `"lines"` or `"cross"` |
 
 ## Good practice
 

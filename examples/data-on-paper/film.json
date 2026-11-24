@@ -1,0 +1,51 @@
+{
+  "$schema": "../../schema/film.schema.json",
+  "spec": 1,
+  "title": "How much of Earth's water can we drink?",
+  "style": "data-on-paper",
+  "format": { "aspect": "16:9", "resolution": "1080p", "fps": 30 },
+  "voice": { "engine": "kokoro", "gender": "female" },
+  "music": { "source": "generated", "mood": "ambient" },
+  "scenes": [
+    {
+      "id": "question",
+      "type": "custom",
+      "file": "scenes/question.js",
+      "props": { "title": "How much of Earth's water can we drink?", "note": "All the water on Earth = 100 squares" },
+      "narration": "Earth is covered in water. So how much of it can we actually drink?",
+      "sounds": []
+    },
+    {
+      "id": "salt",
+      "type": "custom",
+      "file": "scenes/waffle.js",
+      "props": { "salt": 97, "ice": 2, "fresh": 1, "stage": "salt", "notes": { "salt": "97 salt water", "ice": "2 frozen", "fresh": "1 left" } },
+      "narration": "Picture all of it as a hundred squares. About ninety-seven are salt water, in the oceans.",
+      "sounds": [{ "at": 3.6, "sound": "tick", "gain": 0.4 }]
+    },
+    {
+      "id": "rest",
+      "type": "custom",
+      "file": "scenes/waffle.js",
+      "props": { "salt": 97, "ice": 2, "fresh": 1, "stage": "rest", "notes": { "salt": "97 salt water", "ice": "2 frozen", "fresh": "1 left" } },
+      "narration": "About two more are frozen in ice caps and glaciers. That leaves roughly one square.",
+      "sounds": [{ "at": 1.4, "sound": "tick", "gain": 0.4 }, { "at": 3.6, "sound": "pop", "gain": 0.4 }]
+    },
+    {
+      "id": "where",
+      "type": "custom",
+      "file": "scenes/bars.js",
+      "props": { "title": "Where Earth's fresh water is", "bars": [["Ice and glaciers", 69], ["Underground", 30], ["Rivers and lakes", 1]] },
+      "narration": "And most of the fresh water isn't in rivers and lakes at all. It's frozen, or deep underground.",
+      "sounds": []
+    },
+    {
+      "id": "end",
+      "type": "custom",
+      "file": "scenes/end.js",
+      "props": { "title": "Every drop counts.", "source": "Figures rounded. Source: US Geological Survey" },
+      "narration": "So the water we can easily reach is precious. Every drop counts.",
+      "sounds": []
+    }
+  ]
+}

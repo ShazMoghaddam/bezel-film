@@ -1,0 +1,43 @@
+{
+  "$schema": "../../schema/film.schema.json",
+  "spec": 1,
+  "title": "Dawnlight: wake up with the sun",
+  "style": "manga",
+  "format": { "aspect": "16:9", "resolution": "1080p", "fps": 30 },
+  "voice": { "engine": "kokoro", "gender": "female" },
+  "music": { "source": "generated", "mood": "dramatic" },
+  "scenes": [
+    {
+      "id": "alarm",
+      "type": "custom",
+      "file": "scenes/alarm.js",
+      "props": { "time": "6:00", "sfx": "BRRRING!!", "bubble": "...five more minutes." },
+      "narration": "Every morning starts the same way. A screaming alarm. And five more minutes.",
+      "sounds": [{ "at": 0.4, "sound": "whoosh", "gain": 0.5 }, { "at": 2.6, "sound": "tap", "gain": 0.6, "pitch": -3 }]
+    },
+    {
+      "id": "reveal",
+      "type": "custom",
+      "file": "scenes/reveal.js",
+      "props": { "line": "What if your morning started with light?", "sfx": "SHIIN" },
+      "narration": "But what if your morning started with light instead?",
+      "sounds": [{ "at": 0.6, "sound": "sweep", "gain": 0.6 }, { "at": 1.4, "sound": "ding", "gain": 0.5 }]
+    },
+    {
+      "id": "sunrise",
+      "type": "custom",
+      "file": "scenes/sunrise.js",
+      "props": { "times": ["6:00", "6:15", "6:30"], "last": "Up." },
+      "narration": "Dawnlight brightens slowly over thirty minutes, just like a real sunrise. So you wake up gently, on your own.",
+      "sounds": [{ "at": 0.5, "sound": "tap", "gain": 0.4 }, { "at": 1.6, "sound": "tap", "gain": 0.4 }, { "at": 2.7, "sound": "tap", "gain": 0.4 }]
+    },
+    {
+      "id": "name",
+      "type": "custom",
+      "file": "scenes/name.js",
+      "props": { "name": "DAWNLIGHT", "tagline": "Wake up with the sun." },
+      "narration": "Dawnlight. Wake up with the sun.",
+      "sounds": [{ "at": 0.3, "sound": "whoosh", "gain": 0.6 }]
+    }
+  ]
+}

@@ -546,7 +546,10 @@ export const RUNTIME_JS = String.raw`
       for (let node = el; node && node !== document.body; node = node.parentElement) opacity *= Number(getComputedStyle(node).opacity);
       const r = el.getBoundingClientRect();
       if (opacity < 0.5 || r.width < 1 || r.height < 1) continue;
-      texts.push({ text: el.textContent.trim().slice(0, 40), colour: getComputedStyle(el).color, rect: { x: r.left, y: r.top, width: r.width, height: r.height } });
+      // Text in its own box (a label, a strip) is read against the box, not what's behind it.
+      const fill = getComputedStyle(el).backgroundColor;
+      const boxed = /^rgba?\(/.test(fill) && !/,\s*0\)$/.test(fill);
+      texts.push({ text: el.textContent.trim().slice(0, 40), colour: getComputedStyle(el).color, background: boxed ? fill : null, rect: { x: r.left, y: r.top, width: r.width, height: r.height } });
     }
     return { safe: custom.kit.safe, texts };
   }

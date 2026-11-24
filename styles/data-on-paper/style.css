@@ -1,0 +1,15 @@
+/* Data on paper: a page from a data journal. Faint blue graph paper with a heavier line
+   every fifth square; charts are drawn in coloured pencil (filter #pencil). */
+.backdrop{background:radial-gradient(80% 70% at 50% 45%,#FFFFFF,transparent 80%)}
+.grain{--sq:calc(var(--u)*2.2);background:
+  linear-gradient(rgb(47 93 138/.16) 1px,transparent 1px) 0 0/calc(var(--sq) * 5) calc(var(--sq) * 5),
+  linear-gradient(90deg,rgb(47 93 138/.16) 1px,transparent 1px) 0 0/calc(var(--sq) * 5) calc(var(--sq) * 5),
+  linear-gradient(rgb(47 93 138/.07) 1px,transparent 1px) 0 0/var(--sq) var(--sq),
+  linear-gradient(90deg,rgb(47 93 138/.07) 1px,transparent 1px) 0 0/var(--sq) var(--sq)}
+.display{letter-spacing:-.02em}
+.rule{height:calc(var(--u)*.45);width:calc(var(--u)*18);background:var(--accent);filter:url(#pencil)}
+.card{background:#FFFFFF;border:1px solid rgb(43 42 40/.18);border-radius:calc(var(--u)*.4);box-shadow:0 calc(var(--u)*.4) calc(var(--u)*1.2) rgb(43 42 40/.08)}
+.dot{box-shadow:none}
+.chip{background:transparent;border:1px solid rgb(43 42 40/.3);border-radius:calc(var(--u)*.4)}
+.stat-value{filter:url(#pencil)}
+.progress{background:var(--accent)}

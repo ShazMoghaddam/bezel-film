@@ -5,6 +5,21 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+### Added
+
+- Four more styles made for custom scenes, each with a guide for agents and an example film:
+  - **Data on paper**: charts drawn mark by mark in coloured pencil on graph paper, with hatched fills and notes.
+  - **1950s cartoon**: flat colour and geometric characters, moving pose to pose on twos.
+  - **1930s cartoon**: bendy black-and-white characters bouncing to the beat on flickering, grainy film.
+  - **Manga**: comic panels that slam in on the beat, with speed lines, screentone and sound-effect lettering.
+- More in the scene kit: cartoon characters with squash and stretch (`kit.toon`, rubber hose or flat), held-step timing (`kit.stepped`), comic panels (`kit.panels`), speed lines (`kit.speedLines`) and screentone and hatching fills (`kit.tone`).
+- Styles can put their grain and vignette over custom scenes, as the 1930s cartoon does.
+
+### Fixed
+
+- The check that a scene draws the same picture every time no longer fails over a few pixels of edge smoothing, which can differ with what was drawn just before. Real flicker is still caught.
+- The readability check reads words in their own box (a caption, a label, a strip) against that box, not the page behind it.
+
 ## [0.6.0] - 2026-11-24
 
 Films can now look like different kinds of film. Your agent can draw whole scenes in code, and the first four styles made for it turn any idea into a whiteboard explainer, a stick-figure story, a small isometric world or a technical drawing.
