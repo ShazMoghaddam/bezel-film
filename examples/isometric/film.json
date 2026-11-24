@@ -1,0 +1,51 @@
+{
+  "$schema": "../../schema/film.schema.json",
+  "spec": 1,
+  "title": "Where your bottle goes",
+  "style": "isometric",
+  "format": { "aspect": "16:9", "resolution": "1080p", "fps": 30 },
+  "voice": { "engine": "kokoro", "gender": "female" },
+  "music": { "source": "generated", "mood": "upbeat" },
+  "scenes": [
+    {
+      "id": "town",
+      "type": "custom",
+      "file": "scenes/town.js",
+      "props": { "title": "Where does your bottle go?" },
+      "narration": "You drop a bottle in the recycling. Then where does it actually go?",
+      "sounds": [{ "at": 0.4, "sound": "tap", "gain": 0.4 }, { "at": 0.7, "sound": "tap", "gain": 0.4 }, { "at": 1.0, "sound": "tap", "gain": 0.4 }]
+    },
+    {
+      "id": "collect",
+      "type": "custom",
+      "file": "scenes/collect.js",
+      "props": { "label": "Collected" },
+      "narration": "First, a truck collects it with everything else from your street.",
+      "sounds": [{ "at": 1.0, "sound": "whoosh", "gain": 0.5 }]
+    },
+    {
+      "id": "sort",
+      "type": "custom",
+      "file": "scenes/sort.js",
+      "props": { "label": "Sorted", "bins": ["Plastic", "Glass", "Paper"] },
+      "narration": "At the plant, a belt carries it past machines that sort plastic from glass and paper.",
+      "sounds": [{ "at": 2.4, "sound": "click", "gain": 0.5 }, { "at": 3.2, "sound": "click", "gain": 0.5 }, { "at": 4.0, "sound": "click", "gain": 0.5 }]
+    },
+    {
+      "id": "pellets",
+      "type": "custom",
+      "file": "scenes/pellets.js",
+      "props": { "label": "Shredded into flakes" },
+      "narration": "Then it's washed, shredded into flakes, and melted down to make something new.",
+      "sounds": [{ "at": 1.6, "sound": "tick", "gain": 0.4 }]
+    },
+    {
+      "id": "help",
+      "type": "custom",
+      "file": "scenes/help.js",
+      "props": { "title": "Help it get there", "steps": ["Empty it", "Rinse it", "Cap on"] },
+      "narration": "You can help it get there: empty it, rinse it, and put the cap back on.",
+      "sounds": []
+    }
+  ]
+}

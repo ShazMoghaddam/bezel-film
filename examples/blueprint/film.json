@@ -1,0 +1,51 @@
+{
+  "$schema": "../../schema/film.schema.json",
+  "spec": 1,
+  "title": "Drawing a better water bottle",
+  "style": "blueprint",
+  "format": { "aspect": "16:9", "resolution": "1080p", "fps": 30 },
+  "voice": { "engine": "kokoro", "gender": "male" },
+  "music": { "source": "generated", "mood": "ambient" },
+  "scenes": [
+    {
+      "id": "outline",
+      "type": "custom",
+      "file": "scenes/outline.js",
+      "props": { "name": "Reusable bottle", "drawing": "DWG 01 · FRONT VIEW", "scale": "SCALE 1:2" },
+      "narration": "Every good product starts as a drawing. This is a reusable bottle, line by line.",
+      "sounds": []
+    },
+    {
+      "id": "size",
+      "type": "custom",
+      "file": "scenes/size.js",
+      "props": { "height": "260", "width": "74", "volume": "HOLDS 750 ML" },
+      "narration": "It's two hundred and sixty millimetres tall, seventy-four wide, and holds three quarters of a litre.",
+      "sounds": [{ "at": 3.4, "sound": "tick", "gain": 0.5 }]
+    },
+    {
+      "id": "section",
+      "type": "custom",
+      "file": "scenes/section.js",
+      "props": { "label": "SECTION A–A", "callout": "VACUUM GAP", "note": "Keeps drinks cold for 24 hours" },
+      "narration": "Cut it in half, and you'll see two steel walls with a vacuum between them. That gap keeps drinks cold all day.",
+      "sounds": []
+    },
+    {
+      "id": "parts",
+      "type": "custom",
+      "file": "scenes/parts.js",
+      "props": { "parts": ["CAP", "SEAL", "BODY"] },
+      "narration": "Just three parts: a cap, a seal and the body. Easy to clean, easy to replace.",
+      "sounds": [{ "at": 0.6, "sound": "tap", "gain": 0.4 }, { "at": 1.4, "sound": "tap", "gain": 0.4 }, { "at": 2.2, "sound": "tap", "gain": 0.4 }]
+    },
+    {
+      "id": "specs",
+      "type": "custom",
+      "file": "scenes/specs.js",
+      "props": { "rows": [["MATERIAL", "STEEL 18/8"], ["CAP", "BPA-FREE"], ["CLEANING", "DISHWASHER SAFE"], ["LIFE", "10+ YEARS"]], "stamp": "APPROVED" },
+      "narration": "Steel that lasts for years. One bottle can replace hundreds of plastic ones.",
+      "sounds": [{ "at": 3.0, "sound": "tap", "gain": 0.7, "pitch": -5 }]
+    }
+  ]
+}

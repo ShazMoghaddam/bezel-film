@@ -1,0 +1,15 @@
+/* Stick figures: a page from a notebook. Faint blue rules, a red margin, and ink that
+   looks drawn with a felt-tip. Custom scenes act the story out with kit.figure. */
+.backdrop{background:radial-gradient(80% 70% at 50% 45%,#FFFFFF,transparent 80%)}
+.grain{--rule:calc(var(--u)*5.2);background:
+  linear-gradient(90deg,transparent calc(var(--u)*7.6),rgb(228 87 46/.45) calc(var(--u)*7.6),rgb(228 87 46/.45) calc(var(--u)*7.6 + 2px),transparent calc(var(--u)*7.6 + 2px)),
+  repeating-linear-gradient(180deg,transparent 0 calc(var(--rule) - 1.5px),rgb(45 108 223/.16) calc(var(--rule) - 1.5px) var(--rule))}
+.display,.heading,.stat-label,.quote,.stop-label{letter-spacing:0}
+.display{line-height:1.05}
+.rule{height:calc(var(--u)*.7);width:calc(var(--u)*26);border-radius:99px;background:var(--accent);rotate:-1.5deg}
+.card{background:#FFFFFF;border:calc(var(--u)*.4) solid var(--text);box-shadow:calc(var(--u)*.6) calc(var(--u)*.7) 0 rgb(34 37 46/.12);
+  border-radius:calc(var(--u)*1.6) calc(var(--u)*.5) calc(var(--u)*1.9) calc(var(--u)*.7)/calc(var(--u)*.7) calc(var(--u)*1.8) calc(var(--u)*.5) calc(var(--u)*1.6)}
+.dot{background:transparent;border:calc(var(--u)*.45) solid var(--c);box-shadow:none}
+.chip{background:transparent;border:calc(var(--u)*.3) solid var(--c);border-radius:99px}
+.stat-value{letter-spacing:0}
+.progress{background:var(--accent)}

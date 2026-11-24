@@ -11,7 +11,7 @@ Before anything else, be clear on five things. Ask the user only for what you ca
 - **Who it's for**, and what they already know.
 - **The one idea** they should leave with. One sentence. If you can't say it in one, the film is trying to do too much.
 - **Where it goes**: TikTok, Reels, Shorts, LinkedIn, YouTube. This sets the shape (`format.preset`) and the length.
-- **The style**: run `npx bezel-film styles` and pick the one that suits the idea and the audience, not just the topic.
+- **The style**: run `npx bezel-film styles` and pick the one that suits the idea and the audience, not just the topic. Then read its guide, `npx bezel-film guide <style>`, and the example film it points to. The style's guide says how it looks and moves; follow it closely.
 - **How long**: social films work best at 20 to 60 seconds. Every second has to earn its place.
 
 ## 2. The story

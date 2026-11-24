@@ -1,0 +1,35 @@
+{
+  "name": "blueprint",
+  "label": "Blueprint",
+  "description": "Technical drawings plotted in white on blue paper: precise lines, measurements and labels in capitals.",
+  "theme": "dark",
+  "font": "technical",
+  "colours": {
+    "background": "#0D3866",
+    "surface": "#124A84",
+    "text": "#F2F7FF",
+    "muted": "#BCD0E8",
+    "accent": "#FFD166",
+    "palette": [
+      "#FFD166",
+      "#7FDBFF",
+      "#FF9FB2",
+      "#B8F2A1",
+      "#FFFFFF",
+      "#CDB9FF",
+      "#FFB27A"
+    ]
+  },
+  "motion": {
+    "level": "calm",
+    "easing": "cubic-bezier(0.22, 1, 0.36, 1)",
+    "enterMs": 600,
+    "staggerMs": 90,
+    "transition": "wipe",
+    "transitionMs": 450
+  },
+  "layout": {
+    "safeArea": 0.08,
+    "captionPosition": "bottom"
+  }
+}

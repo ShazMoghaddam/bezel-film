@@ -7,6 +7,7 @@ A style is a folder here. The folder's name is the style's name, in lowercase wo
 | `style.json` | Settings: name, label, description, theme, font pairing, colours, motion and layout. Required. |
 | `style.css` | The look: backdrop, texture, cards, lines, anything the shared CSS doesn't decide. |
 | `filters.svg` | SVG filters the CSS can use, such as wobbly ink lines or print grain. Optional. |
+| `guide.md` | For styles made for custom scenes: how the style looks and moves, for agents to follow (`bezel-film guide <name>`). Pair it with an example film in `examples/<name>`. |
 
 Start by copying `data-story`, then:
 

@@ -1,0 +1,126 @@
+{
+  "$schema": "../../schema/film.schema.json",
+  "spec": 1,
+  "title": "Why savings grow faster over time",
+  "style": "whiteboard",
+  "format": {
+    "aspect": "16:9",
+    "resolution": "1080p",
+    "fps": 30
+  },
+  "voice": {
+    "engine": "kokoro",
+    "gender": "female"
+  },
+  "music": {
+    "source": "generated",
+    "mood": "calm"
+  },
+  "scenes": [
+    {
+      "id": "hook",
+      "type": "custom",
+      "file": "scenes/hook.js",
+      "props": {
+        "lines": [
+          "Why does money",
+          "left alone grow"
+        ],
+        "pop": "faster?"
+      },
+      "narration": "Why does money you leave alone grow faster and faster?",
+      "sounds": [
+        {
+          "at": 2.6,
+          "sound": "swish",
+          "gain": 0.6
+        }
+      ]
+    },
+    {
+      "id": "start",
+      "type": "custom",
+      "file": "scenes/start.js",
+      "props": {
+        "amount": "£100",
+        "rate": "+7% a year"
+      },
+      "narration": "Say you save a hundred pounds, and it earns seven percent a year.",
+      "sounds": [
+        {
+          "at": 2.2,
+          "sound": "tap",
+          "gain": 0.6
+        }
+      ]
+    },
+    {
+      "id": "interest",
+      "type": "custom",
+      "file": "scenes/interest.js",
+      "props": {
+        "years": [
+          {
+            "label": "Year 1",
+            "base": "£100",
+            "gain": "+£7"
+          },
+          {
+            "label": "Year 2",
+            "base": "£107",
+            "gain": "+£7.49"
+          }
+        ],
+        "note": "interest on interest"
+      },
+      "narration": "In year one, you earn seven. In year two, you earn interest on that interest too.",
+      "sounds": [
+        {
+          "at": 1.2,
+          "sound": "pop",
+          "gain": 0.5
+        },
+        {
+          "at": 3.4,
+          "sound": "pop",
+          "gain": 0.5
+        }
+      ]
+    },
+    {
+      "id": "curve",
+      "type": "custom",
+      "file": "scenes/curve.js",
+      "props": {
+        "rate": 0.07,
+        "start": 100,
+        "marks": [
+          10,
+          20,
+          30
+        ],
+        "currency": "£",
+        "title": "£100 at 7% a year"
+      },
+      "narration": "Keep going, and the curve bends upwards. Ten years, two hundred. Thirty years, over seven hundred and fifty.",
+      "sounds": []
+    },
+    {
+      "id": "lesson",
+      "type": "custom",
+      "file": "scenes/lesson.js",
+      "props": {
+        "title": "Start early.",
+        "line": "Time does the heavy lifting."
+      },
+      "narration": "So start early. Time does the heavy lifting.",
+      "sounds": [
+        {
+          "at": 0.9,
+          "sound": "ding",
+          "gain": 0.5
+        }
+      ]
+    }
+  ]
+}

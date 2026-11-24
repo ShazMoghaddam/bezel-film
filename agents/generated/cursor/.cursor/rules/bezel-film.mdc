@@ -102,5 +102,5 @@ Every scene can also have `id`, `narration`, `duration` (seconds), `transition` 
 - **Maps:** name places as people say them (`"Nairobi"`, `"Paris, France"`, `"UK"`), or give `{ "lat", "lon", "name" }`. Run `validate` to check every name. Maps work at country and region scale, so don't pin several places in one city.
 - **Use the style's defaults** for colour, fonts and motion. Set `font` or `motion` (`calm`, `lively`, `punchy`) only if asked.
 - **Styles and fonts:** `npx bezel-film styles` lists them. Pick the style that suits the story.
-- **For a film that has to be great, or any custom scene,** read `npx bezel-film guide director` first and follow it.
+- **For a film that has to be great, or any custom scene,** read `npx bezel-film guide director` first and follow it. Styles made for custom scenes, like `whiteboard`, have their own guide too: read it with `npx bezel-film guide <style>`, and look at the example film it names.
 <!-- bezel-film:end -->

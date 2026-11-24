@@ -89,5 +89,5 @@ Every scene can also have `id`, `narration`, `duration` (seconds), `transition` 
 - **Six items at most** in points, timelines and roadmaps; split more across two scenes. On tall formats, four or five read best, with few `detail` lines.
 - **Use the style's defaults** for colour, fonts and motion. Set `font` or `motion` (`calm`, `lively`, `punchy`) only if asked.
 - **Styles and fonts:** `npx bezel-film styles` lists them. Pick the style that suits the story.
-- **For a film that has to be great, or any custom scene,** read `npx bezel-film guide director` first and follow it.
+- **For a great film or any custom scene,** read `npx bezel-film guide director` and the style's guide (`guide <style>`).
 <!-- bezel-film:end -->

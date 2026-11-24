@@ -1,0 +1,35 @@
+{
+  "name": "stick-figures",
+  "label": "Stick figures",
+  "description": "Stick people act the idea out on notebook paper: simple characters, big feelings, quick sketches around them.",
+  "theme": "light",
+  "font": "handwritten",
+  "colours": {
+    "background": "#FBF8F1",
+    "surface": "#FFFFFF",
+    "text": "#22252E",
+    "muted": "#5A5E6B",
+    "accent": "#E4572E",
+    "palette": [
+      "#2D6CDF",
+      "#E4572E",
+      "#1F9D6B",
+      "#8E44AD",
+      "#C2410C",
+      "#0E7490",
+      "#22252E"
+    ]
+  },
+  "motion": {
+    "level": "lively",
+    "easing": "cubic-bezier(0.22, 1, 0.36, 1)",
+    "enterMs": 600,
+    "staggerMs": 90,
+    "transition": "fade",
+    "transitionMs": 400
+  },
+  "layout": {
+    "safeArea": 0.08,
+    "captionPosition": "bottom"
+  }
+}

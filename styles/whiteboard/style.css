@@ -1,0 +1,32 @@
+/* Whiteboard: marker on a clean board. Custom scenes draw live with the kit's pen; these
+   rules make the ready-made scenes match. Lines, boxes and underlines are drawn by hand and
+   write themselves in, left to right, rather than growing like a bar. */
+/* A clean board: brighter in the middle, a little shadow towards the frame. */
+.backdrop{background:radial-gradient(75% 65% at 50% 45%,#FFFFFF,transparent 78%)}
+.grain{background:radial-gradient(ellipse at center,transparent 55%,rgb(30 36 48/.07));}
+.display,.heading,.stat-label,.quote,.stop-label{letter-spacing:0}
+.display{line-height:1.05}
+
+/* A marker stroke, coloured with the accent through a mask, drawn in from the left. */
+@keyframes write-in{from{clip-path:inset(-20% 100% -20% 0)}to{clip-path:inset(-20% -2% -20% 0)}}
+.rule{height:calc(var(--u)*2.4);width:calc(var(--u)*34);border-radius:0;background:var(--accent);
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 14' preserveAspectRatio='none'%3E%3Cpath d='M3 9 C 40 3, 80 12, 120 6 S 180 4, 197 8' fill='none' stroke='black' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E") center/100% 100% no-repeat;
+  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 14' preserveAspectRatio='none'%3E%3Cpath d='M3 9 C 40 3, 80 12, 120 6 S 180 4, 197 8' fill='none' stroke='black' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E") center/100% 100% no-repeat;
+  animation-name:write-in}
+.heading{position:relative;padding-bottom:calc(var(--u)*1.6)}
+.heading::after{content:"";position:absolute;left:0;bottom:0;width:min(100%,calc(var(--u)*40));height:calc(var(--u)*1.6);background:var(--c,var(--accent));
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 10' preserveAspectRatio='none'%3E%3Cpath d='M2 6 C 50 2, 110 9, 198 4' fill='none' stroke='black' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E") center/100% 100% no-repeat;
+  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 10' preserveAspectRatio='none'%3E%3Cpath d='M2 6 C 50 2, 110 9, 198 4' fill='none' stroke='black' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E") center/100% 100% no-repeat;
+  animation:write-in calc(var(--enter) * 1.6) ease-out calc(var(--enter) * .9) both}
+.center .heading::after{left:50%;translate:-50% 0}
+
+/* Boxes and dots are drawn, not printed. */
+.card{background:#FFFFFF;border:calc(var(--u)*.45) solid var(--text);box-shadow:none;
+  border-radius:calc(var(--u)*2) calc(var(--u)*.6) calc(var(--u)*2.4) calc(var(--u)*.8)/calc(var(--u)*.8) calc(var(--u)*2.2) calc(var(--u)*.6) calc(var(--u)*2);filter:url(#wb-wobble)}
+.dot{background:transparent;border:calc(var(--u)*.5) solid var(--c);box-shadow:none;border-radius:55% 45% 50% 50%/50% 55% 45% 50%;filter:url(#wb-wobble)}
+.chip{background:transparent;border:calc(var(--u)*.35) solid var(--c);border-radius:50% 45% 55% 48%/60% 50% 55% 45%;filter:url(#wb-wobble)}
+.stat-value{letter-spacing:0}
+.cta{border-radius:calc(var(--u)*1.2) calc(var(--u)*.4) calc(var(--u)*1.4) calc(var(--u)*.5);filter:url(#wb-wobble)}
+.code{border:calc(var(--u)*.35) solid var(--text);filter:none}
+.stop-dot{box-shadow:0 0 0 calc(var(--u)*.7) var(--bg)}
+.progress{background:var(--accent)}

@@ -1,0 +1,26 @@
+/* Blueprint: white line drawing on blue paper, over a fine grid with a heavier line
+   every fifth square. Headings are lettered in capitals, like a drawing's title block. */
+.backdrop{background:radial-gradient(70% 70% at 50% 45%,color-mix(in srgb,#FFFFFF 6%,transparent),transparent 75%)}
+.grain{--cell:calc(var(--u)*2.6);background:
+  linear-gradient(rgb(255 255 255/.13) 1px,transparent 1px) 0 0/calc(var(--cell) * 5) calc(var(--cell) * 5),
+  linear-gradient(90deg,rgb(255 255 255/.13) 1px,transparent 1px) 0 0/calc(var(--cell) * 5) calc(var(--cell) * 5),
+  linear-gradient(rgb(255 255 255/.055) 1px,transparent 1px) 0 0/var(--cell) var(--cell),
+  linear-gradient(90deg,rgb(255 255 255/.055) 1px,transparent 1px) 0 0/var(--cell) var(--cell)}
+.display,.heading,.stat-label,.stop-label{text-transform:uppercase;letter-spacing:.03em}
+.display{font-size:calc(var(--u)*8.6);line-height:1.05}
+.heading{font-size:calc(var(--u)*5)}
+.lead,.muted{color:var(--muted)}
+/* A dimension line: a thin rule with ticks at each end. */
+.rule{height:calc(var(--u)*1.6);width:calc(var(--u)*30);border-radius:0;background:
+  linear-gradient(var(--text),var(--text)) center/100% 1.5px no-repeat,
+  linear-gradient(var(--text),var(--text)) left/1.5px 100% no-repeat,
+  linear-gradient(var(--text),var(--text)) right/1.5px 100% no-repeat}
+.stat-value{color:var(--text);font-weight:700;letter-spacing:-.02em}
+.stat-label{color:var(--accent)}
+.card{background:color-mix(in srgb,var(--bg) 70%,transparent);border:1.5px dashed rgb(255 255 255/.55);border-radius:0;box-shadow:none}
+.dot{background:transparent;border:calc(var(--u)*.3) solid var(--c);box-shadow:none}
+.chip{border-radius:0;background:transparent;border:1.5px solid var(--accent);color:var(--accent);text-transform:uppercase;letter-spacing:.08em}
+.cta{border-radius:0;text-transform:uppercase;letter-spacing:.06em}
+.code{border-radius:0;border:1.5px solid rgb(255 255 255/.45)}
+.quote-mark{color:var(--accent)}
+.progress{background:var(--accent)}

@@ -167,7 +167,7 @@ describe("buildPage", async () => {
 
 describe("loadStyle", () => {
   it("names the styles there are when one doesn't exist", async () => {
-    await expect(loadStyle("watercolour")).rejects.toThrow('There\'s no "watercolour" style. Choose from: data-story.');
+    await expect(loadStyle("watercolour")).rejects.toThrow('There\'s no "watercolour" style. Choose from: blueprint, data-story, isometric, stick-figures, whiteboard.');
   });
 
   it("loads the style's own CSS", async () => {

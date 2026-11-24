@@ -1,0 +1,51 @@
+{
+  "$schema": "../../schema/film.schema.json",
+  "spec": 1,
+  "title": "Why we put things off",
+  "style": "stick-figures",
+  "format": { "aspect": "16:9", "resolution": "1080p", "fps": 30 },
+  "voice": { "engine": "kokoro", "gender": "female" },
+  "music": { "source": "generated", "mood": "upbeat" },
+  "scenes": [
+    {
+      "id": "hook",
+      "type": "custom",
+      "file": "scenes/hook.js",
+      "props": { "title": "Why do we put things off?", "task": "Write the report" },
+      "narration": "Why do we put things off, even when we know we shouldn't?",
+      "sounds": [{ "at": 2.4, "sound": "pop", "gain": 0.5 }]
+    },
+    {
+      "id": "too-big",
+      "type": "custom",
+      "file": "scenes/too-big.js",
+      "props": { "task": "THE REPORT", "label": "too big!" },
+      "narration": "It's not that we're lazy. The task just feels too big to start.",
+      "sounds": [{ "at": 1.0, "sound": "whoosh", "gain": 0.5 }]
+    },
+    {
+      "id": "escape",
+      "type": "custom",
+      "file": "scenes/escape.js",
+      "props": { "label": "easy win" },
+      "narration": "So our brain grabs something easier, like one more scroll.",
+      "sounds": [{ "at": 2.6, "sound": "ding", "gain": 0.4 }]
+    },
+    {
+      "id": "shrink",
+      "type": "custom",
+      "file": "scenes/shrink.js",
+      "props": { "steps": ["Outline", "Notes", "Draft", "Edit", "Send"], "title": "Shrink the first step" },
+      "narration": "The fix is to shrink the first step until it's almost too easy to skip.",
+      "sounds": [{ "at": 1.2, "sound": "swish", "gain": 0.5 }, { "at": 3.2, "sound": "tick", "gain": 0.6 }]
+    },
+    {
+      "id": "go",
+      "type": "custom",
+      "file": "scenes/go.js",
+      "props": { "title": "Just five minutes.", "line": "Starting is the hardest part." },
+      "narration": "Give it five minutes. Starting is the hardest part.",
+      "sounds": [{ "at": 0.6, "sound": "pop", "gain": 0.5 }, { "at": 2.2, "sound": "ding", "gain": 0.4 }]
+    }
+  ]
+}
