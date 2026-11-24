@@ -366,7 +366,7 @@ On Linux, the voice engine also tries to download large GPU files it doesn't nee
 - **v0.5.2 (released):** outro links as stickers, and the Bezel Charts example film
 - **v0.6.0 (released):** eight font pairings, custom scenes drawn by your agent, and the first styles made for them: Whiteboard, Stick figures, Isometric world and Blueprint
 - **v0.7.0 (released):** four more styles: Data on paper, 1950s cartoon, 1930s cartoon and Manga
-- **v0.8.0:** four paper and craft styles: Pop-up book, Crayon book, Origami and Paper lantern
+- **v0.8.0 (released):** four paper and craft styles: Pop-up book, Crayon book, Origami and Paper lantern
 - **After v0.8.0:** eight more styles in batches of four: watercolour, Swiss poster, pop art, risograph, neon, dark keynote, pixel game and retro terminal
 
 ## Contributing
