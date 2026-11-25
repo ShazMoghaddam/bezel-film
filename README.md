@@ -372,7 +372,7 @@ On Linux, the voice engine also tries to download large GPU files it doesn't nee
 - **v0.6.0 (released):** eight font pairings, custom scenes drawn by your agent, and the first styles made for them: Whiteboard, Stick figures, Isometric world and Blueprint
 - **v0.7.0 (released):** four more styles: Data on paper, 1950s cartoon, 1930s cartoon and Manga
 - **v0.8.0 (released):** four paper and craft styles: Pop-up book, Crayon book, Origami and Paper lantern
-- **v0.9.0:** four bold and graphic styles: Watercolour, Swiss poster, Pop art and Risograph
+- **v0.9.0 (released):** four bold and graphic styles: Watercolour, Swiss poster, Pop art and Risograph
 - **After v0.9.0:** the last four styles: neon, dark keynote, pixel game and retro terminal
 
 ## Contributing

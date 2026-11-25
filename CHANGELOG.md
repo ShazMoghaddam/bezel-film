@@ -5,6 +5,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-11-25
+
+Four bold and graphic kinds of film: a watercolour journal, a Swiss poster, pop art and risograph. The scene kit gains watercolour washes, a layout grid, comic starbursts and speech bubbles, and overprinting ink layers to build them with.
+
 ### Added
 
 - Four more styles made for custom scenes, each with a guide for agents and an example film:
@@ -276,7 +280,8 @@ The first release: describe a film in one JSON file, and Bezel Film renders it t
 
 - CI checks on every push and pull request, including a render smoke test, plus Dependabot.
 
-[Unreleased]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.8.0...HEAD
+[Unreleased]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.9.0...HEAD
+[0.9.0]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.5.2...v0.6.0
