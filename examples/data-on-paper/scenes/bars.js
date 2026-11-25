@@ -4,11 +4,12 @@ Bezel.scene((root, kit) => {
   const { u, safe, colours, props } = kit;
   const s = kit.stage();
   const pencil = { "stroke-linecap": "round", "stroke-linejoin": "round", filter: "url(#pencil)" };
-  const title = kit.text(root, props.title, { x: safe.x, y: safe.y, size: 5.6, font: "heading" });
+  const title = kit.text(root, props.title, { x: safe.x, y: safe.y, size: 5.6, font: "heading", maxWidth: safe.width, style: { textWrap: "balance" } });
   const labelW = Math.min(safe.width * 0.26, u * 44);
   const x0 = safe.x + labelW, x1 = safe.x + safe.width - u * 14;
-  const rowH = Math.min((safe.height - u * 14) / props.bars.length, u * 16);
-  const y0 = safe.y + u * 12;
+  const rowH = Math.min((safe.y + safe.height - title.getBoundingClientRect().bottom - u * 9) / props.bars.length, u * 16);
+  // The bars start below the title, however many lines it took.
+  const y0 = title.getBoundingClientRect().bottom + u * 5;
   const axis = kit.svg("path", { d: kit.rough.line(x0, y0 - u * 1, x0, y0 + rowH * props.bars.length, { seed: 1, wobble: 0.3 }), fill: "none", stroke: colours.text, "stroke-width": u * 0.3, ...pencil }, s);
   const colourOf = [colours.palette[5], colours.palette[0], colours.palette[3]];
   const bars = props.bars.map(([name, value], i) => {

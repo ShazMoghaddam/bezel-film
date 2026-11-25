@@ -4,7 +4,10 @@ Bezel.scene((root, kit) => {
   const { u, safe, colours, props } = kit;
   const s = kit.stage();
   const ink = colours.text, paper = colours.surface;
-  const fw = Math.min(safe.width * 0.78, u * 130), fh = Math.min(safe.height * 0.82, u * 64);
+  // Wide frames get a landscape card; narrower ones a near-square card with the title on
+  // two lines.
+  const wide = kit.shape === "wide";
+  const fw = wide ? Math.min(safe.width * 0.78, u * 130) : safe.width * 0.96, fh = wide ? Math.min(safe.height * 0.82, u * 64) : Math.min(u * 56, safe.height * 0.7);
   const fx = kit.width / 2 - fw / 2, fy = safe.y + (safe.height - fh) / 2;
   const frame = kit.svg("g", { fill: "none", stroke: ink }, s);
   kit.svg("rect", { x: fx, y: fy, width: fw, height: fh, rx: u * 3, fill: paper, "stroke-width": u * 0.8 }, frame);
@@ -13,9 +16,10 @@ Bezel.scene((root, kit) => {
   for (const [cx, cy, sx, sy] of [[fx, fy, 1, 1], [fx + fw, fy, -1, 1], [fx, fy + fh, 1, -1], [fx + fw, fy + fh, -1, -1]]) {
     kit.svg("path", { d: `M${cx + sx * u * 4} ${cy + sy * u * 9} q0 ${-sy * u * 5} ${sx * u * 5} ${-sy * u * 5} q${sx * u * 3} 0 ${sx * u * 3} ${sy * u * 2.5} q0 ${sy * u * 2} ${-sx * u * 2} ${sy * u * 2}`, "stroke-width": u * 0.4, "stroke-linecap": "round" }, frame);
   }
-  const kicker = kit.text(root, props.kicker.toUpperCase(), { x: kit.width / 2, y: fy + fh * 0.2, size: 3.4, font: "body", weight: 600, align: "center", colour: ink, style: { letterSpacing: "0.3em" } });
-  const title = kit.text(root, props.title, { x: kit.width / 2, y: fy + fh * 0.36, size: 13, font: "heading", align: "center", colour: ink, style: { fontStyle: "italic" } });
-  const rule = kit.svg("path", { d: `M${kit.width / 2 - u * 20} ${fy + fh * 0.78} h${u * 40} M${kit.width / 2} ${fy + fh * 0.78 - u * 1.4} l${u * 1.4} ${u * 1.4} l${-u * 1.4} ${u * 1.4} l${-u * 1.4} ${-u * 1.4} Z`, fill: ink, stroke: ink, "stroke-width": u * 0.3 }, s);
+  const kicker = kit.text(root, props.kicker.toUpperCase(), { x: kit.width / 2, y: wide ? fy + fh * 0.2 : fy + u * 8, size: 3.4, font: "body", weight: 600, align: "center", colour: ink, maxWidth: wide ? undefined : fw * 0.84, style: { letterSpacing: "0.3em", ...(wide ? {} : { textWrap: "balance" }) } });
+  const title = kit.text(root, props.title, { x: kit.width / 2, y: wide ? fy + fh * 0.36 : fy + u * 17, size: wide ? 13 : kit.shape === "tall" ? 8.6 : 10, font: "heading", align: "center", colour: ink, maxWidth: wide ? undefined : fw * 0.84, style: { fontStyle: "italic", lineHeight: "1.02", ...(wide ? {} : { textWrap: "balance" }) } });
+  const ry = wide ? fy + fh * 0.78 : Math.min(fy + fh - u * 7, title.getBoundingClientRect().bottom + u * 5);
+  const rule = kit.svg("path", { d: `M${kit.width / 2 - u * 20} ${ry} h${u * 40} M${kit.width / 2} ${ry - u * 1.4} l${u * 1.4} ${u * 1.4} l${-u * 1.4} ${u * 1.4} l${-u * 1.4} ${-u * 1.4} Z`, fill: ink, stroke: ink, "stroke-width": u * 0.3 }, s);
   const iris = irisLayer();
 
   return (t) => {

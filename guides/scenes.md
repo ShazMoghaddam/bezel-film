@@ -62,7 +62,7 @@ Bezel.scene((root, kit) => {
 | `kit.width`, `kit.height` | The frame in pixels |
 | `kit.u` | One hundredth of the frame's shorter side. Size everything with it, so one scene works in every format |
 | `kit.safe` | `{ x, y, width, height }`: where words and key pictures go, clear of captions and the platform's buttons |
-| `kit.shape` | `"wide"`, `"square"` or `"tall"`, to lay out differently for each |
+| `kit.shape` | `"wide"` (16:9), `"square"` (1:1 and 4:5) or `"tall"` (9:16), to lay out differently for each |
 
 **The film**
 
@@ -111,7 +111,7 @@ return (t) => plan.draw(t);
 | | |
 | --- | --- |
 | `kit.stage()` | A full-frame SVG layer whose units are the frame's pixels. Put shapes from the parts below on it |
-| `kit.text(parent, words, { x, y, size, font, colour, align })` | Words placed by a point: `align` is `"left"`, `"center"` or `"right"`. `size` is in `kit.u`; `font` is `"heading"`, `"body"` or `"mono"` |
+| `kit.text(parent, words, { x, y, size, font, colour, align })` | Words placed by a point: `align` is `"left"`, `"center"` or `"right"`. `size` is in `kit.u`; `font` is `"heading"`, `"body"` or `"mono"`. Words that would run past the safe area shrink to fit, down to 60% (`fit: false` turns this off) |
 | `kit.icon(name, { x, y, size, colour })` | A line drawing from the bundled set of 5,491 (Tabler Icons). Returns `{ svg, paths }`; draw it in with `plan.sequence(at, icon.paths)`. Find names with `npx bezel-film icons coffee` |
 | `kit.rough` | Hand-drawn path data: `line`, `rect`, `ellipse`, `underline`, and `arrow` (which returns `{ shaft, head }`). Each takes a `seed`, so it's drawn the same way every time |
 | `kit.figure(stage, { x, y, height, face })` | A stick figure standing at `(x, y)`. `.pose("wave")`, `.pose("stand", "cheer", p)` to blend, `.walk(t)`, `.move(x, y)`, `.face("sad")`, `.hand("right")`. Poses: `stand`, `wave`, `point`, `present`, `think`, `cheer`, `shrug`, `hold`, `sad`, `sit`, `walkA`, `walkB` |

@@ -20,7 +20,9 @@ Bezel.scene((root, kit) => {
     const g = kit.svg("g", {}, s);
     kit.svg("rect", { x, y: by, width: bw, height: bh, fill: i === 0 ? `color-mix(in srgb, ${colours.palette[2]} 16%, white)` : "#FFFFFF" }, g);
     kit.svg("path", { d: kit.rough.rect(x, by, bw, bh, { seed: 20 + i }), fill: "none", stroke: colours.text, "stroke-width": u * 0.45, "stroke-linecap": "round" }, g);
-    const label = kit.text(root, step, { x: x + bw / 2, y: by + bh + u * 1.5, size: 4, align: "center" });
+    // On narrow frames every other label sits above its box, so neighbours do not touch.
+    const narrow = kit.shape !== "wide";
+    const label = kit.text(root, step, { x: x + bw / 2, y: narrow && i % 2 ? by - u * 5.6 : by + bh + u * 1.5, size: narrow ? 3.6 : 4, align: "center" });
     return { g, label, x };
   });
   const tickX = left + bw / 2, tickY = by + bh / 2;

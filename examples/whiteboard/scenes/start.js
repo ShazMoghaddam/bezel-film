@@ -4,7 +4,7 @@ Bezel.scene((root, kit) => {
   const { u, safe, colours } = kit;
   const s = kit.stage();
   const tall = kit.shape === "tall";
-  const size = Math.min(safe.width * (tall ? 0.5 : 0.26), safe.height * 0.5);
+  const size = Math.min(safe.width * (tall ? 0.5 : 0.26), safe.height * (tall ? 0.34 : 0.5));
   // Side by side on wide frames, centred as a group: the pig, a gap, then the words.
   const groupW = size + u * 8 + u * 44;
   const pigX = tall ? safe.x + (safe.width - size) / 2 : safe.x + (safe.width - groupW) / 2;

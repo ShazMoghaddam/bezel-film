@@ -253,12 +253,27 @@ export const KIT_JS = String.raw`
     }
 
     /** Text placed by its anchor point: align "left", "center" or "right", like a label on a drawing. */
-    function text(parent, content, { x = 0, y = 0, size = 4, font = "body", weight, colour, align = "left", maxWidth, style: extra } = {}) {
+    function text(parent, content, { x = 0, y = 0, size = 4, font = "body", weight, colour, align = "left", maxWidth, fit = true, style: extra } = {}) {
       const family = info.fonts[font] || font;
       const node = el("div", { text: content, style: {
         position: "absolute", left: x + "px", top: y + "px", font: (weight || (font === "heading" ? 700 : 500)) + " " + size * u + "px/1.15 " + family,
         color: colour || info.colours.text, whiteSpace: maxWidth ? "normal" : "nowrap", width: maxWidth ? maxWidth + "px" : "",
         translate: align === "center" ? "-50% 0" : align === "right" ? "-100% 0" : "0 0", textAlign: align, ...(extra || {}) } }, parent);
+      // Words that would run past the safe area's sides or bottom shrink a step at a time
+      // until they fit, as in a narrow phone frame. Words that already fit are untouched,
+      // and nothing shrinks below 60%, so a badly placed line is still caught by the checks.
+      if (fit && content !== "" && content != null) {
+        const full = size * u;
+        let px = full;
+        for (let i = 0; i < 12; i++) {
+          const r = node.getBoundingClientRect();
+          if (!r.width) break;
+          const over = r.left < safe.x - 0.5 || r.right > safe.x + safe.width + 0.5 || r.bottom > safe.y + safe.height + 0.5;
+          if (!over || px * 0.94 < full * 0.6) break;
+          px *= 0.94;
+          node.style.fontSize = px + "px";
+        }
+      }
       return node;
     }
 
@@ -1062,7 +1077,8 @@ export const KIT_JS = String.raw`
       height,
       u,
       safe,
-      shape: width / height > 1.2 ? "wide" : width / height < 0.85 ? "tall" : "square",
+      // The same names as the rest of Bezel Film: 16:9 is wide, 9:16 tall, 1:1 and 4:5 square.
+      shape: width / height > 1.2 ? "wide" : width / height < 0.7 ? "tall" : "square",
       fps: info.fps,
       duration: info.duration,
       lines: info.lines,

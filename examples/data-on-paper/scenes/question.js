@@ -16,8 +16,13 @@ Bezel.scene((root, kit) => {
     `M${cx - r * 0.55} ${cy - r * 0.35} q${r * 0.25} ${-r * 0.25} ${r * 0.45} ${-r * 0.05} q${r * 0.1} ${r * 0.3} ${-r * 0.1} ${r * 0.45} q${-r * 0.3} ${r * 0.15} ${-r * 0.35} ${-r * 0.4}`,
     `M${cx + r * 0.15} ${cy + r * 0.05} q${r * 0.35} ${-r * 0.2} ${r * 0.5} ${r * 0.15} q${-r * 0.05} ${r * 0.4} ${-r * 0.35} ${r * 0.45} q${-r * 0.25} ${-r * 0.25} ${-r * 0.15} ${-r * 0.6}`,
   ].map((d) => kit.svg("path", { d, ...pencil, fill: colours.background, stroke: colours.palette[2], "stroke-width": u * 0.3 }, s));
-  const note = kit.text(root, props.note, { x: cx + r + u * 6, y: cy - u * 2, size: 3.4, colour: colours.accent, style: { fontStyle: "italic" }, maxWidth: safe.x + safe.width - (cx + r + u * 6) });
-  const arrow = kit.rough.arrow(cx + r + u * 5, cy + u * 4, cx + r + u * 1, cy + u * 1, { curve: -0.3, head: u * 1.4, seed: 3 });
+  const beside = kit.shape === "wide";
+  const note = beside
+    ? kit.text(root, props.note, { x: cx + r + u * 6, y: cy - u * 2, size: 3.4, colour: colours.accent, style: { fontStyle: "italic" }, maxWidth: safe.x + safe.width - (cx + r + u * 6) })
+    : kit.text(root, props.note, { x: cx, y: cy + r + u * 6, size: 3.6, align: "center", colour: colours.accent, style: { fontStyle: "italic" } });
+  const arrow = beside
+    ? kit.rough.arrow(cx + r + u * 5, cy + u * 4, cx + r + u * 1, cy + u * 1, { curve: -0.3, head: u * 1.4, seed: 3 })
+    : kit.rough.arrow(cx + u * 2, cy + r + u * 5, cx + u * 1, cy + r + u * 1, { curve: -0.3, head: u * 1.4, seed: 3 });
   const ag = kit.svg("g", { ...pencil, stroke: colours.accent, "stroke-width": u * 0.3 }, s);
   const shaft = kit.svg("path", { d: arrow.shaft }, ag), head = kit.svg("path", { d: arrow.head }, ag);
 

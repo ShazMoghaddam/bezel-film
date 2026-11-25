@@ -17,9 +17,11 @@ Bezel.scene((root, kit) => {
   const glow = [1.25, 1.5, 1.8].map((k, i) => kit.svg("circle", { cx, cy, r: R * k, fill: "none", stroke: ink, "stroke-width": u * 0.25, "stroke-dasharray": `${u * 1.5} ${u * 1.2}`, opacity: 0.6 - i * 0.15 }, orb));
   kit.svg("rect", { x: r.x, y: r.y, width: r.width, height: r.height, fill: "none", stroke: ink, "stroke-width": u * 0.7 }, s);
   // The question on a white caption box across the top.
-  const line = kit.text(root, props.line, { x: cx, y: r.y + u * 3, size: kit.shape === "tall" ? 4.4 : 5.2, font: "heading", align: "center", colour: ink,
-    style: { background: paper, border: `${u * 0.45}px solid ${ink}`, padding: `${u * 1}px ${u * 2.4}px`, whiteSpace: "nowrap" } });
-  const sfx = kit.text(root, props.sfx, { x: cx + R * 1.6, y: cy - R * 1.5, size: 6, font: "heading", colour: ink,
+  // On a wide page the question fits on one line; narrower pages wrap it onto two.
+  const wide = kit.shape === "wide";
+  const line = kit.text(root, props.line, { x: cx, y: r.y + u * 3, size: wide ? 5.2 : 4.6, font: "heading", align: "center", colour: ink, maxWidth: wide ? undefined : r.width - u * 8,
+    style: { background: paper, border: `${u * 0.45}px solid ${ink}`, padding: `${u * 1}px ${u * 2.4}px`, ...(wide ? { whiteSpace: "nowrap" } : { whiteSpace: "normal", textWrap: "balance" }) } });
+  const sfx = kit.text(root, props.sfx, { x: wide ? cx + R * 1.6 : cx + R * 0.7, y: wide ? cy - R * 1.5 : cy + R * 1.2, size: 6, font: "heading", colour: ink,
     style: { WebkitTextStroke: `${u * 0.8}px #FFFFFF`, paintOrder: "stroke fill", rotate: "12deg" } });
   const sparkles = [[-1.3, -0.9], [1.4, 0.4], [-1.1, 0.8]].map(([dx, dy]) => kit.icon("sparkles", { parent: root, x: cx + dx * R - u * 3, y: cy + dy * R - u * 3, size: u * 6, colour: ink, width: u * 0.45 }));
 

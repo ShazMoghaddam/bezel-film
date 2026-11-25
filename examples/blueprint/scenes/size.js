@@ -17,10 +17,12 @@ Bezel.scene((root, kit) => {
   const wide = kit.dimension(s, cx - r, top + h, cx + r, top + h, { label: "⌀ " + props.width, offset: u * 5, colour: colours.accent, size: 3.6 });
   // A leader line from the body to a note about what it holds.
   const lx = cx + r * 0.6, ly = top + h * 0.55;
-  const tx = cx + r + u * 22, ty = top + h * 0.38;
+  // On a narrow frame the note sits closer and wraps onto two lines.
+  const wideFrame = kit.shape === "wide";
+  const tx = cx + r + u * (wideFrame ? 22 : 9), ty = top + h * 0.38;
   const leader = kit.svg("path", { d: `M${lx} ${ly} L${tx - u * 6} ${ty + u * 2} L${tx - u * 1} ${ty + u * 2}`, ...line, stroke: colours.palette[1] }, s);
   const dot = kit.svg("circle", { cx: lx, cy: ly, r: u * 0.7, fill: colours.palette[1] }, s);
-  const note = kit.text(root, props.volume, { x: tx, y: ty, size: 4.4, font: "heading", colour: colours.palette[1] });
+  const note = kit.text(root, props.volume, { x: tx, y: ty, size: 4.4, font: "heading", colour: colours.palette[1], maxWidth: wideFrame ? undefined : safe.x + safe.width - tx });
 
   const plan = kit.drawing();
   const at = [kit.at(0) + 0.3, kit.at(0) + 1.8, kit.at(0) + 3.3];

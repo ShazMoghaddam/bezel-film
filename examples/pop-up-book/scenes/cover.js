@@ -46,14 +46,15 @@ Bezel.scene((root, kit) => {
 
   // The title sign: a board on two posts.
   const sign = kit.popup(s, { base, x: width / 2 });
-  const bw = Math.min(safe.width * 0.62, u * 96), bh = u * 25;
+  // The sign is wider on narrow frames, so the title keeps to two or three short lines.
+  const bw = kit.shape === "wide" ? Math.min(safe.width * 0.62, u * 96) : safe.width * 0.86, bh = kit.shape === "wide" ? u * 25 : u * 30;
   const bx = width / 2 - bw / 2, by = safe.y + safe.height * 0.16;
   for (const px of [bx + bw * 0.22, bx + bw * 0.78]) {
     kit.cutout(sign.group, `M${px - u * 1.2} ${by + bh - u} L${px + u * 1.2} ${by + bh - u} L${px + u * 1.2} ${base} L${px - u * 1.2} ${base} Z`, { fill: "#9B6A43", edge: rim, edgeWidth: u * 0.4 });
   }
   kit.cutout(sign.group, `M${bx + u * 3} ${by} H${bx + bw - u * 3} Q${bx + bw} ${by} ${bx + bw} ${by + u * 3} V${by + bh - u * 3} Q${bx + bw} ${by + bh} ${bx + bw - u * 3} ${by + bh} H${bx + u * 3} Q${bx} ${by + bh} ${bx} ${by + bh - u * 3} V${by + u * 3} Q${bx} ${by} ${bx + u * 3} ${by} Z`, { fill: "#FFFDF7", edge: rim, lift: u });
   const kicker = kit.text(root, props.kicker, { x: width / 2, y: by + u * 3.2, size: 3, align: "center", colour: colours.accent, weight: 800, style: { letterSpacing: "0.12em", textTransform: "uppercase" } });
-  const title = kit.text(root, props.title, { x: width / 2, y: by + u * 8, size: 7, font: "heading", align: "center", colour: ink, maxWidth: bw - u * 8, style: { textWrap: "balance", lineHeight: "1.05" } });
+  const title = kit.text(root, props.title, { x: width / 2, y: by + u * 8, size: kit.shape === "wide" ? 7 : 6, font: "heading", align: "center", colour: ink, maxWidth: bw - u * 8, style: { textWrap: "balance", lineHeight: "1.05" } });
 
   // Front layer: a row of flowers on stalks.
   const front = kit.popup(s, { base, x: width / 2 });
