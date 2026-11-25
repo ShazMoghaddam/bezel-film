@@ -1,0 +1,10 @@
+/* Watercolour: a nature journal on cold-pressed cotton paper. The paper's tooth shows
+   through everything; scenes paint with filter #paint and draw ink with #ink. */
+.backdrop{background:radial-gradient(85% 75% at 50% 45%,#FBF7EC,transparent 85%),linear-gradient(#F4EFE3,#EFE8D8)}
+.grain{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.035' numOctaves='4' seed='3' stitchTiles='stitch'/%3E%3CfeDiffuseLighting lighting-color='%23fff' surfaceScale='1.6'%3E%3CfeDistantLight azimuth='45' elevation='55'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");opacity:.38;mix-blend-mode:multiply;z-index:3}
+.display,.heading{letter-spacing:-.01em;font-style:italic}
+.rule{height:calc(var(--u)*.5);width:calc(var(--u)*18);background:var(--accent);opacity:.75;filter:url(#paint)}
+.card{background:rgb(251 248 240/.7);border:0;border-radius:calc(var(--u)*.4);box-shadow:none}
+.chip{background:transparent;border:1px solid var(--muted);border-radius:calc(var(--u)*3)}
+.dot{box-shadow:none;filter:url(#paint)}
+.progress{background:var(--accent);opacity:.8}

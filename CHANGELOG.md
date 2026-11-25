@@ -5,6 +5,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+### Added
+
+- Four more styles made for custom scenes, each with a guide for agents and an example film:
+  - **Watercolour**: a nature journal that paints itself, with soft washes, fine ink lines and notes in the margins.
+  - **Swiss poster**: a strict grid, big neutral type and one signal red, snapping into place on the beat.
+  - **Pop art**: comic dots, bold outlines, starbursts and speech bubbles that punch in.
+  - **Risograph**: a zine printed one ink at a time, with bright inks overlapping into new colours, slightly out of register.
+- More in the scene kit: watercolour washes that bloom from a point (`kit.wash`), a layout grid (`kit.grid`), comic starbursts (`kit.burst`), speech and thought bubbles (`kit.bubble`) and overprinting ink layers (`kit.ink`).
+- A new font pairing, `swiss`: Inter for headings and body, with Inter Bold now bundled.
+
 ## [0.8.0] - 2026-11-24
 
 Four paper and craft kinds of film: a pop-up book, a crayon picture book, origami and cut paper lit from behind. The scene kit gains paper cut-outs, pop-ups, crayon colouring-in, origami folds and soft glows to build them with.

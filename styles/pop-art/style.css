@@ -1,0 +1,11 @@
+/* Pop art: a printed comic page. Flat yellow with a faint field of Ben-Day dots, thick
+   black outlines and hard offset shadows. */
+.backdrop{background:radial-gradient(circle at center,rgb(215 20 26/.16) 30%,transparent 32%) 0 0/calc(var(--u)*2.2) calc(var(--u)*2.2),#FFE14D;
+  -webkit-mask:none}
+.grain{background:radial-gradient(120% 90% at 50% 45%,transparent 55%,rgb(17 17 17/.12));opacity:1}
+.display,.heading{letter-spacing:.005em;text-transform:uppercase}
+.rule{height:calc(var(--u)*1.2);width:calc(var(--u)*18);border-radius:0;background:var(--accent);box-shadow:calc(var(--u)*.5) calc(var(--u)*.5) 0 var(--text)}
+.card{background:#FFFFFF;border:calc(var(--u)*.5) solid var(--text);border-radius:0;box-shadow:calc(var(--u)*1) calc(var(--u)*1) 0 var(--text)}
+.chip{background:#FFFFFF;border:calc(var(--u)*.35) solid var(--text);border-radius:0;box-shadow:calc(var(--u)*.4) calc(var(--u)*.4) 0 var(--text)}
+.dot{box-shadow:0 0 0 calc(var(--u)*.3) var(--text)}
+.progress{background:var(--accent)}

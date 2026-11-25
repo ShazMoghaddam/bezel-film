@@ -1,0 +1,35 @@
+{
+  "name": "pop-art",
+  "label": "Pop art",
+  "description": "Comic dots and bold outlines: flat primary colours, halftone shading, starbursts and speech bubbles that punch in.",
+  "theme": "light",
+  "font": "bold",
+  "colours": {
+    "background": "#FFE14D",
+    "surface": "#FFFFFF",
+    "text": "#111111",
+    "muted": "#3A3424",
+    "accent": "#D7141A",
+    "palette": [
+      "#D7141A",
+      "#1D4FB8",
+      "#111111",
+      "#B0105A",
+      "#0B6B33",
+      "#6A2FA8",
+      "#9A3B00"
+    ]
+  },
+  "motion": {
+    "level": "punchy",
+    "easing": "cubic-bezier(0.22, 1, 0.36, 1)",
+    "enterMs": 450,
+    "staggerMs": 90,
+    "transition": "cut",
+    "transitionMs": 0
+  },
+  "layout": {
+    "safeArea": 0.08,
+    "captionPosition": "bottom"
+  }
+}

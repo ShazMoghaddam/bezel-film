@@ -15,7 +15,7 @@ in the Latin and Latin Extended character sets, as woff2. They're rebuilt with `
 | Fraunces | Copyright 2020 The Fraunces Project Authors (github.com/undercasetype/Fraunces) | 600, 700 | [OFL 1.1](fraunces/LICENSE) | v38 |
 | IBM Plex Mono | Copyright 2017 IBM Corp. All rights reserved. | 400, 700 | [OFL 1.1](ibm-plex-mono/LICENSE) | v20 |
 | IBM Plex Sans | Copyright 2019 IBM Corp. All rights reserved. | 400, 600, 700 | [OFL 1.1](ibm-plex-sans/LICENSE) | v23 |
-| Inter | Copyright 2016 The Inter Project Authors (https://github.com/rsms/inter) | 400, 600 | [OFL 1.1](inter/LICENSE) | v20 |
+| Inter | Copyright 2016 The Inter Project Authors (https://github.com/rsms/inter) | 400, 600, 700 | [OFL 1.1](inter/LICENSE) | v20 |
 | JetBrains Mono | Copyright 2020 The JetBrains Mono Project Authors (https://github.com/JetBrains/JetBrainsMono) | 400, 600, 700 | [OFL 1.1](jetbrains-mono/LICENSE) | v24 |
 | Nunito | Copyright 2014 The Nunito Project Authors (https://github.com/googlefonts/nunito) | 400, 600, 700, 800 | [OFL 1.1](nunito/LICENSE) | v32 |
 | Oswald | Copyright 2016 The Oswald Project Authors (https://github.com/googlefonts/OswaldFont) | 500, 600 | [OFL 1.1](oswald/LICENSE) | v57 |
@@ -38,3 +38,4 @@ A film's `font` setting picks one of these. See `src/spec/fonts.ts`.
 | `friendly` | Nunito | Nunito | JetBrains Mono |
 | `handwritten` | Caveat | Patrick Hand | JetBrains Mono |
 | `mono` | Space Mono | JetBrains Mono | JetBrains Mono |
+| `swiss` | Inter | Inter | JetBrains Mono |

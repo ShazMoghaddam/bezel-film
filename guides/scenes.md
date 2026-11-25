@@ -127,6 +127,11 @@ return (t) => plan.draw(t);
 | `kit.scribble(stage, { d, box, colour, angle, seed })` | Crayon colouring-in, clipped to a path or box. `.set(p)` colours it in from 0 to 1 |
 | `kit.fold(parent, { points, crease, front, back })` | An origami flap that folds over its crease line. `.set(p)`: 0 open, 1 folded flat, showing its `back` |
 | `kit.glow(parent, { cx, cy, r, colour, strength })` | A soft round glow, like light through paper. Change its opacity to flicker it |
+| `kit.wash(stage, { d, colour, opacity, from, filter })` | A watercolour wash that blooms out from a point. `.set(p)` spreads it from 0 to 1 |
+| `kit.grid(cols, rows, { gutter })` | A layout grid in the safe area. `.cell(c, r, cols, rows)` gives a box; `.lines(stage)` draws the grid |
+| `kit.burst(parent, { cx, cy, r, points, fill })` | A comic starburst, the jagged "POW!" shape |
+| `kit.bubble(parent, { x, y, width, height, tail, kind })` | A comic speech bubble (or `kind: "thought"`), its tail pointing at `tail` |
+| `kit.ink(stage, { colour, shift, filter })` | One ink of a risograph print: shapes drawn in it overprint the inks below, nudged by `shift` |
 
 ## Good practice
 
