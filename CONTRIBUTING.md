@@ -39,7 +39,7 @@ To render the example film: `npx tsx src/cli.ts render examples/northside-coffee
 | `instruments/` | Recorded instruments for the music. Built by `npm run instruments`; don't edit by hand. |
 | `maps/` | World outlines and places from Natural Earth. Built by `npm run maps`, from a pinned version with checked fingerprints; don't edit by hand. |
 | `examples/` | Example films, checked in CI. Each style made for custom scenes has one, named after it. |
-| `docs/` | The README banner and social preview, built from `docs/banner.html` by `npm run banner`, and the demo (`welcome.gif`, `welcome.mp4`), built by `npm run demo`. |
+| `docs/` | The README banner and social preview, built from `docs/banner.html` (with stills from the example films in `docs/banner/`) by `npm run banner`, the styles gallery (`styles.jpg`), and the demo (`welcome.gif`, `welcome.mp4`), built by `npm run demo`. |
 
 ## Trying `init`
 

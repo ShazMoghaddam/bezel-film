@@ -1,4 +1,4 @@
-[![Bezel Film: short narrated films, made in code. A film strip of scenes (a title card, a big number, a bar chart, a donut chart) above a soundtrack of voice and music. By Shaz Moghaddam, London.](docs/banner.png)](https://shazmoghaddam.github.io/)
+[![Bezel Film: short narrated films, made in code, from whiteboard to neon. A film strip of scenes in different styles (a whiteboard, a neon sign, a pop-up book) above a soundtrack of voice and music. By Shaz Moghaddam, London.](docs/banner.png)](https://shazmoghaddam.github.io/)
 
 # Bezel Film
 
@@ -64,7 +64,13 @@ It reads the README, `package.json` or `pyproject.toml`, the changelog and (for 
 - **Private and offline.** After the one-time download, nothing leaves your computer.
 - **Smooth and repeatable.** Every frame is drawn on a frozen clock, so films look the same on any computer, every time.
 
-> **Styles:** twenty-one, from whiteboard explainers and 1930s cartoons to neon signs, pixel games and green-screen terminals. More are on the [roadmap](#roadmap).
+## Twenty kinds of film
+
+Each style is a different kind of film, not just a new colour scheme. Here's the opening of each one's example film, every frame drawn in code:
+
+[![The opening frames of twenty example films, one per style: Whiteboard, Stick figures, Isometric world, Blueprint, Data on paper, 1950s cartoon, 1930s cartoon, Manga, Pop-up book, Crayon book, Origami, Paper lantern, Watercolour, Swiss poster, Pop art, Risograph, Neon, Dark keynote, Pixel game and Retro terminal](docs/styles.jpg)](#styles-and-fonts)
+
+Plus `data-story`, the clean, chart-led look of the ready-made scenes. See them all in [Styles and fonts](#styles-and-fonts), and the films themselves in [`examples/`](examples).
 
 ## Reference
 
@@ -379,7 +385,7 @@ On Linux, the voice engine also tries to download large GPU files it doesn't nee
 - **v0.7.0 (released):** four more styles: Data on paper, 1950s cartoon, 1930s cartoon and Manga
 - **v0.8.0 (released):** four paper and craft styles: Pop-up book, Crayon book, Origami and Paper lantern
 - **v0.9.0 (released):** four bold and graphic styles: Watercolour, Swiss poster, Pop art and Risograph
-- **v1.0.0:** the last four styles: Neon, Dark keynote, Pixel game and Retro terminal. All twenty styles are in
+- **v1.0.0 (released):** the last four styles: Neon, Dark keynote, Pixel game and Retro terminal. All twenty styles are in, and every example film works on phones, in feeds and on YouTube. From here on, film files and the scene kit follow semantic versioning
 - **After v1.0.0:** Chalkboard, a bonus style built on Whiteboard
 
 ## Contributing
