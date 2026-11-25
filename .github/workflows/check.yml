@@ -12,8 +12,11 @@ env:
   # The voice engine would otherwise download large GPU files on Linux. Bezel Film runs the voice on the CPU.
   ONNXRUNTIME_NODE_INSTALL_CUDA: skip
 
+# A new push to a pull request replaces the run before it. On main, each commit gets its
+# own group, so every merge gets its own full run and a merge never looks broken just
+# because another landed straight after.
 concurrency:
-  group: check-${{ github.ref }}
+  group: check-${{ github.event_name == 'pull_request' && github.ref || github.sha }}
   cancel-in-progress: true
 
 jobs:
