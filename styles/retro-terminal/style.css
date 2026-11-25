@@ -1,0 +1,12 @@
+/* Retro terminal: a green phosphor monitor. Scanlines and a dark curved edge sit over
+   everything; text glows a little, as phosphor does. */
+.backdrop{background:radial-gradient(90% 80% at 50% 50%,#0A170C,#050A06 70%,#020403)}
+.grain{background:
+  repeating-linear-gradient(0deg,rgb(0 0 0/.32) 0 1px,transparent 1px 3px),
+  radial-gradient(120% 100% at 50% 50%,transparent 62%,rgb(0 0 0/.85) 100%);opacity:1;z-index:3}
+.display,.heading,.body,.stat-value{text-shadow:0 0 calc(var(--u)*.5) rgb(168 255 168/.65),0 0 calc(var(--u)*1.6) rgb(111 215 122/.35)}
+.rule{height:calc(var(--u)*.5);width:calc(var(--u)*16);border-radius:0;background:var(--text);box-shadow:0 0 calc(var(--u)*.8) var(--text)}
+.card{background:transparent;border:1px solid var(--muted);border-radius:0;box-shadow:none}
+.chip{background:var(--text);color:#050A06;border:0;border-radius:0}
+.dot{border-radius:0;box-shadow:0 0 calc(var(--u)*.6) var(--c)}
+.progress{background:var(--text);box-shadow:0 0 calc(var(--u)*.8) var(--text)}

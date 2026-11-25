@@ -1,0 +1,35 @@
+{
+  "name": "neon",
+  "label": "Neon",
+  "description": "Glass tubes that flicker on at night: glowing signs on a dark brick wall, humming colour and warm haze.",
+  "theme": "dark",
+  "font": "friendly",
+  "colours": {
+    "background": "#0D0B14",
+    "surface": "#17131F",
+    "text": "#F7F0FA",
+    "muted": "#C4BBD0",
+    "accent": "#FF3D7F",
+    "palette": [
+      "#FF3D7F",
+      "#33E1FF",
+      "#FFD23F",
+      "#7CFF6B",
+      "#B48CFF",
+      "#FF8A3D",
+      "#F7F0FA"
+    ]
+  },
+  "motion": {
+    "level": "lively",
+    "easing": "cubic-bezier(0.22, 1, 0.36, 1)",
+    "enterMs": 600,
+    "staggerMs": 90,
+    "transition": "fade",
+    "transitionMs": 300
+  },
+  "layout": {
+    "safeArea": 0.08,
+    "captionPosition": "bottom"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "$schema": "../../schema/film.schema.json",
+  "spec": 1,
+  "title": "Lingo Quest: learning a language, level by level",
+  "style": "pixel-game",
+  "format": { "aspect": "16:9", "resolution": "1080p", "fps": 30 },
+  "voice": { "engine": "kokoro", "gender": "female" },
+  "music": { "source": "generated", "mood": "upbeat" },
+  "scenes": [
+    {
+      "id": "title",
+      "type": "custom",
+      "file": "scenes/title.js",
+      "props": { "name": "Lingo Quest", "start": "Press start" },
+      "narration": "Learning a language is a quest. Here's how to play it.",
+      "sounds": [{ "at": 0.4, "sound": "ding", "gain": 0.3 }, { "at": 2.2, "sound": "click", "gain": 0.3 }]
+    },
+    {
+      "id": "walk",
+      "type": "custom",
+      "file": "scenes/walk.js",
+      "props": { "say": "Pick up a few new words every day.", "counter": "Words", "goal": 10 },
+      "narration": "Pick up a few new words every day. Ten is plenty.",
+      "sounds": [{ "at": 1.2, "sound": "tick", "gain": 0.3 }, { "at": 1.8, "sound": "tick", "gain": 0.3, "pitch": 2 }, { "at": 2.4, "sound": "tick", "gain": 0.3, "pitch": 4 }]
+    },
+    {
+      "id": "battle",
+      "type": "custom",
+      "file": "scenes/battle.js",
+      "props": { "enemy": "Past tense", "menu": ["Fight", "Practise", "Run"], "pick": 1, "say": "Don't run. Practise!" },
+      "narration": "When a tricky bit of grammar shows up, don't run. Practise it until it's beaten.",
+      "sounds": [{ "at": 0.3, "sound": "whoosh", "gain": 0.35 }, { "at": 2.6, "sound": "tap", "gain": 0.4 }, { "at": 3.2, "sound": "tap", "gain": 0.4 }, { "at": 3.8, "sound": "tap", "gain": 0.4 }]
+    },
+    {
+      "id": "levelup",
+      "type": "custom",
+      "file": "scenes/levelup.js",
+      "props": { "title": "Level up!", "stats": [["Words", 300, 310], ["Grammar", 12, 13], ["Confidence", 40, 45]] },
+      "narration": "Keep going, and one day you'll notice you've levelled up.",
+      "sounds": [{ "at": 0.3, "sound": "ding", "gain": 0.45 }, { "at": 0.6, "sound": "ding", "gain": 0.35, "pitch": 5 }]
+    }
+  ]
+}

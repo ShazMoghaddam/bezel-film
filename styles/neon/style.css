@@ -1,0 +1,14 @@
+/* Neon: a dark brick wall at night. Signs glow on it (kit.neon), and the wall picks up
+   a little of their colour. Headings glow like tubes. */
+.backdrop{background:
+  radial-gradient(60% 50% at 50% 42%,rgb(255 61 127/.10),transparent 75%),
+  repeating-linear-gradient(0deg,rgb(0 0 0/.35) 0 2px,transparent 2px calc(var(--u)*4.6)),
+  repeating-linear-gradient(90deg,rgb(0 0 0/.3) 0 2px,transparent 2px calc(var(--u)*9.2)),
+  linear-gradient(#141019,#0D0B14)}
+.grain{background:radial-gradient(110% 85% at 50% 45%,transparent 50%,rgb(0 0 0/.55));opacity:1;z-index:3}
+.display,.heading{text-shadow:0 0 calc(var(--u)*.6) currentColor,0 0 calc(var(--u)*2.4) var(--accent)}
+.rule{height:calc(var(--u)*.6);width:calc(var(--u)*16);border-radius:var(--u);background:#FFD0E1;box-shadow:0 0 calc(var(--u)*.6) var(--accent),0 0 calc(var(--u)*2.4) var(--accent)}
+.card{background:rgb(23 19 31/.85);border:2px solid var(--accent);border-radius:calc(var(--u)*1.4);box-shadow:0 0 calc(var(--u)*2) rgb(255 61 127/.45),inset 0 0 calc(var(--u)*2) rgb(255 61 127/.2)}
+.chip{background:transparent;border:2px solid #33E1FF;border-radius:calc(var(--u)*3);box-shadow:0 0 calc(var(--u)*1.2) #33E1FF}
+.dot{box-shadow:0 0 calc(var(--u)*1.2) var(--c)}
+.progress{background:var(--accent);box-shadow:0 0 calc(var(--u)*1.2) var(--accent)}

@@ -1,0 +1,43 @@
+{
+  "$schema": "../../schema/film.schema.json",
+  "spec": 1,
+  "title": "The internet, as a log file",
+  "style": "retro-terminal",
+  "format": { "aspect": "16:9", "resolution": "1080p", "fps": 30 },
+  "voice": { "engine": "kokoro", "gender": "male" },
+  "music": { "source": "generated", "mood": "ambient" },
+  "scenes": [
+    {
+      "id": "boot",
+      "type": "custom",
+      "file": "scenes/boot.js",
+      "props": { "lines": ["NETLOG 1.0", "Checking memory ........ 640K OK", "Loading history.log ..... OK"], "title": "The internet,\nas a log file" },
+      "narration": "The story of the internet, as a log file. Let's run it.",
+      "sounds": [{ "at": 0.2, "sound": "click", "gain": 0.3 }]
+    },
+    {
+      "id": "lo",
+      "type": "custom",
+      "file": "scenes/lo.js",
+      "props": { "date": "1969-10-29 22:30", "command": "login --from UCLA --to SRI", "word": "LOGIN", "crash": "CONNECTION LOST", "note": "First message on the ARPANET: \"LO\"" },
+      "narration": "October 1969. A computer at UCLA tries to log in to one at Stanford. It sends L, then O, and crashes. The first message ever sent was lo.",
+      "sounds": [{ "at": 2.6, "sound": "tick", "gain": 0.4 }, { "at": 3.4, "sound": "tick", "gain": 0.4 }]
+    },
+    {
+      "id": "email",
+      "type": "custom",
+      "file": "scenes/email.js",
+      "props": { "date": "1971", "command": "mail --to another-machine", "symbol": "@", "left": "person", "right": "computer", "note": "Ray Tomlinson picks the @ sign" },
+      "narration": "In 1971, Ray Tomlinson sends the first network email, and picks the at sign to join a person to their computer.",
+      "sounds": [{ "at": 1.8, "sound": "ding", "gain": 0.3 }]
+    },
+    {
+      "id": "web",
+      "type": "custom",
+      "file": "scenes/web.js",
+      "props": { "date": "1991-08-06", "command": "open http://info.cern.ch", "ok": "200 OK  The first website is live", "end": "And then everyone came online.", "source": "Sources: UCLA, CERN" },
+      "narration": "In August 1991, the first website goes live, at CERN. And then, everyone came online.",
+      "sounds": [{ "at": 2.4, "sound": "ding", "gain": 0.35 }]
+    }
+  ]
+}

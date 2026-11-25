@@ -1,0 +1,35 @@
+{
+  "name": "pixel-game",
+  "label": "Pixel game",
+  "description": "A 90s video game: pixel-art sprites, chunky text boxes, menus and a level-up for every point you make.",
+  "theme": "dark",
+  "font": "pixel",
+  "colours": {
+    "background": "#0F0E2A",
+    "surface": "#1C1A4A",
+    "text": "#FFFFFF",
+    "muted": "#C9C6F0",
+    "accent": "#FFD23F",
+    "palette": [
+      "#FFD23F",
+      "#FF5E5B",
+      "#3DDC84",
+      "#4CC9F0",
+      "#C77DFF",
+      "#FF9F1C",
+      "#FFFFFF"
+    ]
+  },
+  "motion": {
+    "level": "punchy",
+    "easing": "cubic-bezier(0.22, 1, 0.36, 1)",
+    "enterMs": 300,
+    "staggerMs": 90,
+    "transition": "cut",
+    "transitionMs": 0
+  },
+  "layout": {
+    "safeArea": 0.08,
+    "captionPosition": "bottom"
+  }
+}

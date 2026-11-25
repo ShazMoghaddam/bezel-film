@@ -1,0 +1,43 @@
+{
+  "$schema": "../../schema/film.schema.json",
+  "spec": 1,
+  "title": "Tempo: the calendar that plans your day",
+  "style": "dark-keynote",
+  "format": { "aspect": "16:9", "resolution": "1080p", "fps": 30 },
+  "voice": { "engine": "kokoro", "gender": "male" },
+  "music": { "source": "generated", "mood": "epic" },
+  "scenes": [
+    {
+      "id": "reveal",
+      "type": "custom",
+      "file": "scenes/reveal.js",
+      "props": { "name": "Tempo", "line": "The calendar that plans your day." },
+      "narration": "Introducing Tempo. The calendar that plans your day.",
+      "sounds": [{ "at": 0.3, "sound": "sweep", "gain": 0.4 }]
+    },
+    {
+      "id": "phone",
+      "type": "custom",
+      "file": "scenes/phone.js",
+      "props": { "heading": "Drop in your tasks.", "sub": "Tempo finds the time.", "tasks": ["Write report", "Call the bank", "Gym"] },
+      "narration": "Drop in your tasks, and Tempo finds the time for each one, around everything else in your day.",
+      "sounds": [{ "at": 1.6, "sound": "pop", "gain": 0.3 }, { "at": 2.2, "sound": "pop", "gain": 0.3, "pitch": 2 }, { "at": 2.8, "sound": "pop", "gain": 0.3, "pitch": 4 }]
+    },
+    {
+      "id": "week",
+      "type": "custom",
+      "file": "scenes/week.js",
+      "props": { "features": ["Plans around your meetings", "Protects your focus time", "Moves things when life does"] },
+      "narration": "It plans around your meetings, protects your focus time, and moves things when life gets in the way.",
+      "sounds": [{ "at": 0.4, "sound": "whoosh", "gain": 0.3 }]
+    },
+    {
+      "id": "end",
+      "type": "custom",
+      "file": "scenes/end.js",
+      "props": { "name": "Tempo", "line": "Available today.", "where": "On phone, tablet and desktop" },
+      "narration": "Tempo. Available today.",
+      "sounds": [{ "at": 0.3, "sound": "ding", "gain": 0.35 }]
+    }
+  ]
+}

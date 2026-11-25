@@ -1,0 +1,11 @@
+/* Pixel game: a night-blue screen with hard pixel edges everywhere. Boxes are drawn as
+   chunky bordered windows, like a game's text box. */
+.backdrop{background:linear-gradient(#0F0E2A,#16134A)}
+.grain{background:repeating-linear-gradient(0deg,rgb(0 0 0/.18) 0 2px,transparent 2px 4px);opacity:.6;z-index:3}
+.display,.heading{letter-spacing:0;line-height:1.35;text-shadow:calc(var(--u)*.4) calc(var(--u)*.4) 0 #000}
+.rule{height:calc(var(--u)*.8);width:calc(var(--u)*18);border-radius:0;background:var(--accent);box-shadow:calc(var(--u)*.4) calc(var(--u)*.4) 0 #000}
+.card{background:#1C1A4A;border:calc(var(--u)*.6) solid #FFFFFF;border-radius:0;box-shadow:0 0 0 calc(var(--u)*.6) #000}
+.chip{background:#000;border:calc(var(--u)*.4) solid #FFFFFF;border-radius:0}
+.dot{border-radius:0;box-shadow:none}
+.progress{background:var(--accent);border-radius:0}
+*{image-rendering:pixelated}
