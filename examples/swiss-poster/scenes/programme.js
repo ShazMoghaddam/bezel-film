@@ -15,8 +15,8 @@ Bezel.scene((root, kit) => {
     const rule = kit.svg("rect", { x: g.x(0), y, width: 0, height: u * 0.3, fill: colours.text }, s);
     const square = kit.svg("rect", { x: g.x(0), y: y + u * 2.4, width: u * 3, height: u * 3, fill: colours.accent }, s);
     const day = kit.text(root, d.day, { x: g.x(0) + u * 5, y: y + u * 2, size: tall ? 3.6 : 4, weight: 600, colour: colours.text });
-    const theme = kit.text(root, d.theme, { x: tall ? g.x(0) + u * 5 : g.x(3), y: tall ? y + u * 7 : y + u * 0.6, size: tall ? 11 : 15, font: "heading", colour: colours.text, style: { letterSpacing: "-0.05em", lineHeight: "0.9" } });
-    const note = kit.text(root, d.note, { x: tall ? g.x(0) + u * 5 : g.x(8), y: tall ? y + u * 19 : y + u * 2, size: 3.2, colour: colours.muted, maxWidth: tall ? g.cell(0, 0, 12).width : g.cell(8, 0, 4).width });
+    const theme = kit.text(root, d.theme, { x: tall ? g.x(0) + u * 5 : g.x(3), y: tall ? y + u * 6 : y + u * 0.6, size: tall ? 9 : 15, font: "heading", colour: colours.text, style: { letterSpacing: "-0.05em", lineHeight: "0.9" } });
+    const note = kit.text(root, d.note, { x: tall ? g.x(0) + u * 5 : g.x(8), y: tall ? y + u * 16.5 : y + u * 2, size: tall ? 2.8 : 3.2, colour: colours.muted, maxWidth: tall ? g.cell(0, 0, 12).width - u * 5 : g.cell(8, 0, 4).width });
     return { rule, square, day, theme, note, at: Math.max(0.2 + i * 0.7, (kit.at(i) || 0) - 0.05) };
   });
 

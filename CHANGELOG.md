@@ -14,6 +14,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
   - **Retro terminal**: green text on an old monitor, with typed commands, logs and a blinking cursor.
 - More in the scene kit: neon tubes (`kit.neon`), phone, laptop and browser frames to show an app in (`kit.device`), pixel art from text (`kit.pixels`) and typed text with a cursor (`kit.typing`).
 - Two new font pairings: `pixel` (Press Start 2P and VT323) and `terminal` (VT323), bundled from Fontsource.
+- A "Design for every shape" section in the scenes guide: how to lay out a scene so it works on a phone, in a feed and on YouTube.
+- `npm run example:shapes` previews every example film made with custom scenes in 16:9, TikTok, 4:5 and square frames and fails if any check fails. It takes about 15 minutes, so it's for before a release rather than every push.
 
 ### Changed
 
@@ -22,7 +24,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ### Fixed
 
-- The example films for Whiteboard, Stick figures, Isometric world, Blueprint, Data on paper, the 1950s and 1930s cartoons, Manga, Pop-up book and Crayon book now lay out properly in TikTok, Reels and Shorts (9:16), 4:5 and square frames, not only 16:9.
+- The example films for Custom scenes, Whiteboard, Stick figures, Isometric world, Blueprint, Data on paper, the 1950s and 1930s cartoons, Manga, Pop-up book, Crayon book, Origami, Paper lantern, Watercolour, Swiss poster, Pop art, Risograph, Neon, Dark keynote, Pixel game and Retro terminal now lay out properly in TikTok, Reels and Shorts (9:16), 4:5 and square frames, not only 16:9.
+- A custom scene could measure its words before the page's fonts had loaded, so on a busy computer the marker pen could start in the wrong place and words could shrink when they didn't need to. Every bundled font now loads before any scene is built.
 
 ## [0.9.0] - 2026-11-25
 

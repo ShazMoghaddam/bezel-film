@@ -81,6 +81,7 @@ Two things are generated, and CI fails if they're out of date:
 
 - Changed `src/spec/schema.ts`? Run `npm run schema`.
 - Changed `agents/instructions.md`? Run `npm run agents`. Windsurf rule files are capped at 6,000 characters, so Windsurf gets a compact version: wrap anything it can do without in `<!-- full -->` and `<!-- /full -->`, and give it a one-line stand-in with `<!-- compact: … -->` if it needs one. A test checks the limit.
+- Changed the scene kit, a style or an example film made with custom scenes? Run `npm run example:shapes` to preview every one of them in 16:9, TikTok, 4:5 and square frames. It takes about 15 minutes, so it isn't part of `npm run check`.
 - Changed the welcome film or how films look? Run `npm run demo` (it needs the voice, so run `npx bezel-film setup` first) to refresh the README demo.
 
 Commit the generated files along with your change.

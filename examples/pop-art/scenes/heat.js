@@ -32,7 +32,7 @@ Bezel.scene((root, kit) => {
     // One more chilli per level, fanned out so each one reads.
     for (let c = 0; c <= i; c++) chilli(inner, cx - k * 0.45, cy - k * 0.55 + (c - i / 2) * k * 0.42, k * 0.9, -20 + (c - i / 2) * 14);
     kit.svg("rect", { x: r.x, y: r.y, width: r.width, height: r.height, fill: "none", stroke: ink, "stroke-width": u * 0.8 }, g);
-    const caption = kit.text(root, word, { x: tall ? r.x + u * 3 : cx, y: r.y + u * 3, size: tall ? 6 : 7.4, font: "heading", align: tall ? "left" : "center", colour: i === 2 ? "#FFFFFF" : ink,
+    const caption = kit.text(root, word, { x: tall ? r.x + u * 3 : cx, y: r.y + u * 3, size: tall ? 6 : kit.shape === "wide" ? 7.4 : 4, font: "heading", align: tall ? "left" : "center", colour: i === 2 ? "#FFFFFF" : ink,
       style: { textTransform: "uppercase", background: i === 2 ? ink : "#FFFFFF", padding: `${u * 0.6}px ${u * 2}px`, border: `${u * 0.45}px solid ${ink}` } });
     return { g, caption, at: Math.max(0.2 + i * 0.6, (kit.at(i + 1) || 0) - 0.1), cx, cy, i };
   });

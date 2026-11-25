@@ -10,7 +10,7 @@ Bezel.scene((root, kit) => {
   const rand = kit.random(5);
   const stars = Array.from({ length: 50 }, () => kit.svg("rect", { x: snap(rand() * width), y: snap(rand() * height * 0.55), width: P, height: P, fill: rand() > 0.7 ? colours.accent : "#FFFFFF" }, s));
   // A pixel moon.
-  kit.pixels(s, { art: ["..MMMM..", ".MMMMMMM", "MMMMMMM.", "MMMMMM..", "MMMMMM..", "MMMMMMM.", ".MMMMMMM", "..MMMM.."], palette: { M: "#FFF1B8" }, x: snap(safe.x + safe.width * 0.82), y: snap(safe.y + safe.height * 0.05), size: P * 2 });
+  kit.pixels(s, { art: ["..MMMM..", ".MMMMMMM", "MMMMMMM.", "MMMMMM..", "MMMMMM..", "MMMMMMM.", ".MMMMMMM", "..MMMM.."], palette: { M: "#FFF1B8" }, x: snap(safe.x + safe.width * (kit.shape === "wide" ? 0.82 : 0.72)), y: snap(safe.y + safe.height * 0.05), size: P * 2 });
 
   // Mountains in steps, two layers, then a castle on the near ridge.
   const range = (base, peaks, colour, seed) => {
@@ -28,7 +28,7 @@ Bezel.scene((root, kit) => {
   const castle = ["....T.......T....", "...TTT.....TTT...", "...WWW.....WWW...", "...WWWWWWWWWWWW...", "...WWDWWWWWDWWW...", "...WWWWWWWWWWWW...", "...WWWWWDDWWWWW...", "...WWWWWDDWWWWW..."].map((r) => r.slice(0, 17));
   kit.pixels(s, { art: castle, palette: { T: colours.palette[1], W: "#8C88D8", D: colours.accent }, x: snap(width * 0.7 - P * 17), y: ground - P * 2 * castle.length - P * 18, size: P * 2 });
 
-  const name = kit.text(root, props.name.toUpperCase(), { x: width / 2, y: safe.y + safe.height * 0.24, size: 8.4, font: "heading", align: "center", colour: colours.accent,
+  const name = kit.text(root, props.name.toUpperCase(), { x: width / 2, y: safe.y + safe.height * (kit.shape === "wide" ? 0.24 : 0.32), size: kit.shape === "wide" ? 8.4 : 6.4, font: "heading", align: "center", colour: colours.accent,
     style: { textShadow: `${P}px ${P}px 0 #C2410C, ${P * 2}px ${P * 2}px 0 #000` } });
   const start = kit.text(root, props.start.toUpperCase(), { x: width / 2, y: safe.y + safe.height * 0.5, size: 3, font: "heading", align: "center", colour: "#FFFFFF", style: { textShadow: `${P / 2}px ${P / 2}px 0 #000` } });
 

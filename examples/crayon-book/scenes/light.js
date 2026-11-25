@@ -47,7 +47,8 @@ Bezel.scene((root, kit) => {
   const label = (txt, x, y, colour, align = "center") => kit.text(root, txt, { x, y, size: 4.2, font: "heading", align, colour });
   const sunLabel = label(props.sun, sx + sr * 0.35, mid + sr + u * 2, yellow, "left");
   const earthLabel = label(props.earth, ex, mid + er + u * 1.2, cream);
-  const moonLabel = label(props.moon, 0, 0, cream);
+  // Built at (0, 0) and moved round with the Moon, so it mustn't shrink to fit where it starts.
+  const moonLabel = kit.text(root, props.moon, { x: 0, y: 0, size: 4.2, font: "heading", align: "center", colour: cream, fit: false });
   const note = kit.text(root, props.note, { x: safe.x + safe.width, y: safe.y, size: 5, font: "heading", align: "right", colour: coral });
 
   plan.line(sunEdge, { at: 0.2, duration: 0.6 });

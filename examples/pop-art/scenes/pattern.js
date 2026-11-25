@@ -32,13 +32,14 @@ Bezel.scene((root, kit) => {
   }
 
   // The panel: white with a heavy outline and a hard shadow, the name on it.
-  const pw = Math.min(safe.width * 0.7, u * 110), ph = u * 34;
+  const wide = kit.shape === "wide";
+  const pw = wide ? Math.min(safe.width * 0.7, u * 110) : safe.width * 0.96, ph = wide ? u * 34 : u * 38;
   const px = width / 2 - pw / 2, py = height / 2 - ph / 2 - u * 2;
   const panel = kit.svg("g", {}, s);
   kit.svg("rect", { x: px + u * 1.4, y: py + u * 1.4, width: pw, height: ph, fill: ink }, panel);
   kit.svg("rect", { x: px, y: py, width: pw, height: ph, fill: "#FFFFFF", stroke: ink, "stroke-width": u * 0.7 }, panel);
   const name = kit.text(root, props.name, { x: width / 2, y: py + u * 3, size: 15, font: "heading", align: "center", colour: colours.accent, style: { textTransform: "uppercase", lineHeight: "1", WebkitTextStroke: `${u * 0.35}px ${ink}`, textShadow: `${u * 0.7}px ${u * 0.7}px 0 ${ink}` } });
-  const line = kit.text(root, props.line, { x: width / 2, y: py + u * 23, size: 4.2, font: "heading", align: "center", colour: ink, style: { textTransform: "uppercase" } });
+  const line = kit.text(root, props.line, { x: width / 2, y: wide ? py + u * 23 : py + u * 22, size: 4.2, maxWidth: wide ? undefined : pw * 0.88, font: "heading", align: "center", colour: ink, style: { textTransform: "uppercase" } });
 
   return (t) => {
     items.forEach((it) => {

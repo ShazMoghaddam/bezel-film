@@ -8,9 +8,10 @@ Bezel.scene((root, kit) => {
   const heading = kit.text(root, props.heading, { x: safe.x, y: safe.y, size: kit.shape === "tall" ? 5.4 : 6, font: "heading", colour: colours.text, maxWidth: safe.width });
 
   // The plane is built pointing right, nose at (0, 0), one unit long, then scaled.
-  const L = Math.min(safe.width * 0.3, safe.height * 0.55);
+  const wide = kit.shape === "wide";
+  const L = wide ? Math.min(safe.width * 0.3, safe.height * 0.55) : Math.min(safe.width * 0.62, safe.height * 0.42);
   const P = (x, y) => [x * L, y * L];
-  const start = { x: safe.x + safe.width * 0.62, y: safe.y + safe.height * 0.72 };
+  const start = wide ? { x: safe.x + safe.width * 0.62, y: safe.y + safe.height * 0.72 } : { x: safe.x + safe.width * 0.82, y: safe.y + safe.height * 0.66 };
   const shadow = kit.svg("ellipse", { cx: start.x - L * 0.5, cy: start.y + L * 0.32, rx: L * 0.5, ry: L * 0.05, fill: "#1F2328", opacity: 0.12, style: `filter:blur(${u}px)` }, s);
   const trail = kit.svg("path", { fill: "none", stroke: colours.muted, "stroke-width": u * 0.3, "stroke-dasharray": `${u * 1.2} ${u * 1.2}`, "stroke-linecap": "round", opacity: 0.6 }, s);
   const plane = kit.svg("g", {}, s);

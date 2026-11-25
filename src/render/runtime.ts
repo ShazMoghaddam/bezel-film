@@ -484,6 +484,10 @@ export const RUNTIME_JS = String.raw`
   }
 
   async function ready() {
+    // Every bundled face, not just the ones the text so far has asked for. Scenes built
+    // below measure their words, and a face that only starts loading then would be
+    // measured as the fallback font: the wrong size now, and the right one a frame later.
+    await Promise.all([...document.fonts].map((face) => face.load().catch(() => {})));
     await document.fonts.ready;
     const charts = [...document.querySelectorAll("[data-chart] bezel-chart")];
     const deadline = performance.now() + 10000;

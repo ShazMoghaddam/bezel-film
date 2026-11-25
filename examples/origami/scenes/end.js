@@ -6,7 +6,7 @@ Bezel.scene((root, kit) => {
   const wide = kit.shape === "wide";
   // The sheet starts white side up, so each fold shows its coloured side.
   const front = "#FFFFFF", back = colours.accent;
-  const D = Math.min(safe.height * 0.4, safe.width * 0.28);
+  const D = wide ? Math.min(safe.height * 0.4, safe.width * 0.28) : Math.min(safe.height * 0.24, safe.width * 0.4);
   const cx = wide ? safe.x + safe.width * 0.27 : width / 2, cy = wide ? safe.y + safe.height * 0.5 : safe.y + D + u * 2;
 
   const shadow = kit.svg("ellipse", { cx, cy: cy + D * 1.05, rx: D * 0.9, ry: D * 0.1, fill: "#1F2328", opacity: 0.12, style: `filter:blur(${u * 1.2}px)` }, s);

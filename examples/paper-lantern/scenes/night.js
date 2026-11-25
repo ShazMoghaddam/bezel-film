@@ -27,7 +27,8 @@ Bezel.scene((root, kit) => {
   };
 
   // The moon, with a warm glow that the layers in front cut into.
-  const mx = safe.x + safe.width * 0.72, my = safe.y + safe.height * 0.26;
+  const wideFrame = kit.shape === "wide";
+  const mx = safe.x + safe.width * (wideFrame ? 0.72 : 0.8), my = safe.y + safe.height * (wideFrame ? 0.26 : 0.1);
   const halo = kit.glow(s, { cx: mx, cy: my, r: u * 34, colour: "#FFD59A", strength: 0.55 });
   const moon = kit.svg("circle", { cx: mx, cy: my, r: u * 5, fill: "#FFE9C4" }, s);
   const rand = kit.random(4);
@@ -49,8 +50,8 @@ Bezel.scene((root, kit) => {
   // A few lit windows, low in the hills: someone's still awake.
   const windows = [[0.18, 0.86], [0.24, 0.875], [0.56, 0.9]].map(([fx, fy]) => kit.svg("rect", { x: width * fx, y: safe.y + safe.height * fy, width: u * 0.9, height: u * 0.9, fill: warm }, layers[2]));
 
-  const kicker = kit.text(root, props.kicker.toUpperCase(), { x: safe.x, y: safe.y + safe.height * 0.12, size: 2.8, weight: 700, colour: warm, style: { letterSpacing: "0.3em" } });
-  const title = kit.text(root, props.title, { x: safe.x, y: safe.y + safe.height * 0.18, size: kit.shape === "tall" ? 7 : 8, font: "heading", colour: colours.text, maxWidth: safe.width * (kit.shape === "wide" ? 0.52 : 0.9), style: { lineHeight: "1.05", textWrap: "balance" } });
+  const kicker = kit.text(root, props.kicker.toUpperCase(), { x: safe.x, y: safe.y + safe.height * (wideFrame ? 0.12 : 0.22), size: 2.8, weight: 700, colour: warm, style: { letterSpacing: "0.3em" } });
+  const title = kit.text(root, props.title, { x: safe.x, y: safe.y + safe.height * (wideFrame ? 0.18 : 0.28), size: kit.shape === "tall" ? 7 : 8, font: "heading", colour: colours.text, maxWidth: safe.width * (kit.shape === "wide" ? 0.52 : 0.9), style: { lineHeight: "1.05", textWrap: "balance" } });
 
   return (t) => {
     // Layers rise into place, back first, then drift apart a little for depth.
