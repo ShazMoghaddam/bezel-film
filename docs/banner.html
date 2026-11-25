@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <style>
-@font-face{font-family:"Space Grotesk";font-weight:700;src:url(file:///home/claude/bezel-film-repo/node_modules/@fontsource/space-grotesk/files/space-grotesk-latin-700-normal.woff2)}
-@font-face{font-family:"Space Grotesk";font-weight:600;src:url(file:///home/claude/bezel-film-repo/node_modules/@fontsource/space-grotesk/files/space-grotesk-latin-600-normal.woff2)}
-@font-face{font-family:"Inter";font-weight:400;src:url(file:///home/claude/bezel-film-repo/node_modules/@fontsource/inter/files/inter-latin-400-normal.woff2)}
-@font-face{font-family:"Inter";font-weight:600;src:url(file:///home/claude/bezel-film-repo/node_modules/@fontsource/inter/files/inter-latin-600-normal.woff2)}
-@font-face{font-family:"JetBrains Mono";font-weight:400;src:url(file:///home/claude/bezel-film-repo/node_modules/@fontsource/jetbrains-mono/files/jetbrains-mono-latin-400-normal.woff2)}
+@font-face{font-family:"Space Grotesk";font-weight:700;src:url(FONTS/space-grotesk/files/space-grotesk-latin-700-normal.woff2)}
+@font-face{font-family:"Space Grotesk";font-weight:600;src:url(FONTS/space-grotesk/files/space-grotesk-latin-600-normal.woff2)}
+@font-face{font-family:"Inter";font-weight:400;src:url(FONTS/inter/files/inter-latin-400-normal.woff2)}
+@font-face{font-family:"Inter";font-weight:600;src:url(FONTS/inter/files/inter-latin-600-normal.woff2)}
+@font-face{font-family:"JetBrains Mono";font-weight:400;src:url(FONTS/jetbrains-mono/files/jetbrains-mono-latin-400-normal.woff2)}
 :root{--bg:#0B1020;--surface:#151B2E;--text:#F5F7FB;--muted:#9AA3B8;--p0:#4C8DFF;--p1:#FF5D73;--p2:#2EC4B6;--p3:#FFB020;--p4:#9B5DE5;--p5:#7BD389;--p6:#FF8A3D}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:Inter,sans-serif;-webkit-font-smoothing:antialiased}
@@ -38,20 +38,10 @@ h1 span{background:linear-gradient(90deg,var(--p0),var(--p4) 45%,var(--p1));-web
   background:repeating-linear-gradient(90deg,rgb(255 255 255/.16) 0 16px,transparent 16px 34px);border-radius:3px}
 .strip::before{top:9px}.strip::after{bottom:9px}
 .frame{width:256px;height:144px;flex:none;border-radius:6px;overflow:hidden;position:relative;background:var(--bg);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:12px;
   box-shadow:inset 0 0 0 1px rgb(255 255 255/.08)}
-.frame::before{content:"";position:absolute;inset:0;background:radial-gradient(60% 70% at 30% 20%,color-mix(in srgb,var(--c,var(--p0)) 22%,transparent),transparent 70%)}
-.frame > *{position:relative}
-.f-title{font-family:"Space Grotesk";font-weight:700;font-size:24px;letter-spacing:-.02em;line-height:1}
-.f-rule{width:70px;height:5px;border-radius:9px;margin-top:9px;background:linear-gradient(90deg,var(--p0),var(--p1),var(--p2),var(--p3))}
-.f-stat{font-family:"Space Grotesk";font-weight:700;font-size:50px;letter-spacing:-.04em;line-height:.95;color:var(--c)}
-.f-label{font-family:"Space Grotesk";font-weight:600;font-size:15px;margin-top:4px}
-.f-heading{font-family:"Space Grotesk";font-weight:700;font-size:13px;margin-bottom:5px}
-.f-chart{width:228px}
-.f-caption{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);white-space:nowrap;font-weight:600;font-size:10.5px;padding:2px 7px;border-radius:4px;background:rgb(0 0 0/.65)}
-.f-points{list-style:none;text-align:left;display:flex;flex-direction:column;gap:7px}
-.f-points li{display:flex;align-items:center;gap:8px;font-weight:600;font-size:13px}
-.f-points i{width:9px;height:9px;border-radius:50%;background:var(--c);box-shadow:0 0 8px var(--c)}
+.frame img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.frame::after{content:attr(data-style);position:absolute;left:7px;bottom:7px;font-family:"Space Grotesk";font-weight:600;font-size:10.5px;
+  letter-spacing:.01em;color:#F5F7FB;padding:2px 7px;border-radius:4px;background:rgb(5 8 15/.72);box-shadow:inset 0 0 0 1px rgb(255 255 255/.22)}
 
 /* Soundtrack lane */
 .lane{position:absolute;z-index:2;display:flex;flex-direction:column;gap:8px}
@@ -76,7 +66,8 @@ h1 span{background:linear-gradient(90deg,var(--p0),var(--p4) 45%,var(--p1));-web
 .banner .mark{width:70px;height:70px;border-radius:20px}
 .banner .mark::after{border-left-width:25px;border-top-width:16px;border-bottom-width:16px}
 .banner .tagline{font-size:25px;max-width:440px}
-.banner .chip{font-size:14px;padding:5px 11px}
+.banner .chip{font-size:13px;padding:5px 10px}
+.banner .chips{gap:8px;flex-wrap:nowrap}
 .banner .brand{left:56px;top:50px;gap:14px}
 .banner .chip.agent{display:none}
 .banner .strip{left:600px;top:62px;transform:rotate(-3deg) scale(.84);transform-origin:left center}
@@ -91,26 +82,26 @@ h1 span{background:linear-gradient(90deg,var(--p0),var(--p4) 45%,var(--p1));-web
 
 <div class="brand">
   <div class="mark-row"><div class="mark"></div><h1>Bezel <span>Film</span></h1></div>
-  <p class="tagline">Short narrated films, made in code. <em>From a repo, a README or a dataset.</em></p>
+  <p class="tagline">Short narrated films, made in code. <em>From whiteboard to neon.</em></p>
   <div class="chips">
     <span class="chip" style="--c:var(--p0)">Voiceover</span>
     <span class="chip" style="--c:var(--p1)">Music</span>
     <span class="chip" style="--c:var(--p2)">Captions</span>
-    <span class="chip" style="--c:var(--p3)">Charts</span>
+    <span class="chip" style="--c:var(--p3)">20 styles</span>
+    <span class="chip" style="--c:var(--p6)">Every platform</span>
     <span class="chip" style="--c:var(--p4)">Offline</span>
     <span class="chip agent" style="--c:var(--p5)">Any coding agent</span>
   </div>
 </div>
 
 <div class="strip">
-  <div class="frame" style="--c:var(--p4)"><div class="f-title">A year<br>in numbers</div><div class="f-rule"></div></div>
-  <div class="frame" style="--c:var(--p0)"><div class="f-stat">48,210</div><div class="f-label">cups served</div><div class="f-caption">We served over forty-eight thousand cups.</div></div>
-  <div class="frame" style="--c:var(--p3)"><div class="f-heading">Every quarter beat the last</div><bezel-chart class="f-chart" id="bars"></bezel-chart></div>
-  <div class="frame" style="--c:var(--p1)"><div class="f-heading">Lattes lead the way</div><bezel-chart class="f-chart" id="donut"></bezel-chart></div>
-  <div class="frame" style="--c:var(--p2)"><ul class="f-points">
-    <li style="--c:var(--p2)"><i></i>Voice timed to every scene</li>
-    <li style="--c:var(--p1)"><i></i>Music that dips under it</li>
-    <li style="--c:var(--p3)"><i></i>Same film, every time</li></ul></div>
+  <div class="frame" data-style="Whiteboard"><img src="banner/whiteboard.jpg" alt=""></div>
+  <div class="frame" data-style="Neon"><img src="banner/neon.jpg" alt=""></div>
+  <div class="frame" data-style="Pop-up book"><img src="banner/pop-up-book.jpg" alt=""></div>
+  <div class="frame" data-style="Pixel game"><img src="banner/pixel-game.jpg" alt=""></div>
+  <div class="frame" data-style="Pop art"><img src="banner/pop-art.jpg" alt=""></div>
+  <div class="frame" data-style="Manga"><img src="banner/manga.jpg" alt=""></div>
+  <div class="frame" data-style="Isometric world"><img src="banner/isometric.jpg" alt=""></div>
 </div>
 
 <div class="lane">
@@ -120,19 +111,7 @@ h1 span{background:linear-gradient(90deg,var(--p0),var(--p4) 45%,var(--p1));-web
 
 <div class="by"><span><strong>Shaz Moghaddam</strong> · London</span><span class="url">shazmoghaddam.github.io</span></div>
 
-<script src="file:///home/claude/bezel-film-repo/node_modules/bezel-charts/dist/bezel-charts.iife.js"></script>
 <script>
-const palette = "#4C8DFF,#FF5D73,#2EC4B6,#FFB020,#9B5DE5,#7BD389,#FF8A3D";
-for (const [id, type, data] of [
-  ["bars", "bars", { values: [9800, 11200, 12400, 14810], labels: ["Q1", "Q2", "Q3", "Q4"] }],
-  ["donut", "donut", { values: [18300, 11600, 8700, 5800, 3810], labels: ["Latte", "Mocha", "Chai", "Tea", "Other"], "center-label": "orders" }],
-]) {
-  const el = document.getElementById(id);
-  for (const [k, v] of Object.entries({ type, theme: "dark", frame: "none", background: "transparent", color: palette, compact: "", "no-tooltips": "", static: "", width: "228", height: type === "bars" ? "96" : "104" })) el.setAttribute(k, v);
-  const { "center-label": centre, ...rest } = data;
-  if (centre) el.setAttribute("center-label", centre);
-  el.data = rest;
-}
 // The soundtrack lane: voice in bursts (one per sentence), music as a smooth, continuous wave.
 let seed = 7; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
 const W = document.body.classList.contains("social") ? 1080 : 540, H = 26;

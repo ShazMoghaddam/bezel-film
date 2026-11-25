@@ -3,7 +3,9 @@
 All notable changes to Bezel Film are listed here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [1.0.0] - 2026-11-25
+
+All twenty styles are in. Bezel Film now makes twenty different kinds of film, from whiteboard explainers and pop-up books to neon signs and green-screen terminals, and every example film works on phones, in feeds and on YouTube. From this release on, film files and the scene kit follow semantic versioning: anything that works in 1.0.0 keeps working until 2.0.0.
 
 ### Added
 
@@ -15,6 +17,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - More in the scene kit: neon tubes (`kit.neon`), phone, laptop and browser frames to show an app in (`kit.device`), pixel art from text (`kit.pixels`) and typed text with a cursor (`kit.typing`).
 - Two new font pairings: `pixel` (Press Start 2P and VT323) and `terminal` (VT323), bundled from Fontsource.
 - A "Design for every shape" section in the scenes guide: how to lay out a scene so it works on a phone, in a feed and on YouTube.
+- A gallery of all twenty styles in the README, and a new README banner and social preview showing films in different styles.
 - `npm run example:shapes` previews every example film made with custom scenes in 16:9, TikTok, 4:5 and square frames and fails if any check fails. It takes about 15 minutes, so it's for before a release rather than every push.
 
 ### Changed
@@ -302,7 +305,8 @@ The first release: describe a film in one JSON file, and Bezel Film renders it t
 
 - CI checks on every push and pull request, including a render smoke test, plus Dependabot.
 
-[Unreleased]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.9.0...HEAD
+[Unreleased]: https://github.com/ShazMoghaddam/bezel-film/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.9.0...v1.0.0
 [0.9.0]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.6.0...v0.7.0
