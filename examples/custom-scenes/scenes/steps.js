@@ -9,7 +9,9 @@ Bezel.scene((root, kit) => {
     ["M2.5 7h11v9h-11z", "M13.5 10h4l3 3.2v2.8h-7", "M5 18.3a1.8 1.8 0 1 0 3.6 0a1.8 1.8 0 1 0 -3.6 0", "M15 18.3a1.8 1.8 0 1 0 3.6 0a1.8 1.8 0 1 0 -3.6 0", "M5 10.5h5"],
   ];
   const steps = kit.props.steps;
-  const size = Math.min(safe.width / 5, safe.height / 2.6);
+  // In narrow frames the drawings take more of the width, and each label wraps under its own.
+  const narrow = kit.shape !== "wide";
+  const size = narrow ? Math.min(safe.width / 4.2, safe.height / 3) : Math.min(safe.width / 5, safe.height / 2.6);
   const gapX = (safe.width - size * 3) / 2;
   const top = safe.y + safe.height * 0.5 - size * 0.75;
   const plan = kit.drawing({ pen: true, penColour: colours.accent });
@@ -22,7 +24,8 @@ Bezel.scene((root, kit) => {
     const art = kit.svg("svg", { viewBox: "0 0 24 24", width: size, height: size, style: `position:absolute;left:${x}px;top:${top}px;overflow:visible` }, root);
     const paths = DRAWINGS[i].map((d) => kit.svg("path", { d, fill: "none", stroke: ink, "stroke-width": 1.05, "stroke-linecap": "round", "stroke-linejoin": "round" }, art));
     const text = kit.el("div", { text: label, style: { position: "absolute", left: x + size / 2 + "px", top: top + size * 1.12 + "px", translate: "-50% 0",
-      font: `600 ${u * 4}px ${fonts.body}`, color: ink, whiteSpace: "nowrap" } }, root);
+      font: `600 ${u * 4}px/1.15 ${fonts.body}`, color: ink,
+      ...(narrow ? { width: size + "px", textAlign: "center", textWrap: "balance" } : { whiteSpace: "nowrap" }) } }, root);
 
     // Each step lands on its own sentence when there is one.
     const start = kit.lines[i] ? kit.lines[i].start : 0.3 + i * 1.6;

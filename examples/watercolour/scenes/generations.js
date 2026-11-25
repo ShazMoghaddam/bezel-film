@@ -52,13 +52,14 @@ Bezel.scene((root, kit) => {
     const y = lineY - size * 1.35 - u * 3;
     const g = kit.svg("g", { transform: `translate(${x} ${y}) rotate(${(i % 2 ? 8 : -8)})` }, s);
     const m = monarch(g, size, 10 + i);
-    const season = kit.text(root, label, { x, y: lineY + u * 3, size: 3.6, font: "heading", align: "center", colour: colours.muted, style: { fontStyle: "italic" } });
-    const life = kit.text(root, last ? props.long : props.short, { x, y: lineY + u * 8, size: last ? 5 : 3.8, font: "heading", align: "center", colour: last ? colours.accent : colours.text });
+    const narrow = kit.shape !== "wide";
+    const season = kit.text(root, label, { x, y: lineY + u * 3, size: narrow ? 2.8 : 3.6, maxWidth: narrow ? colW * 0.96 : undefined, font: "heading", align: "center", colour: colours.muted, style: { fontStyle: "italic" } });
+    const life = kit.text(root, last ? props.long : props.short, { x, y: lineY + u * (narrow ? 10 : 8), size: narrow ? (last ? 3.4 : 2.8) : last ? 5 : 3.8, maxWidth: narrow ? colW * 0.96 : undefined, font: "heading", align: "center", colour: last ? colours.accent : colours.text });
     return { m, season, life, x, size, last };
   });
   // An ink ring round the long-lived one, drawn as a loose hand circle.
   const big = flies[n - 1];
-  const ring = kit.svg("path", { d: kit.rough.ellipse(big.x, lineY + u * 11, colW * 0.44, u * 4.8, { seed: 4, wobble: 0.5 }), ...pen, stroke: colours.accent, "stroke-width": u * 0.3 }, s);
+  const ring = kit.svg("path", { d: kit.rough.ellipse(big.x, lineY + u * (kit.shape === "wide" ? 11 : 14), colW * 0.48, u * (kit.shape === "wide" ? 4.8 : 6), { seed: 4, wobble: 0.5 }), ...pen, stroke: colours.accent, "stroke-width": u * 0.3 }, s);
 
   const first = Math.max(0.6, kit.at(0) - 0.2), turn = Math.max(first + 2, kit.at(1) - 0.1);
   plan.write(heading, { at: 0.1, duration: 0.8 });

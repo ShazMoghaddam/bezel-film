@@ -8,7 +8,7 @@ Bezel.scene((root, kit) => {
 
   const lines = props.lines.map((txt, i) => ({ txt, at: 0.15 + i * 0.45, el: kit.text(root, "", { x: safe.x, y: safe.y + i * u * 5, size: 4, font: "body", colour: colours.muted, style: { textShadow: glow, whiteSpace: "pre" } }) }));
   const ready = kit.text(root, "", { x: safe.x, y: safe.y + props.lines.length * u * 5 + u * 3, size: 4, font: "body", colour: colours.text, style: { textShadow: glow } });
-  const title = kit.text(root, "", { x: safe.x, y: safe.y + safe.height * 0.42, size: 13, font: "heading", colour: colours.text, maxWidth: safe.width, style: { textShadow: glow, lineHeight: "0.95", whiteSpace: "pre-line" } });
+  const title = kit.text(root, "", { x: safe.x, y: safe.y + safe.height * 0.42, size: kit.shape === "wide" ? 13 : 9, font: "heading", colour: colours.text, maxWidth: safe.width, style: { textShadow: glow, lineHeight: "0.95", whiteSpace: "pre-line" } });
 
   const titleAt = Math.max(1.8, (kit.at(0) || 0) + 0.4);
   return (t) => {

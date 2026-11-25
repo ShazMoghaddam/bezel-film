@@ -36,8 +36,8 @@ export function fontAssets(pairing: FontPairing): Record<string, string> {
 }
 
 /**
- * One @font-face per role, weight and character set. The browser loads a file only
- * when the text needs its characters, so Latin Extended costs nothing until a name uses it.
+ * One @font-face per role, weight and character set. The page loads them all before it
+ * draws (a dozen small local files at most), so every word is measured in its real font.
  */
 export function fontFaceCss(pairing: FontPairing): string {
   const rules: string[] = [];

@@ -11,7 +11,7 @@ Bezel.scene((root, kit) => {
   const heading = kit.text(root, props.heading, { x: safe.x, y: safe.y, size: tall ? 5 : 5.6, font: "heading", colour: colours.text, maxWidth: safe.width, style: { textWrap: "balance" } });
   const colW = safe.width / n;
   const base = safe.y + safe.height * 0.84;
-  const w = Math.min(colW * 0.62, u * 40), h = w * 0.62;
+  const w = Math.min(colW * (kit.shape === "wide" ? 0.62 : 0.84), u * 40), h = w * 0.62;
   const rect = (x, y, ww, hh) => [[x, y], [x + ww, y], [x + ww, y + hh], [x, y + hh]];
 
   const piles = props.piles.map((label, i) => {

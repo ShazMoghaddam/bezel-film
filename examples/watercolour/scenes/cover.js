@@ -65,7 +65,10 @@ Bezel.scene((root, kit) => {
   const kicker = kit.text(root, props.kicker, { x: tx, y: safe.y + safe.height * (wide ? 0.16 : 0.02), size: 3.4, font: "heading", colour: colours.accent });
   const title = kit.text(root, props.title, { x: tx, y: safe.y + safe.height * (wide ? 0.23 : 0.09), size: wide ? 9.5 : 8, font: "heading", colour: colours.text, maxWidth: tw, style: { lineHeight: "1.02", textWrap: "balance" } });
   // A margin note with an inked arrow to the wing.
-  const aside = kit.text(root, props.aside, { x: bx - size * 0.35, y: Math.max(safe.y + u, by - size * 1.42), size: 2.8, font: "heading", colour: colours.muted, align: "right", style: { fontStyle: "italic" } });
+  // Wide: a margin note above the wing with an inked arrow. Narrow: the note sits under
+  // the species name instead, where there's room.
+  const asideWide = kit.shape === "wide";
+  const aside = kit.text(root, props.aside, { x: asideWide ? bx - size * 0.35 : bx, y: asideWide ? Math.max(safe.y + u, by - size * 1.42) : by + size * 0.95 + u * 4.5, size: 2.8, font: "heading", colour: colours.muted, align: asideWide ? "right" : "center", style: { fontStyle: "italic" } });
   const ax = bx - size * 0.3, ay = Math.max(safe.y + u * 5, by - size * 1.2);
   const arrow = kit.svg("path", { d: `M${ax} ${ay} Q${ax + size * 0.05} ${ay + size * 0.3} ${bx - size * 0.55} ${by - size * 0.62} M${bx - size * 0.55} ${by - size * 0.62} l${-u * 0.3} ${-u * 1.6} M${bx - size * 0.55} ${by - size * 0.62} l${-u * 1.5} ${-u * 0.6}`, ...pen, "stroke-width": u * 0.2 }, s);
   const note = kit.text(root, props.note, { x: bx, y: by + size * 0.95, size: 2.8, font: "heading", colour: colours.muted, align: "center", style: { fontStyle: "italic" } });
@@ -80,7 +83,8 @@ Bezel.scene((root, kit) => {
   plan.write(kicker, { at: 0.6, duration: 0.6 });
   plan.write(title, { at: 1.0, duration: 1.6 });
   plan.write(note, { at: 3.0, duration: 0.6 });
-  plan.line(arrow, { at: 3.4, duration: 0.5 });
+  if (asideWide) plan.line(arrow, { at: 3.4, duration: 0.5 });
+  else arrow.style.display = "none";
   plan.write(aside, { at: 3.6, duration: 0.6 });
 
   return (t) => {

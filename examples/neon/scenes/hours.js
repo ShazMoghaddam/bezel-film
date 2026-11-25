@@ -7,7 +7,7 @@ Bezel.scene((root, kit) => {
   const wide = kit.shape === "wide";
   const on = (t, at) => (t < at ? 0 : t < at + 0.5 ? (kit.random(Math.floor(t * 14) + 7)() > 0.45 ? 1 : 0.1) : 1);
 
-  const R = Math.min(safe.height * 0.28, u * 24);
+  const R = wide ? Math.min(safe.height * 0.28, u * 24) : Math.min(safe.height * 0.19, safe.width * 0.34);
   const cx = wide ? safe.x + safe.width * 0.27 : width / 2, cy = wide ? safe.y + safe.height * 0.48 : safe.y + R + u * 2;
   const ring = kit.neon(s, `M${cx - R} ${cy} a${R} ${R} 0 1 0 ${R * 2} 0 a${R} ${R} 0 1 0 ${-R * 2} 0`, { colour: cyan, width: u * 0.8 });
   let ticks = "";

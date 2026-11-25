@@ -13,7 +13,7 @@ Bezel.scene((root, kit) => {
   const lines = kit.speedLines(s, { kind: "focus", cx: bx, cy: by - safe.height * 0.45, box: { x: 0, y: 0, width, height }, count: 70, inner: u * 26, colour: "#FFFFFF", seed: 3 });
 
   // The starburst behind the bottle, with the shout on it.
-  const sx = bx + (wide ? safe.width * 0.18 : safe.width * 0.22), sy = safe.y + safe.height * 0.22;
+  const sx = wide ? bx + safe.width * 0.18 : safe.x + safe.width * 0.2, sy = safe.y + safe.height * (wide ? 0.22 : 0.52);
   const burst = kit.svg("g", {}, s);
   kit.burst(burst, { cx: sx, cy: sy, r: u * 17, points: 16, fill: "#FFE14D", stroke: ink, strokeWidth: u * 0.6, seed: 4 });
   kit.burst(burst, { cx: sx, cy: sy, r: u * 12, points: 12, fill: colours.accent, stroke: ink, strokeWidth: u * 0.4, seed: 7, inner: 0.78 });

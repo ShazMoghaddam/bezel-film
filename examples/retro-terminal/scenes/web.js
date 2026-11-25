@@ -10,9 +10,10 @@ Bezel.scene((root, kit) => {
   const bar = line(safe.y + u * 12, 4.4, colours.muted);
   const ok = line(safe.y + u * 18, 4.4, colours.accent);
   // The page: a framed box of text, as the first browsers showed it.
-  const page = kit.text(root, "", { x: safe.x, y: safe.y + u * 26, size: 4, font: "body", colour: colours.text, style: { textShadow: glow, whiteSpace: "pre", lineHeight: "1.15" } });
+  const narrow = kit.shape !== "wide";
+  const page = kit.text(root, "", { x: safe.x, y: safe.y + u * 26, size: narrow ? 2.8 : 4, font: "body", colour: colours.text, style: { textShadow: glow, whiteSpace: "pre", lineHeight: "1.15" } });
   const pageText = ["+------------------------------------+", "|  World Wide Web                    |", "|                                    |", "|  The WorldWideWeb (W3) is a wide-  |", "|  area hypermedia information       |", "|  retrieval initiative...           |", "+------------------------------------+"].join("\n");
-  const end = kit.text(root, "", { x: safe.x, y: safe.y + safe.height * 0.84, size: 6.4, font: "heading", colour: colours.text, style: { textShadow: glow } });
+  const end = kit.text(root, "", { x: safe.x, y: safe.y + safe.height * (narrow ? 0.76 : 0.84), size: narrow ? 4.8 : 6.4, font: "heading", colour: colours.text, maxWidth: safe.width, style: { textShadow: glow } });
   const source = kit.text(root, props.source, { x: safe.x + safe.width, y: safe.y, size: 3, font: "body", align: "right", colour: colours.muted });
 
   const loadAt = 1.4, okAt = 2.6, endAt = Math.max(3.6, (kit.at(1) || 0) - 0.1);

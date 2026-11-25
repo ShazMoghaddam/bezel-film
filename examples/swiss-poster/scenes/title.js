@@ -20,7 +20,7 @@ Bezel.scene((root, kit) => {
 
   // Details in the first columns, small and flush left.
   const info = [props.line, props.date, props.place].map((txt, i) => {
-    const cell = g.cell(i * (wide ? 3 : 4), 0, wide ? 3 : 4, 1);
+    const cell = wide ? g.cell(i * 3, 0, 3, 1) : g.cell(0, i, 4, 1);
     return kit.text(root, txt, { x: cell.x, y: cell.y, size: 3.2, weight: 600, colour: ink, maxWidth: cell.width });
   });
   const name = g.cell(0, 5, 12, 3);

@@ -7,8 +7,9 @@ Bezel.scene((root, kit) => {
   const [blue, pink, green, amber] = colours.palette;
   const wide = kit.shape === "wide";
 
-  const pw = Math.min(safe.height * 0.47, u * 46);
-  const px = wide ? safe.x + safe.width * 0.62 : width / 2 - pw / 2, py = safe.y + safe.height * 0.02;
+  // Narrow frames: the words across the top, the phone under them.
+  const pw = wide ? Math.min(safe.height * 0.47, u * 46) : Math.min(safe.height * 0.36, safe.width * 0.5);
+  const px = wide ? safe.x + safe.width * 0.62 : width / 2 - pw / 2, py = wide ? safe.y + safe.height * 0.02 : safe.y + safe.height * 0.22;
   kit.glow(s, { cx: px + pw / 2, cy: py + pw, r: pw * 1.6, colour: blue, strength: 0.25 });
   const phone = kit.device(s, { kind: "phone", x: px, y: py, width: pw });
   const sc = phone.screen, ui = phone.content;
@@ -41,7 +42,7 @@ Bezel.scene((root, kit) => {
     return { g, slot, at: 1.4 + i * 0.6 };
   });
 
-  const tx = wide ? safe.x : safe.x, ty = wide ? safe.y + safe.height * 0.34 : safe.y + safe.height * 0.82;
+  const tx = wide ? safe.x : safe.x, ty = wide ? safe.y + safe.height * 0.34 : safe.y;
   const heading = kit.text(root, props.heading, { x: tx, y: ty, size: wide ? 7.4 : 5.6, font: "heading", colour: colours.text, maxWidth: wide ? safe.width * 0.5 : safe.width, style: { letterSpacing: "-0.04em" } });
   const sub = kit.text(root, props.sub, { x: tx, y: ty + u * (wide ? 10 : 7.5), size: wide ? 7.4 : 5.6, font: "heading", colour: colours.muted, maxWidth: wide ? safe.width * 0.5 : safe.width, style: { letterSpacing: "-0.04em" } });
 

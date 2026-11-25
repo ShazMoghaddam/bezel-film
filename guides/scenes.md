@@ -137,6 +137,16 @@ return (t) => plan.draw(t);
 | `kit.pixels(stage, { art, palette, x, y, size })` | Pixel art from rows of characters, coloured by `palette`. `.` is see-through |
 | `kit.typing(text, t, { at, cps, cursor })` | How much of `text` is typed by time `t`, with an optional blinking block cursor |
 
+## Design for every shape
+
+A film can go to TikTok, Reels and Shorts (9:16), a LinkedIn or Instagram feed (4:5 or square) and YouTube (16:9). Each platform also covers part of the frame with its buttons and captions, so the space you can use is `kit.safe`, not the whole frame. On TikTok that space is close to square, even though the frame is tall.
+
+- **Lay out by shape.** Check `kit.shape` (`"wide"`, `"square"` or `"tall"`) and give narrow frames their own layout: side by side on wide frames, stacked on narrow ones. Don't just shrink the wide layout.
+- **Size from the safe area.** Make pictures a share of `Math.min(safe.width, safe.height)`, so they fill a phone without spilling.
+- **Let long lines wrap.** Give `kit.text` a `maxWidth` on narrow frames, and use `textWrap: "balance"` only where wrapping is wanted: it turns wrapping back on even for a line set not to wrap.
+- **Words shrink to fit,** but only so far. `kit.text` shrinks a line that would run past the safe area, down to 60%. If it still doesn't fit, the layout needs changing. Words built at one spot and moved somewhere else in draw (a label that follows something round) need `fit: false`, or they'll shrink to fit where they start.
+- **Check every shape the film is for,** before rendering: `npx bezel-film preview film.json --for tiktok`, then `--for linkedin-mobile` and `--for linkedin-square`. Look at the stills as well as the warnings: words can fit and still sit on top of a picture.
+
 ## Good practice
 
 - **Lay out from `kit.safe` and `kit.u`**, never fixed pixel numbers, so the scene works from TikTok to a wide LinkedIn video. Check every format the film is for with `preview --for`.

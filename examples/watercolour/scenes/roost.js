@@ -77,7 +77,7 @@ Bezel.scene((root, kit) => {
   const tx = wide ? safe.x + safe.width * 0.64 : safe.x, tw = wide ? safe.width * 0.36 : safe.width;
   const note = kit.text(root, props.note, { x: tx, y: wide ? safe.y + safe.height * 0.14 : safe.y, size: 3.2, font: "heading", colour: colours.muted, maxWidth: tw, style: { fontStyle: "italic" } });
   const line = kit.text(root, props.line, { x: tx, y: wide ? safe.y + safe.height * 0.24 : safe.y + u * 5, size: wide ? 6.4 : 5.2, font: "heading", colour: colours.text, maxWidth: tw, style: { lineHeight: "1.08", textWrap: "balance" } });
-  const source = kit.text(root, props.source, { x: tx, y: wide ? safe.y + safe.height * 0.9 : safe.y + u * 22, size: 2.4, colour: colours.muted, maxWidth: tw });
+  const source = kit.text(root, props.source, { x: tx, y: wide ? safe.y + safe.height * 0.9 : line.getBoundingClientRect().bottom + u * 2, size: 2.4, colour: colours.muted, maxWidth: tw });
 
   firs.forEach((f, i) => { plan.line(f.trunk, { at: 0.2 + i * 0.2, duration: 0.4 }); plan.line(f.outline, { at: 0.8 + i * 0.25, duration: 0.9 }); });
   plan.write(note, { at: 0.6, duration: 0.7 });
