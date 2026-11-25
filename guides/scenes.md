@@ -132,6 +132,10 @@ return (t) => plan.draw(t);
 | `kit.burst(parent, { cx, cy, r, points, fill })` | A comic starburst, the jagged "POW!" shape |
 | `kit.bubble(parent, { x, y, width, height, tail, kind })` | A comic speech bubble (or `kind: "thought"`), its tail pointing at `tail` |
 | `kit.ink(stage, { colour, shift, filter })` | One ink of a risograph print: shapes drawn in it overprint the inks below, nudged by `shift` |
+| `kit.neon(stage, d, { colour, width })` | A neon tube along a path. `.set(on)` sets its brightness from 0 (off) to 1 (lit) |
+| `kit.device(stage, { kind, x, y, width })` | A phone, laptop or browser frame. Draw the app into `.content`, which is clipped to `.screen` |
+| `kit.pixels(stage, { art, palette, x, y, size })` | Pixel art from rows of characters, coloured by `palette`. `.` is see-through |
+| `kit.typing(text, t, { at, cps, cursor })` | How much of `text` is typed by time `t`, with an optional blinking block cursor |
 
 ## Good practice
 

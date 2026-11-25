@@ -1,0 +1,35 @@
+{
+  "name": "dark-keynote",
+  "label": "Dark keynote",
+  "description": "A product launch on a black stage: the product's screens are the star, with big clean type and slow, confident moves.",
+  "theme": "dark",
+  "font": "swiss",
+  "colours": {
+    "background": "#050608",
+    "surface": "#111318",
+    "text": "#F5F7FA",
+    "muted": "#A6ADBB",
+    "accent": "#7C8CFF",
+    "palette": [
+      "#7C8CFF",
+      "#FF6B8B",
+      "#3DDC97",
+      "#FFB84D",
+      "#4CC9F0",
+      "#C38BFF",
+      "#F5F7FA"
+    ]
+  },
+  "motion": {
+    "level": "calm",
+    "easing": "cubic-bezier(0.22, 1, 0.36, 1)",
+    "enterMs": 800,
+    "staggerMs": 90,
+    "transition": "fade",
+    "transitionMs": 600
+  },
+  "layout": {
+    "safeArea": 0.08,
+    "captionPosition": "bottom"
+  }
+}

@@ -20,9 +20,11 @@ in the Latin and Latin Extended character sets, as woff2. They're rebuilt with `
 | Nunito | Copyright 2014 The Nunito Project Authors (https://github.com/googlefonts/nunito) | 400, 600, 700, 800 | [OFL 1.1](nunito/LICENSE) | v32 |
 | Oswald | Copyright 2016 The Oswald Project Authors (https://github.com/googlefonts/OswaldFont) | 500, 600 | [OFL 1.1](oswald/LICENSE) | v57 |
 | Patrick Hand | Copyright (c) 2010-2012 Patrick Wagesreiter (mail@patrickwagesreiter.at) | 400 | [OFL 1.1](patrick-hand/LICENSE) | v25 |
+| Press Start 2P | Copyright 2012 The Press Start 2P Project Authors (cody@zone38.net), with Reserved Font Name "Press Start 2P" | 400 | [OFL 1.1](press-start-2p/LICENSE) | v16 |
 | Source Serif 4 | Google Inc. | 400, 600 | [OFL 1.1](source-serif-4/LICENSE) | v15 |
 | Space Grotesk | Copyright 2020 The Space Grotesk Project Authors (https://github.com/floriankarsten/space-grotesk) | 600, 700 | [OFL 1.1](space-grotesk/LICENSE) | v22 |
 | Space Mono | Copyright 2016 The Space Mono Project Authors (https://github.com/googlefonts/spacemono) | 700 | [OFL 1.1](space-mono/LICENSE) | v17 |
+| VT323 | Copyright 2011, The VT323 Project Authors (peter.hull@oikoi.com) | 400 | [OFL 1.1](vt323/LICENSE) | v18 |
 
 ## Pairings
 
@@ -39,3 +41,5 @@ A film's `font` setting picks one of these. See `src/spec/fonts.ts`.
 | `handwritten` | Caveat | Patrick Hand | JetBrains Mono |
 | `mono` | Space Mono | JetBrains Mono | JetBrains Mono |
 | `swiss` | Inter | Inter | JetBrains Mono |
+| `pixel` | Press Start 2P | VT323 | VT323 |
+| `terminal` | VT323 | VT323 | VT323 |

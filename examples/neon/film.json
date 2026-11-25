@@ -1,0 +1,43 @@
+{
+  "$schema": "../../schema/film.schema.json",
+  "spec": 1,
+  "title": "Lucky Noodle: open late",
+  "style": "neon",
+  "format": { "aspect": "16:9", "resolution": "1080p", "fps": 30 },
+  "voice": { "engine": "kokoro", "gender": "female" },
+  "music": { "source": "generated", "mood": "ambient" },
+  "scenes": [
+    {
+      "id": "sign",
+      "type": "custom",
+      "file": "scenes/sign.js",
+      "props": { "name": "Lucky Noodle" },
+      "narration": "When the city goes quiet, one sign comes on.",
+      "sounds": [{ "at": 0.6, "sound": "click", "gain": 0.3 }, { "at": 1.0, "sound": "tick", "gain": 0.3 }]
+    },
+    {
+      "id": "hours",
+      "type": "custom",
+      "file": "scenes/hours.js",
+      "props": { "open": "Open", "until": "till 2am" },
+      "narration": "Lucky Noodle. Open till two in the morning.",
+      "sounds": [{ "at": 0.4, "sound": "click", "gain": 0.3 }]
+    },
+    {
+      "id": "menu",
+      "type": "custom",
+      "file": "scenes/menu.js",
+      "props": { "items": ["Ramen", "Dumplings", "Tea"] },
+      "narration": "Hot ramen, fresh dumplings, and a pot of tea.",
+      "sounds": [{ "at": 0.3, "sound": "click", "gain": 0.3 }, { "at": 1.2, "sound": "click", "gain": 0.3, "pitch": 2 }, { "at": 2.0, "sound": "click", "gain": 0.3, "pitch": 4 }]
+    },
+    {
+      "id": "arrow",
+      "type": "custom",
+      "file": "scenes/arrow.js",
+      "props": { "line": "This way", "where": "Corner of Pine Street" },
+      "narration": "Just follow the light.",
+      "sounds": [{ "at": 0.4, "sound": "sweep", "gain": 0.35 }]
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "name": "retro-terminal",
+  "label": "Retro terminal",
+  "description": "Glowing green text on an old monitor: commands typed in, logs scrolling, ASCII art and a blinking cursor.",
+  "theme": "dark",
+  "font": "terminal",
+  "colours": {
+    "background": "#050A06",
+    "surface": "#0B140D",
+    "text": "#A8FFA8",
+    "muted": "#6FD77A",
+    "accent": "#E6FFE6",
+    "palette": [
+      "#A8FFA8",
+      "#FFB000",
+      "#6FD77A",
+      "#E6FFE6",
+      "#7FE0FF",
+      "#FF7B6B",
+      "#C8FF5C"
+    ]
+  },
+  "motion": {
+    "level": "lively",
+    "easing": "cubic-bezier(0.22, 1, 0.36, 1)",
+    "enterMs": 300,
+    "staggerMs": 90,
+    "transition": "cut",
+    "transitionMs": 0
+  },
+  "layout": {
+    "safeArea": 0.08,
+    "captionPosition": "bottom"
+  }
+}

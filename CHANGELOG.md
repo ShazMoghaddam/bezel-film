@@ -5,6 +5,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+### Added
+
+- The last four styles made for custom scenes, each with a guide for agents and an example film:
+  - **Neon**: glass tubes that sputter on at night, glowing on a dark brick wall.
+  - **Dark keynote**: a product launch on a black stage, where the product's screens are the star.
+  - **Pixel game**: a 90s video game, with pixel sprites, text boxes, menus and level-ups.
+  - **Retro terminal**: green text on an old monitor, with typed commands, logs and a blinking cursor.
+- More in the scene kit: neon tubes (`kit.neon`), phone, laptop and browser frames to show an app in (`kit.device`), pixel art from text (`kit.pixels`) and typed text with a cursor (`kit.typing`).
+- Two new font pairings: `pixel` (Press Start 2P and VT323) and `terminal` (VT323), bundled from Fontsource.
+
 ## [0.9.0] - 2026-11-25
 
 Four bold and graphic kinds of film: a watercolour journal, a Swiss poster, pop art and risograph. The scene kit gains watercolour washes, a layout grid, comic starbursts and speech bubbles, and overprinting ink layers to build them with.

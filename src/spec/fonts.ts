@@ -6,7 +6,7 @@
  * The font files ship inside the package (fonts/), so rendering stays offline.
  */
 
-export const FONT_NAMES = ["grotesk", "editorial", "condensed", "bold", "technical", "friendly", "handwritten", "mono", "swiss"] as const;
+export const FONT_NAMES = ["grotesk", "editorial", "condensed", "bold", "technical", "friendly", "handwritten", "mono", "swiss", "pixel", "terminal"] as const;
 export type FontName = (typeof FONT_NAMES)[number];
 
 /** One font in a pairing, and which of its files to use for each weight the page asks for. */
@@ -41,6 +41,9 @@ const SPACE_GROTESK = face("space-grotesk", "Space Grotesk", { 600: 600, 700: 70
 const INTER = face("inter", "Inter", { 400: 400, 600: 600 });
 // Mono text at 600 (stickers) uses the bold file: it matches the weight stickers have always had.
 const JETBRAINS_MONO = face("jetbrains-mono", "JetBrains Mono", { 400: 400, 600: 700 });
+// VT323 has one weight, and is drawn small for its size.
+const VT323 = face("vt323", "VT323", { 400: 400, 600: 400 }, 135);
+const VT323_HEADING = face("vt323", "VT323", { 600: 400, 700: 400 }, 135);
 
 export const FONT_PAIRINGS: Record<FontName, FontPairing> = {
   grotesk: {
@@ -107,6 +110,21 @@ export const FONT_PAIRINGS: Record<FontName, FontPairing> = {
     heading: face("inter", "Inter", { 600: 700, 700: 700 }),
     body: INTER,
     mono: JETBRAINS_MONO,
+  },
+  pixel: {
+    name: "pixel",
+    description: "A 90s video game: blocky pixel headings and screen-text body.",
+    // Press Start 2P and VT323 each have one weight. Press Start is drawn wide, VT323 small.
+    heading: face("press-start-2p", "Press Start 2P", { 600: 400, 700: 400 }, 82),
+    body: VT323,
+    mono: VT323,
+  },
+  terminal: {
+    name: "terminal",
+    description: "An old green-screen monitor. Logs, systems and hacker stories.",
+    heading: VT323_HEADING,
+    body: VT323,
+    mono: VT323,
   },
 };
 

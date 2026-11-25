@@ -879,6 +879,90 @@ export const KIT_JS = String.raw`
     }
 
     /**
+     * A neon tube along a path: a dim unlit glass tube, and over it the lit tube with a
+     * hot white core and a soft halo. Returns { group, set(on) }: on is the brightness,
+     * 0 (off) to 1 (fully lit); drive it with kit.random for flicker.
+     */
+    function neon(parent, d, { colour = info.colours.accent, width: w = u * 0.7 } = {}) {
+      const g = svg("g", {}, parent);
+      const line = (attrs) => svg("path", Object.assign({ d, fill: "none", "stroke-linecap": "round", "stroke-linejoin": "round" }, attrs), g);
+      line({ stroke: colour, "stroke-width": w, opacity: 0.2 });
+      const lit = svg("g", {}, g);
+      const halo = svg("path", { d, fill: "none", stroke: colour, "stroke-width": w * 5, "stroke-linecap": "round", "stroke-linejoin": "round", opacity: 0.35 }, lit);
+      halo.style.filter = "blur(" + w * 2.2 + "px)";
+      const bloom = svg("path", { d, fill: "none", stroke: colour, "stroke-width": w * 2.2, "stroke-linecap": "round", "stroke-linejoin": "round", opacity: 0.7 }, lit);
+      bloom.style.filter = "blur(" + w * 0.7 + "px)";
+      svg("path", { d, fill: "none", stroke: colour, "stroke-width": w, "stroke-linecap": "round", "stroke-linejoin": "round" }, lit);
+      svg("path", { d, fill: "none", stroke: "color-mix(in oklab, " + colour + ", #FFFFFF 65%)", "stroke-width": w * 0.38, "stroke-linecap": "round", "stroke-linejoin": "round" }, lit);
+      return { group: g, set(on) { lit.style.opacity = String(clamp(on)); return this; } };
+    }
+
+    /**
+     * A device to show a product's screens in: kind "phone", "laptop" or "browser".
+     * x and y are its top-left corner. Returns { group, screen, content }: screen is the
+     * box of the display, and content is a group clipped to it, to draw the app into.
+     */
+    let devices = 0;
+    function device(parent, { kind = "phone", x = safe.x, y = safe.y, width: w = u * 30, body = "#16181D", edge = "#3A3F4A" } = {}) {
+      const id = "bf-device-" + index + "-" + devices++;
+      const g = svg("g", {}, parent);
+      let screen;
+      if (kind === "phone") {
+        const h = w * 2.05, r = w * 0.16, b = w * 0.045;
+        svg("rect", { x, y, width: w, height: h, rx: r, fill: body, stroke: edge, "stroke-width": w * 0.012 }, g);
+        screen = { x: x + b, y: y + b, width: w - b * 2, height: h - b * 2, r: r - b };
+      } else if (kind === "laptop") {
+        const h = w * 0.64, b = w * 0.025;
+        svg("rect", { x, y, width: w, height: h, rx: w * 0.025, fill: body, stroke: edge, "stroke-width": w * 0.004 }, g);
+        svg("path", { d: "M" + (x - w * 0.08) + " " + (y + h) + " H" + (x + w * 1.08) + " L" + (x + w * 1.04) + " " + (y + h + w * 0.035) + " H" + (x - w * 0.04) + " Z", fill: edge }, g);
+        svg("rect", { x: x + w * 0.42, y: y + h, width: w * 0.16, height: w * 0.008, rx: w * 0.004, fill: body }, g);
+        screen = { x: x + b, y: y + b, width: w - b * 2, height: h - b * 2, r: w * 0.008 };
+      } else {
+        const h = w * 0.62, bar = w * 0.05;
+        svg("rect", { x, y, width: w, height: h, rx: w * 0.018, fill: body, stroke: edge, "stroke-width": w * 0.003 }, g);
+        ["#FF5F57", "#FEBC2E", "#28C840"].forEach((c, i) => svg("circle", { cx: x + bar * (0.7 + i * 0.6), cy: y + bar / 2, r: bar * 0.17, fill: c }, g));
+        screen = { x, y: y + bar, width: w, height: h - bar, r: w * 0.012 };
+      }
+      const clip = svg("clipPath", { id }, svg("defs", {}, g));
+      svg("rect", { x: screen.x, y: screen.y, width: screen.width, height: screen.height, rx: screen.r }, clip);
+      const content = svg("g", { "clip-path": "url(#" + id + ")" }, g);
+      if (kind === "phone") svg("rect", { x: x + w * 0.36, y: y + w * 0.06, width: w * 0.28, height: w * 0.075, rx: w * 0.0375, fill: "#000000" }, g);
+      return { group: g, screen, content };
+    }
+
+    /**
+     * Pixel art from text: each string in art is a row, each character a pixel, coloured
+     * by palette (a map from character to colour). "." and spaces are see-through. Draw at
+     * (x, y) with pixels size big. Returns the group.
+     */
+    function pixels(parent, { art, palette, x = 0, y = 0, size = u } = {}) {
+      const g = svg("g", { "shape-rendering": "crispEdges" }, parent);
+      art.forEach((row, r) => {
+        let c = 0;
+        while (c < row.length) {
+          const ch = row[c];
+          let run = 1;
+          while (c + run < row.length && row[c + run] === ch) run++;
+          if (ch !== "." && ch !== " " && palette[ch]) svg("rect", { x: x + c * size, y: y + r * size, width: run * size + 0.5, height: size + 0.5, fill: palette[ch] }, g);
+          c += run;
+        }
+      });
+      return g;
+    }
+
+    /**
+     * Text being typed: how much of text is showing at time t, typed from at at cps
+     * characters a second. With cursor, a block cursor blinks at the end.
+     */
+    function typing(text, t, { at = 0, cps = 24, cursor = false } = {}) {
+      const n = Math.max(0, Math.floor((t - at) * cps + 1e-6));
+      const shown = String(text).slice(0, n);
+      if (!cursor || t < at - 0.6) return shown;
+      const done = n >= String(text).length;
+      return shown + (!done || Math.floor(t * 2) % 2 === 0 ? "█" : " ");
+    }
+
+    /**
      * Isometric drawing: points, boxes and tiles on a grid seen from above at 30°.
      * kit.iso({ x, y, unit }) puts grid point (0, 0, 0) at (x, y); one grid step is unit pixels.
      */
@@ -1021,6 +1105,10 @@ export const KIT_JS = String.raw`
       burst,
       bubble,
       ink,
+      neon,
+      device,
+      pixels,
+      typing,
     };
   }
 
