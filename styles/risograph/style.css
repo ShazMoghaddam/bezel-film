@@ -1,0 +1,10 @@
+/* Risograph: a zine on uncoated paper. Every ink overprints the ones under it, a little
+   out of register; scenes print with kit.ink and filter #riso for the grain. */
+.backdrop{background:#F4EFE4}
+.grain{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.25 0 0 0 0 0.22 0 0 0 0 0.2 0 0 0 0.5 -0.05'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");opacity:.45;mix-blend-mode:multiply;z-index:3}
+.display,.heading{text-transform:uppercase;letter-spacing:.01em;mix-blend-mode:multiply}
+.rule{height:calc(var(--u)*1);width:calc(var(--u)*18);border-radius:0;background:var(--accent);mix-blend-mode:multiply;filter:url(#riso)}
+.card{background:transparent;border:calc(var(--u)*.35) solid var(--text);border-radius:0;box-shadow:calc(var(--u)*.6) calc(var(--u)*.5) 0 rgb(214 42 122/.55)}
+.chip{background:var(--accent);color:#FFFFFF;border:0;border-radius:0;mix-blend-mode:multiply}
+.dot{box-shadow:none;mix-blend-mode:multiply}
+.progress{background:var(--accent);mix-blend-mode:multiply}

@@ -6,7 +6,7 @@
  * The font files ship inside the package (fonts/), so rendering stays offline.
  */
 
-export const FONT_NAMES = ["grotesk", "editorial", "condensed", "bold", "technical", "friendly", "handwritten", "mono"] as const;
+export const FONT_NAMES = ["grotesk", "editorial", "condensed", "bold", "technical", "friendly", "handwritten", "mono", "swiss"] as const;
 export type FontName = (typeof FONT_NAMES)[number];
 
 /** One font in a pairing, and which of its files to use for each weight the page asks for. */
@@ -99,6 +99,13 @@ export const FONT_PAIRINGS: Record<FontName, FontPairing> = {
     description: "Typewriter and terminal. Best with short headings.",
     heading: face("space-mono", "Space Mono", { 600: 700, 700: 700 }),
     body: face("jetbrains-mono", "JetBrains Mono", { 400: 400, 600: 600 }),
+    mono: JETBRAINS_MONO,
+  },
+  swiss: {
+    name: "swiss",
+    description: "Neutral and exact, like a Swiss poster. Events, posters and grids.",
+    heading: face("inter", "Inter", { 600: 700, 700: 700 }),
+    body: INTER,
     mono: JETBRAINS_MONO,
   },
 };

@@ -1,0 +1,19 @@
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- Paint: watercolour edges bleed and wander, and pigment settles into the paper's
+         grain, so the colour is uneven inside. -->
+    <filter id="paint" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="3" seed="4" result="bleed"/>
+      <feDisplacementMap in="SourceGraphic" in2="bleed" scale="14" xChannelSelector="R" yChannelSelector="G" result="wander"/>
+      <feTurbulence type="fractalNoise" baseFrequency="0.09" numOctaves="2" seed="9" result="grain"/>
+      <feColorMatrix in="grain" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -0.6 1.25" result="settle"/>
+      <feComposite in="wander" in2="settle" operator="in" result="pigment"/>
+      <feGaussianBlur in="pigment" stdDeviation="0.6"/>
+    </filter>
+    <!-- Ink: a fine pen line that wobbles very slightly, as a dip pen does. -->
+    <filter id="ink" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" seed="2" result="wave"/>
+      <feDisplacementMap in="SourceGraphic" in2="wave" scale="2.2" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+</svg>

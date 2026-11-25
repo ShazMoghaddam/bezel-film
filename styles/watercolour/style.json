@@ -1,0 +1,35 @@
+{
+  "name": "watercolour",
+  "label": "Watercolour",
+  "description": "A nature journal that paints itself: soft washes bloom on cotton paper, ink lines draw in, and notes are written in the margins.",
+  "theme": "light",
+  "font": "editorial",
+  "colours": {
+    "background": "#F4EFE3",
+    "surface": "#FBF8F0",
+    "text": "#2E2A24",
+    "muted": "#5E574C",
+    "accent": "#B8501F",
+    "palette": [
+      "#B8501F",
+      "#3F7A5A",
+      "#2F6690",
+      "#966210",
+      "#8A4B7A",
+      "#3F7480",
+      "#6B5B45"
+    ]
+  },
+  "motion": {
+    "level": "calm",
+    "easing": "cubic-bezier(0.22, 1, 0.36, 1)",
+    "enterMs": 800,
+    "staggerMs": 90,
+    "transition": "fade",
+    "transitionMs": 600
+  },
+  "layout": {
+    "safeArea": 0.08,
+    "captionPosition": "bottom"
+  }
+}

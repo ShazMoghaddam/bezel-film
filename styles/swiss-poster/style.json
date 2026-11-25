@@ -1,0 +1,35 @@
+{
+  "name": "swiss-poster",
+  "label": "Swiss poster",
+  "description": "A strict grid and one signal colour: big neutral type, hard edges and blocks that snap into place on the beat.",
+  "theme": "light",
+  "font": "swiss",
+  "colours": {
+    "background": "#F2F0EB",
+    "surface": "#FFFFFF",
+    "text": "#111111",
+    "muted": "#4A4A4A",
+    "accent": "#E30613",
+    "palette": [
+      "#E30613",
+      "#111111",
+      "#5C5C5C",
+      "#9E1B1B",
+      "#2B2B2B",
+      "#737373",
+      "#C4101A"
+    ]
+  },
+  "motion": {
+    "level": "punchy",
+    "easing": "cubic-bezier(0.22, 1, 0.36, 1)",
+    "enterMs": 400,
+    "staggerMs": 90,
+    "transition": "cut",
+    "transitionMs": 0
+  },
+  "layout": {
+    "safeArea": 0.08,
+    "captionPosition": "bottom"
+  }
+}

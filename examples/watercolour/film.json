@@ -1,0 +1,111 @@
+{
+  "$schema": "../../schema/film.schema.json",
+  "spec": 1,
+  "title": "The monarch's long way south",
+  "style": "watercolour",
+  "format": {
+    "aspect": "16:9",
+    "resolution": "1080p",
+    "fps": 30
+  },
+  "voice": {
+    "engine": "kokoro",
+    "gender": "female"
+  },
+  "music": {
+    "source": "generated",
+    "mood": "reflective"
+  },
+  "scenes": [
+    {
+      "id": "cover",
+      "type": "custom",
+      "file": "scenes/cover.js",
+      "props": {
+        "kicker": "Field notes, autumn",
+        "title": "The monarch's long way south",
+        "note": "Danaus plexippus",
+        "aside": "wingspan about 10 cm"
+      },
+      "narration": "Every autumn, millions of monarch butterflies set off on one of nature's longest journeys.",
+      "sounds": [
+        {
+          "at": 0.3,
+          "sound": "swish",
+          "gain": 0.3
+        }
+      ]
+    },
+    {
+      "id": "generations",
+      "type": "custom",
+      "file": "scenes/generations.js",
+      "props": {
+        "heading": "Four generations a year",
+        "labels": [
+          "spring",
+          "early summer",
+          "late summer",
+          "autumn"
+        ],
+        "short": "a few weeks",
+        "long": "up to 8 months"
+      },
+      "narration": "Most monarchs live for only a few weeks. But the last generation of the summer is different. It can live for up to eight months.",
+      "sounds": [
+        {
+          "at": 0.5,
+          "sound": "tap",
+          "gain": 0.25
+        },
+        {
+          "at": 3.2,
+          "sound": "ding",
+          "gain": 0.3
+        }
+      ]
+    },
+    {
+      "id": "map",
+      "type": "custom",
+      "file": "scenes/map.js",
+      "props": {
+        "north": "Canada and the US",
+        "south": "central Mexico",
+        "distance": "up to 4,800 km",
+        "miles": "about 3,000 miles"
+      },
+      "narration": "This super generation flies up to three thousand miles, from Canada and the United States to the mountains of central Mexico.",
+      "sounds": [
+        {
+          "at": 0.6,
+          "sound": "swish",
+          "gain": 0.3
+        }
+      ]
+    },
+    {
+      "id": "roost",
+      "type": "custom",
+      "file": "scenes/roost.js",
+      "props": {
+        "note": "Oyamel fir forest, central Mexico",
+        "line": "They wait here for spring, then head north again.",
+        "source": "Source: US Fish and Wildlife Service"
+      },
+      "narration": "There, they gather in fir forests, high in the mountains. They wait for spring, then head north again.",
+      "sounds": [
+        {
+          "at": 0.5,
+          "sound": "swish",
+          "gain": 0.3
+        },
+        {
+          "at": 2.8,
+          "sound": "ding",
+          "gain": 0.25
+        }
+      ]
+    }
+  ]
+}

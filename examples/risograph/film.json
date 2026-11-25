@@ -1,0 +1,43 @@
+{
+  "$schema": "../../schema/film.schema.json",
+  "spec": 1,
+  "title": "One colour at a time: how a risograph prints",
+  "style": "risograph",
+  "format": { "aspect": "16:9", "resolution": "1080p", "fps": 30 },
+  "voice": { "engine": "kokoro", "gender": "female" },
+  "music": { "source": "generated", "mood": "upbeat" },
+  "scenes": [
+    {
+      "id": "title",
+      "type": "custom",
+      "file": "scenes/title.js",
+      "props": { "kicker": "How a risograph prints", "title": "One colour at a time" },
+      "narration": "A risograph prints like a tiny press. One colour at a time.",
+      "sounds": [{ "at": 0.3, "sound": "swish", "gain": 0.4 }, { "at": 1.1, "sound": "swish", "gain": 0.4, "pitch": 2 }, { "at": 1.9, "sound": "swish", "gain": 0.4, "pitch": 4 }]
+    },
+    {
+      "id": "drum",
+      "type": "custom",
+      "file": "scenes/drum.js",
+      "props": { "steps": ["A stencil full of tiny holes", "Wrapped round a drum of ink", "Paper rolls underneath"] },
+      "narration": "First, it burns a stencil full of tiny holes. The stencil wraps round a drum of ink, and the paper rolls underneath.",
+      "sounds": [{ "at": 0.4, "sound": "tick", "gain": 0.35 }, { "at": 2.2, "sound": "sweep", "gain": 0.35 }]
+    },
+    {
+      "id": "layers",
+      "type": "custom",
+      "file": "scenes/layers.js",
+      "props": { "inks": ["Pink", "Blue", "Yellow"], "note": "Where inks overlap, they mix" },
+      "narration": "Each colour has its own drum. Where the inks overlap, they mix into new colours.",
+      "sounds": [{ "at": 0.4, "sound": "tap", "gain": 0.4 }, { "at": 1.2, "sound": "tap", "gain": 0.4, "pitch": 2 }, { "at": 2.0, "sound": "tap", "gain": 0.4, "pitch": 4 }]
+    },
+    {
+      "id": "charm",
+      "type": "custom",
+      "file": "scenes/charm.js",
+      "props": { "line": "Slightly off.", "line2": "That's the charm." },
+      "narration": "And when the layers don't quite line up? That's the charm.",
+      "sounds": [{ "at": 0.3, "sound": "swish", "gain": 0.4 }, { "at": 2.0, "sound": "ding", "gain": 0.3 }]
+    }
+  ]
+}

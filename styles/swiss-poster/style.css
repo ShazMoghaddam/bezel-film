@@ -1,0 +1,10 @@
+/* Swiss poster: plain warm-white paper, no texture, nothing decorative. The grid and
+   one signal red do all the work. */
+.backdrop{background:#F2F0EB}
+.grain{display:none}
+.display,.heading{letter-spacing:-.045em;line-height:.92}
+.rule{height:calc(var(--u)*1.2);width:calc(var(--u)*14);border-radius:0;background:var(--accent)}
+.card{background:#FFFFFF;border:0;border-radius:0;box-shadow:none}
+.chip{background:var(--text);color:#FFFFFF;border:0;border-radius:0}
+.dot{border-radius:0;box-shadow:none}
+.progress{background:var(--accent);border-radius:0}

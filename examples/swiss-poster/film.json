@@ -1,0 +1,43 @@
+{
+  "$schema": "../../schema/film.schema.json",
+  "spec": 1,
+  "title": "Raster: three days of design, type and code",
+  "style": "swiss-poster",
+  "format": { "aspect": "16:9", "resolution": "1080p", "fps": 30 },
+  "voice": { "engine": "kokoro", "gender": "female" },
+  "music": { "source": "generated", "mood": "ambient" },
+  "scenes": [
+    {
+      "id": "title",
+      "type": "custom",
+      "file": "scenes/title.js",
+      "props": { "name": "Raster", "line": "Design, type and code", "date": "12–14 March", "place": "Basel" },
+      "narration": "Raster. Three days of design, type and code.",
+      "sounds": [{ "at": 0.3, "sound": "tap", "gain": 0.4 }, { "at": 0.8, "sound": "click", "gain": 0.4 }]
+    },
+    {
+      "id": "numbers",
+      "type": "custom",
+      "file": "scenes/numbers.js",
+      "props": { "items": [{ "value": 3, "label": "days" }, { "value": 40, "label": "talks" }, { "value": 1, "label": "city" }] },
+      "narration": "Three days. Forty talks. One city.",
+      "sounds": [{ "at": 0.2, "sound": "tap", "gain": 0.4 }, { "at": 1.0, "sound": "tap", "gain": 0.4, "pitch": 2 }, { "at": 1.8, "sound": "tap", "gain": 0.4, "pitch": 4 }]
+    },
+    {
+      "id": "programme",
+      "type": "custom",
+      "file": "scenes/programme.js",
+      "props": { "heading": "Programme", "days": [{ "day": "Fri 12", "theme": "Type", "note": "Letters, from sketch to screen" }, { "day": "Sat 13", "theme": "Grids", "note": "Order, rhythm and white space" }, { "day": "Sun 14", "theme": "Code", "note": "Design that runs" }] },
+      "narration": "Friday is type. Saturday is grids. Sunday is code.",
+      "sounds": [{ "at": 0.3, "sound": "tap", "gain": 0.4 }, { "at": 1.2, "sound": "tap", "gain": 0.4 }, { "at": 2.1, "sound": "tap", "gain": 0.4 }]
+    },
+    {
+      "id": "tickets",
+      "type": "custom",
+      "file": "scenes/tickets.js",
+      "props": { "name": "Raster", "line": "Tickets on sale now", "date": "12–14 March", "place": "Basel" },
+      "narration": "Tickets are on sale now.",
+      "sounds": [{ "at": 0.2, "sound": "click", "gain": 0.45 }]
+    }
+  ]
+}

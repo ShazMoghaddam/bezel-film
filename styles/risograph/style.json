@@ -1,0 +1,35 @@
+{
+  "name": "risograph",
+  "label": "Risograph",
+  "description": "A zine printed one ink at a time: two or three bright inks that overlap into new colours, slightly out of register, with grain.",
+  "theme": "light",
+  "font": "condensed",
+  "colours": {
+    "background": "#F4EFE4",
+    "surface": "#FBF8F1",
+    "text": "#1F2F6E",
+    "muted": "#454C73",
+    "accent": "#D62A7A",
+    "palette": [
+      "#D62A7A",
+      "#2F56A8",
+      "#0B7A74",
+      "#C24A12",
+      "#6E4AA0",
+      "#2E7D46",
+      "#1F2F6E"
+    ]
+  },
+  "motion": {
+    "level": "lively",
+    "easing": "cubic-bezier(0.22, 1, 0.36, 1)",
+    "enterMs": 500,
+    "staggerMs": 90,
+    "transition": "cut",
+    "transitionMs": 0
+  },
+  "layout": {
+    "safeArea": 0.08,
+    "captionPosition": "bottom"
+  }
+}

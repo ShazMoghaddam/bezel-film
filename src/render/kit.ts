@@ -774,6 +774,111 @@ export const KIT_JS = String.raw`
     }
 
     /**
+     * A watercolour wash: a shape of thin colour that blooms outward from a point, with
+     * pigment pooling a little darker at its edge. Pass a style's paint filter as
+     * filter to give it a soft, bleeding edge. Returns { group, shape, set(p) }:
+     * set(p) spreads the colour from 0 (dry paper) to 1 (filled).
+     */
+    let washes = 0;
+    function wash(parent, { d, colour = info.colours.accent, opacity = 0.6, from = null, filter = null, edge = 0.35 } = {}) {
+      const id = "bf-wash-" + index + "-" + washes++;
+      const defs = svg("defs", {}, parent);
+      const probe = svg("path", { d }, parent);
+      const bb = probe.getBBox();
+      probe.remove();
+      const [fx, fy] = from || [bb.x + bb.width * 0.35, bb.y + bb.height * 0.4];
+      const reach = Math.hypot(Math.max(fx - bb.x, bb.x + bb.width - fx), Math.max(fy - bb.y, bb.y + bb.height - fy));
+      const grad = svg("radialGradient", { id: id + "-g" }, defs);
+      [[0, 1], [0.82, 1], [1, 0]].forEach(([o, a]) => svg("stop", { offset: o, "stop-color": "#FFFFFF", "stop-opacity": a }, grad));
+      const mask = svg("mask", { id: id + "-m", maskUnits: "userSpaceOnUse", x: bb.x - u * 10, y: bb.y - u * 10, width: bb.width + u * 20, height: bb.height + u * 20 }, defs);
+      const spot = svg("circle", { cx: fx, cy: fy, r: 0, fill: "url(#" + id + "-g)" }, mask);
+      const g = svg("g", { mask: "url(#" + id + "-m)" }, parent);
+      const inner = svg("g", filter ? { filter } : {}, g);
+      const shape = svg("path", { d, fill: colour, "fill-opacity": opacity, stroke: colour, "stroke-opacity": Math.min(1, opacity * edge * 2), "stroke-width": u * 0.35, "stroke-linejoin": "round" }, inner);
+      return {
+        group: g,
+        shape,
+        set(p) { spot.setAttribute("r", String(reach * 1.25 * clamp(p))); return this; },
+      };
+    }
+
+    /**
+     * A layout grid inside the safe area, as a Swiss poster is built on. Returns the
+     * column and row sizes, and cell(c, r, cols, rows) for the box spanning those cells.
+     * grid.lines(parent) draws the grid itself, for when you want it to show.
+     */
+    function grid(cols = 12, rows = 8, { area = safe, gutter = u * 2 } = {}) {
+      const colW = (area.width - gutter * (cols - 1)) / cols, rowH = (area.height - gutter * (rows - 1)) / rows;
+      const x = (c) => area.x + c * (colW + gutter);
+      const y = (r) => area.y + r * (rowH + gutter);
+      return {
+        cols, rows, colW, rowH, gutter, x, y,
+        cell(c, r, cw = 1, rh = 1) { return { x: x(c), y: y(r), width: cw * colW + (cw - 1) * gutter, height: rh * rowH + (rh - 1) * gutter }; },
+        lines(parent, { colour = info.colours.muted, width: w = 1, opacity = 0.25 } = {}) {
+          let d = "";
+          for (let c = 0; c < cols; c++) d += "M" + x(c) + " " + area.y + " V" + (area.y + area.height) + " M" + (x(c) + colW) + " " + area.y + " V" + (area.y + area.height) + " ";
+          for (let r = 0; r < rows; r++) d += "M" + area.x + " " + y(r) + " H" + (area.x + area.width) + " M" + area.x + " " + (y(r) + rowH) + " H" + (area.x + area.width) + " ";
+          return svg("path", { d, fill: "none", stroke: colour, "stroke-width": w, opacity }, parent);
+        },
+      };
+    }
+
+    /**
+     * A comic starburst, the jagged "POW!" shape. Returns the path; scale and turn it to
+     * make it punch in.
+     */
+    function burst(parent, { cx = width / 2, cy = height / 2, r = u * 18, inner = 0.7, points = 14, fill = info.colours.accent, stroke = info.colours.text, strokeWidth = u * 0.6, seed = 1 } = {}) {
+      const rand = seeded(seed * 977);
+      let d = "";
+      for (let i = 0; i < points * 2; i++) {
+        const a = (i / (points * 2)) * Math.PI * 2 - Math.PI / 2;
+        const k = i % 2 ? inner * (0.9 + rand() * 0.2) : 0.88 + rand() * 0.24;
+        d += (i ? " L" : "M") + (cx + Math.cos(a) * r * k).toFixed(1) + " " + (cy + Math.sin(a) * r * k * 0.86).toFixed(1);
+      }
+      return svg("path", { d: d + " Z", fill, stroke, "stroke-width": strokeWidth, "stroke-linejoin": "miter" }, parent);
+    }
+
+    /**
+     * A comic speech bubble (or a thought bubble), with its tail pointing at [x, y].
+     * Returns { group, shape }; put the words on top with kit.text.
+     */
+    function bubble(parent, { x, y, width: w, height: h, tail, kind = "speech", fill = "#FFFFFF", stroke = info.colours.text, strokeWidth = u * 0.5 }) {
+      const g = svg("g", {}, parent);
+      const cx = x + w / 2, cy = y + h / 2;
+      const [tx, ty] = tail || [x + w * 0.25, y + h + u * 6];
+      if (kind === "thought") {
+        const shape = svg("ellipse", { cx, cy, rx: w / 2, ry: h / 2, fill, stroke, "stroke-width": strokeWidth }, g);
+        [0.35, 0.62, 0.85].forEach((k, i) => {
+          const r = u * (1.8 - i * 0.5);
+          svg("circle", { cx: cx + (tx - cx) * k, cy: cy + h / 2 * (1 - k) + (ty - cy) * k, r, fill, stroke, "stroke-width": strokeWidth }, g);
+        });
+        return { group: g, shape };
+      }
+      // One outline round the body and the tail, so they read as a single shape.
+      const rx = w / 2, ry = h / 2;
+      const a1 = Math.atan2(ty - cy, tx - cx);
+      const spread = 0.22;
+      const p = (a) => [cx + Math.cos(a) * rx, cy + Math.sin(a) * ry];
+      const [sx, sy] = p(a1 - spread), [ex, ey] = p(a1 + spread);
+      const d = "M" + ex + " " + ey + " A" + rx + " " + ry + " 0 1 1 " + sx + " " + sy + " L" + tx + " " + ty + " Z";
+      const shape = svg("path", { d, fill, stroke, "stroke-width": strokeWidth, "stroke-linejoin": "round" }, g);
+      return { group: g, shape };
+    }
+
+    /**
+     * One ink of a print, as on a risograph: a group whose shapes overprint the inks
+     * under them (multiply), nudged by shift to look slightly out of register. Draw
+     * every shape of that colour into it.
+     */
+    function ink(parent, { colour = info.colours.accent, shift = [0, 0], filter = null, opacity = 0.92 } = {}) {
+      const g = svg("g", { fill: colour, transform: "translate(" + shift[0] + " " + shift[1] + ")" }, parent);
+      g.style.mixBlendMode = "multiply";
+      g.style.opacity = String(opacity);
+      if (filter) g.setAttribute("filter", filter);
+      return g;
+    }
+
+    /**
      * Isometric drawing: points, boxes and tiles on a grid seen from above at 30°.
      * kit.iso({ x, y, unit }) puts grid point (0, 0, 0) at (x, y); one grid step is unit pixels.
      */
@@ -911,6 +1016,11 @@ export const KIT_JS = String.raw`
       scribble,
       fold,
       glow,
+      wash,
+      grid,
+      burst,
+      bubble,
+      ink,
     };
   }
 
