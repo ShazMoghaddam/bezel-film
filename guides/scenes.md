@@ -18,7 +18,7 @@ Read `npx bezel-film guide director` first: it's how to plan the film this scene
 
 - `file` is relative to the film file. Keep scene files in a `scenes/` folder beside it.
 - `props` is anything your code needs. It arrives as `kit.props`, so the words live in the film file, not the code.
-- `sounds` land at seconds into the scene: `whoosh`, `sweep`, `swish`, `tap`, `pop`, `click`, `tick`, `ding`.
+- `sounds` land at seconds into the scene: `whoosh`, `sweep`, `swish`, `tap`, `pop`, `click`, `tick`, `ding`, `chalk`. Add `line: i` to count `at` from when sentence `i` starts (like `kit.at(i)`), so the sound stays on its words whatever the voice. Add `for: seconds` to repeat it across a span, a little different each time: `{ "line": 1, "at": 0.2, "sound": "chalk", "for": 1.2 }` is chalk while a line is written.
 - The scene lasts as long as its narration, or `duration` seconds.
 - Custom and ready-made scenes mix freely in one film.
 
@@ -104,7 +104,7 @@ const end = plan.sequence(2.4, [path1, path2, label]); // one after another
 return (t) => plan.draw(t);
 ```
 
-`line` works with any SVG shape that has a stroke: `path`, `line`, `polyline`, `circle`, `rect`. With `pen: true`, a marker pen follows the tip as it draws, lifting between strokes. Leave the pen out for a cleaner look.
+`line` works with any SVG shape that has a stroke: `path`, `line`, `polyline`, `circle`, `rect`. With `pen: true`, a marker pen follows the tip as it draws, lifting between strokes; `pen: "chalk"` is a stick of chalk instead. `dust: true` (or a colour) lets little specks fall from wherever it's writing. Leave the pen out for a cleaner look.
 
 **Drawing kit**
 
@@ -136,6 +136,8 @@ return (t) => plan.draw(t);
 | `kit.device(stage, { kind, x, y, width })` | A phone, laptop or browser frame. Draw the app into `.content`, which is clipped to `.screen` |
 | `kit.pixels(stage, { art, palette, x, y, size })` | Pixel art from rows of characters, coloured by `palette`. `.` is see-through |
 | `kit.typing(text, t, { at, cps, cursor })` | How much of `text` is typed by time `t`, with an optional blinking block cursor |
+| `kit.dust(stage, { x, y, colour, count, seed })` | A little fall of dust from a point. `.set(p, x, y)`: 0 none yet, 1 settled and gone; `x` and `y` move where it falls from |
+| `kit.erase(target, { area, ghost, seed })` | A felt eraser rubbing out what's in `target` (an element holding the drawing) in overlapping passes across `area`, leaving a faint ghost. `.set(p)`: 0 untouched, 1 wiped clean |
 
 ## Design for every shape
 

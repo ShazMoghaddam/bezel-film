@@ -233,6 +233,7 @@ A style is the film's look: its colours, backdrop, fonts and the way things move
 | `dark-keynote` | A product launch on a black stage, where the product's screens are the star | App launches, features, demos |
 | `pixel-game` | A 90s video game: pixel sprites, text boxes, menus and level-ups | Learning, habits, playful progress stories |
 | `retro-terminal` | Green text on an old monitor: typed commands, logs and a blinking cursor | Tech history, dev tools, release notes |
+| `chalkboard` | A lesson worked out in chalk: line by line, with ruler-straight diagrams and a felt eraser | Maths and science, rules and where they come from |
 
 Every style apart from Data story is made for [custom scenes](#custom-scenes): your agent draws each film from scratch in the style, so no two films look alike. Each has a guide for agents (`npx bezel-film guide whiteboard`) and an example film in `examples/`. Ready-made scenes take on their look too.
 
@@ -251,6 +252,7 @@ Each style has its own fonts, and `font` swaps them for another pairing. A pairi
 | `swiss` | Inter | Neutral and exact, like a Swiss poster. Events, posters and grids |
 | `pixel` | Press Start 2P and VT323 | A 90s video game: blocky pixel headings and screen-text body |
 | `terminal` | VT323 | An old green-screen monitor. Logs, systems and hacker stories |
+| `chalk` | Fredericka the Great and Kalam | Chalk on a blackboard: sketched headings and classroom handwriting |
 
 The fonts ship inside the package, so films look the same on every computer. They cover English and other languages written in the Latin alphabet, accents included (Zoë, Ştefan, Łódź). Text in other alphabets, like Persian, Japanese or Greek, falls back to a system font for now.
 

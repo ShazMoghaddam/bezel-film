@@ -13,10 +13,12 @@ in the Latin and Latin Extended character sets, as woff2. They're rebuilt with `
 | Barlow | Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) | 400, 600 | [OFL 1.1](barlow/LICENSE) | v13 |
 | Caveat | Copyright 2014 The Caveat Project Authors (https://github.com/googlefonts/caveat) | 600, 700 | [OFL 1.1](caveat/LICENSE) | v23 |
 | Fraunces | Copyright 2020 The Fraunces Project Authors (github.com/undercasetype/Fraunces) | 600, 700 | [OFL 1.1](fraunces/LICENSE) | v38 |
+| Fredericka the Great | Copyright (c) 2011 by Font Diner, Inc DBA Tart Workshop (diner@fontdiner.com) with Reseved Font Name "Fredericka the Great" | 400 | [OFL 1.1](fredericka-the-great/LICENSE) | v23 |
 | IBM Plex Mono | Copyright 2017 IBM Corp. All rights reserved. | 400, 700 | [OFL 1.1](ibm-plex-mono/LICENSE) | v20 |
 | IBM Plex Sans | Copyright 2019 IBM Corp. All rights reserved. | 400, 600, 700 | [OFL 1.1](ibm-plex-sans/LICENSE) | v23 |
 | Inter | Copyright 2016 The Inter Project Authors (https://github.com/rsms/inter) | 400, 600, 700 | [OFL 1.1](inter/LICENSE) | v20 |
 | JetBrains Mono | Copyright 2020 The JetBrains Mono Project Authors (https://github.com/JetBrains/JetBrainsMono) | 400, 600, 700 | [OFL 1.1](jetbrains-mono/LICENSE) | v24 |
+| Kalam | Copyright (c) 2014 Indian Type Foundry (info@indiantypefoundry.com) | 400, 700 | [OFL 1.1](kalam/LICENSE) | v18 |
 | Nunito | Copyright 2014 The Nunito Project Authors (https://github.com/googlefonts/nunito) | 400, 600, 700, 800 | [OFL 1.1](nunito/LICENSE) | v32 |
 | Oswald | Copyright 2016 The Oswald Project Authors (https://github.com/googlefonts/OswaldFont) | 500, 600 | [OFL 1.1](oswald/LICENSE) | v57 |
 | Patrick Hand | Copyright (c) 2010-2012 Patrick Wagesreiter (mail@patrickwagesreiter.at) | 400 | [OFL 1.1](patrick-hand/LICENSE) | v25 |
@@ -41,5 +43,6 @@ A film's `font` setting picks one of these. See `src/spec/fonts.ts`.
 | `handwritten` | Caveat | Patrick Hand | JetBrains Mono |
 | `mono` | Space Mono | JetBrains Mono | JetBrains Mono |
 | `swiss` | Inter | Inter | JetBrains Mono |
+| `chalk` | Fredericka the Great | Kalam | JetBrains Mono |
 | `pixel` | Press Start 2P | VT323 | VT323 |
 | `terminal` | VT323 | VT323 | VT323 |

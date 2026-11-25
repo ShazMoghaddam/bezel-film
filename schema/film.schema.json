@@ -19,6 +19,7 @@
       "type": "string",
       "enum": [
         "blueprint",
+        "chalkboard",
         "crayon-book",
         "dark-keynote",
         "data-on-paper",
@@ -40,10 +41,10 @@
         "watercolour",
         "whiteboard"
       ],
-      "description": "The film's look. blueprint: Technical drawings plotted in white on blue paper: precise lines, measurements and labels in capitals. crayon-book: A picture book drawn in wax crayon on dark paper: scribbled colour, wobbly outlines that boil on twos, and soft watercolour washes. dark-keynote: A product launch on a black stage: the product's screens are the star, with big clean type and slow, confident moves. data-on-paper: A data journal on graph paper: charts drawn mark by mark in coloured pencil, hatched fills and handwritten notes. data-story: Clean, confident and chart-led. Big numbers, bold colour per series, springy motion. isometric: A small world seen from above at an angle: blocks rise, roads unroll and things move through it to show how it works. manga: A black-and-white comic page: panels open on the beat, with speed lines, screentone and big sound-effect lettering. mid-century-cartoon: Flat colour and simple geometric characters, with snappy pose-to-pose movement like classic limited animation. neon: Glass tubes that flicker on at night: glowing signs on a dark brick wall, humming colour and warm haze. origami: Folded paper that unfolds into each idea: flat-shaded facets, crisp creases and flaps that turn over as the story moves on. paper-lantern: Cut paper layers lit from behind at night: silhouettes in deep blues, warm glowing windows and a slow drift between the layers. pixel-game: A 90s video game: pixel-art sprites, chunky text boxes, menus and a level-up for every point you make. pop-art: Comic dots and bold outlines: flat primary colours, halftone shading, starbursts and speech bubbles that punch in. pop-up-book: A storybook spread where card scenes spring up off the page: thick paper cut-outs with white rims, soft shadows and pull tabs. retro-terminal: Glowing green text on an old monitor: commands typed in, logs scrolling, ASCII art and a blinking cursor. risograph: A zine printed one ink at a time: two or three bright inks that overlap into new colours, slightly out of register, with grain. rubber-hose-cartoon: Black-and-white characters with bendy limbs and white gloves, bouncing to the beat on flickering film. stick-figures: Stick people act the idea out on notebook paper: simple characters, big feelings, quick sketches around them. swiss-poster: A strict grid and one signal colour: big neutral type, hard edges and blocks that snap into place on the beat. watercolour: A nature journal that paints itself: soft washes bloom on cotton paper, ink lines draw in, and notes are written in the margins. whiteboard: Explainers drawn live in marker: the pen writes headings, sketches each idea as it's spoken and joins them with arrows."
+      "description": "The film's look. blueprint: Technical drawings plotted in white on blue paper: precise lines, measurements and labels in capitals. crayon-book: A picture book drawn in wax crayon on dark paper: scribbled colour, wobbly outlines that boil on twos, and soft watercolour washes. dark-keynote: A product launch on a black stage: the product's screens are the star, with big clean type and slow, confident moves. data-on-paper: A data journal on graph paper: charts drawn mark by mark in coloured pencil, hatched fills and handwritten notes. data-story: Clean, confident and chart-led. Big numbers, bold colour per series, springy motion. isometric: A small world seen from above at an angle: blocks rise, roads unroll and things move through it to show how it works. manga: A black-and-white comic page: panels open on the beat, with speed lines, screentone and big sound-effect lettering. mid-century-cartoon: Flat colour and simple geometric characters, with snappy pose-to-pose movement like classic limited animation. neon: Glass tubes that flicker on at night: glowing signs on a dark brick wall, humming colour and warm haze. origami: Folded paper that unfolds into each idea: flat-shaded facets, crisp creases and flaps that turn over as the story moves on. paper-lantern: Cut paper layers lit from behind at night: silhouettes in deep blues, warm glowing windows and a slow drift between the layers. pixel-game: A 90s video game: pixel-art sprites, chunky text boxes, menus and a level-up for every point you make. pop-art: Comic dots and bold outlines: flat primary colours, halftone shading, starbursts and speech bubbles that punch in. pop-up-book: A storybook spread where card scenes spring up off the page: thick paper cut-outs with white rims, soft shadows and pull tabs. chalkboard: A lesson worked out in chalk on a dark green slate: written up line by line, with dust off the chalk and a felt eraser wiping the board between ideas. retro-terminal: Glowing green text on an old monitor: commands typed in, logs scrolling, ASCII art and a blinking cursor. risograph: A zine printed one ink at a time: two or three bright inks that overlap into new colours, slightly out of register, with grain. rubber-hose-cartoon: Black-and-white characters with bendy limbs and white gloves, bouncing to the beat on flickering film. stick-figures: Stick people act the idea out on notebook paper: simple characters, big feelings, quick sketches around them. swiss-poster: A strict grid and one signal colour: big neutral type, hard edges and blocks that snap into place on the beat. watercolour: A nature journal that paints itself: soft washes bloom on cotton paper, ink lines draw in, and notes are written in the margins. whiteboard: Explainers drawn live in marker: the pen writes headings, sketches each idea as it's spoken and joins them with arrows."
     },
     "font": {
-      "description": "The film's fonts, as a pairing chosen to suit each other. grotesk: Modern and confident. Tech, data and product stories. editorial: A magazine serif. Considered, classic and calm. condensed: Tall and narrow, like a news headline. Fits long titles. bold: Heavy, poster-like headings with a clean body. technical: Precise and engineered. Plans, systems and specs. friendly: Soft and rounded. Warm explainers for everyone. handwritten: Written by hand, like a whiteboard or a notebook. mono: Typewriter and terminal. Best with short headings. swiss: Neutral and exact, like a Swiss poster. Events, posters and grids. pixel: A 90s video game: blocky pixel headings and screen-text body. terminal: An old green-screen monitor. Logs, systems and hacker stories. Defaults to the style's choice.",
+      "description": "The film's fonts, as a pairing chosen to suit each other. grotesk: Modern and confident. Tech, data and product stories. editorial: A magazine serif. Considered, classic and calm. condensed: Tall and narrow, like a news headline. Fits long titles. bold: Heavy, poster-like headings with a clean body. technical: Precise and engineered. Plans, systems and specs. friendly: Soft and rounded. Warm explainers for everyone. handwritten: Written by hand, like a whiteboard or a notebook. mono: Typewriter and terminal. Best with short headings. swiss: Neutral and exact, like a Swiss poster. Events, posters and grids. chalk: Chalk on a blackboard: sketched headings and neat classroom handwriting. pixel: A 90s video game: blocky pixel headings and screen-text body. terminal: An old green-screen monitor. Logs, systems and hacker stories. Defaults to the style's choice.",
       "type": "string",
       "enum": [
         "grotesk",
@@ -56,7 +57,8 @@
         "mono",
         "swiss",
         "pixel",
-        "terminal"
+        "terminal",
+        "chalk"
       ]
     },
     "format": {
@@ -1271,7 +1273,7 @@
                 "additionalProperties": {}
               },
               "sounds": {
-                "description": "Sound effects to land with your scene's movement: whoosh, sweep, swish, tap, pop, click, tick, ding.",
+                "description": "Sound effects to land with your scene's movement: whoosh, sweep, swish, tap, pop, click, tick, ding, chalk.",
                 "maxItems": 40,
                 "type": "array",
                 "items": {
@@ -1281,7 +1283,13 @@
                       "type": "number",
                       "minimum": 0,
                       "maximum": 120,
-                      "description": "Seconds into the scene."
+                      "description": "Seconds into the scene, or after the start of sentence line if given."
+                    },
+                    "line": {
+                      "description": "Count at from when this sentence of the narration starts (0 is the first), like kit.at(line), so the sound stays on its words.",
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 40
                     },
                     "sound": {
                       "type": "string",
@@ -1293,7 +1301,8 @@
                         "pop",
                         "click",
                         "tick",
-                        "ding"
+                        "ding",
+                        "chalk"
                       ]
                     },
                     "gain": {
@@ -1307,6 +1316,12 @@
                       "type": "number",
                       "minimum": -12,
                       "maximum": 12
+                    },
+                    "for": {
+                      "description": "Seconds to keep repeating it, a little different each time: chalk while a line is written, ticks while a number counts.",
+                      "type": "number",
+                      "minimum": 0.1,
+                      "maximum": 20
                     }
                   },
                   "required": [

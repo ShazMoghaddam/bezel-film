@@ -92,6 +92,12 @@ export const KIT_JS = String.raw`
     return node;
   }
 
+  // A stick of chalk held at an angle, its worn tip at (10, 150) of a 160 box like the pen.
+  const CHALK = '<svg viewBox="0 0 160 160" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">'
+    + '<line x1="16" y1="144" x2="112" y2="48" stroke="var(--pen, #F2F0E6)" stroke-width="20" stroke-linecap="round"/>'
+    + '<line x1="22" y1="132" x2="106" y2="48" stroke="#FFFFFF" stroke-opacity=".35" stroke-width="5" stroke-linecap="round"/>'
+    + '<line x1="104" y1="56" x2="112" y2="48" stroke="#000000" stroke-opacity=".12" stroke-width="20" stroke-linecap="round"/>'
+    + '<circle cx="11" cy="149" r="5" fill="var(--pen, #F2F0E6)"/></svg>';
   // Our own marker pen, tip at (0, 0), leaning up and to the right like a right hand's.
   const PEN = '<svg viewBox="-10 -150 160 160" overflow="visible" aria-hidden="true"><g transform="rotate(-38)">' +
     '<path d="M0 0 L 7 -5 L 7 5 Z" fill="#1E2430"/><rect x="7" y="-8" width="16" height="16" rx="2" fill="#2B3240"/>' +
@@ -134,19 +140,21 @@ export const KIT_JS = String.raw`
 
     /**
      * Lines that draw themselves, and words that write themselves, in order, with an
-     * optional marker pen following the tip. Add marks, then call plan.draw(t) in draw.
+     * optional pen following the tip: pen true (or "marker") for a marker, "chalk" for a
+     * stick of chalk. dust (true, or a colour) lets specks fall from wherever it's writing,
+     * like chalk. Add marks, then call plan.draw(t) in draw.
      */
     // How much of a line of text shows as it's written. Handwriting leans and loops past
     // its box, so the reveal starts a little before it and ends a little after.
     const reveal = (p) => "inset(-40% " + ((1 - p) * 125 - 15).toFixed(2) + "% -40% -15%)";
 
-    function drawing({ pen = false, penColour } = {}) {
+    function drawing({ pen = false, penColour, dust: dusty = false } = {}) {
       const marks = [];
       let penEl = null;
       if (pen) {
         penEl = el("div", { class: "bf-pen", style: { position: "absolute", left: "0", top: "0", width: u * 13 + "px", height: u * 13 + "px",
           pointerEvents: "none", zIndex: "50", filter: "drop-shadow(" + u * 0.5 + "px " + u * 0.9 + "px " + u * 0.6 + "px rgb(30 36 48 / .22))" } }, null);
-        penEl.innerHTML = PEN;
+        penEl.innerHTML = pen === "chalk" ? CHALK : PEN;
         if (penColour) penEl.style.setProperty("--pen", penColour);
       }
       const plan = {
@@ -190,8 +198,29 @@ export const KIT_JS = String.raw`
             else m.node.style.clipPath = reveal(p);
           }
           if (penEl) placePen(t);
+          if (dusty) placeDust(t);
         },
       };
+
+      // Dust: a small puff every so often while a mark is being made, each falling from
+      // where the tip was at that moment. Where each puff starts is measured once.
+      let puffs = null;
+      function placeDust(t) {
+        if (!puffs) {
+          const layer = stage(root);
+          const colour = typeof dusty === "string" ? dusty : info.colours.text;
+          puffs = [];
+          marks.forEach((m, i) => {
+            const every = 0.14;
+            for (let k = 0; k * every < m.duration; k++) {
+              const when = m.at + k * every;
+              const from = tip(m, progress(when, m.at, m.duration, m.how));
+              puffs.push({ when, puff: dust(layer, { x: from.x, y: from.y + u * 0.3, colour, count: 4, spread: u * 1, fall: u * 3.6, size: u * 0.2, seed: i * 97 + k + 1 }) });
+            }
+          });
+        }
+        for (const { when, puff } of puffs) puff.set((t - when) / 0.9);
+      }
 
       function tip(m, p) {
         if (m.kind === "line") {
@@ -966,6 +995,98 @@ export const KIT_JS = String.raw`
     }
 
     /**
+     * A little fall of dust from a point, like chalk crumbling off as it writes or a puff
+     * when something lands. Returns { group, set(p, x, y) }: p runs the fall from 0 (none
+     * yet) to 1 (settled and gone), and x and y, if given, move where it falls from.
+     */
+    function dust(parent, { x = 0, y = 0, colour = info.colours.text, count = 10, spread = u * 2.2, fall = u * 5, size = u * 0.22, seed = 1 } = {}) {
+      const g = svg("g", {}, parent);
+      const rand = seeded(seed * 4561);
+      const specks = Array.from({ length: count }, () => ({
+        dot: svg("circle", { r: size * (0.5 + rand()), fill: colour, opacity: 0 }, g),
+        dx: (rand() - 0.5) * 2 * spread,
+        dy: fall * (0.5 + rand() * 0.7),
+        lift: spread * 0.35 * rand(),
+        delay: rand() * 0.35,
+      }));
+      let ox = x, oy = y;
+      return {
+        group: g,
+        set(p, nx, ny) {
+          if (nx != null) ox = nx;
+          if (ny != null) oy = ny;
+          for (const s of specks) {
+            const q = clamp((p - s.delay) / (1 - s.delay));
+            // Each speck drifts out, lifts a touch, then drops and fades.
+            s.dot.setAttribute("cx", (ox + s.dx * (1 - (1 - q) * (1 - q))).toFixed(1));
+            s.dot.setAttribute("cy", (oy - s.lift * Math.sin(q * Math.PI) + s.dy * q * q).toFixed(1));
+            s.dot.setAttribute("opacity", q > 0 && q < 1 ? ((1 - q) * 0.9).toFixed(3) : "0");
+          }
+          return this;
+        },
+      };
+    }
+
+    /**
+     * A felt board eraser rubbing out what's on target (an element holding the scene's
+     * drawing, such as a div that fills the frame), in overlapping passes across area
+     * ({ x, y, width, height }, the whole frame by default). Rubbed-out chalk fades with
+     * soft edges and leaves a faint ghost (ghost, 0 to 1). Returns { group, set(p) }: 0 is
+     * untouched, 1 is wiped clean with the eraser gone.
+     */
+    let erasers = 0;
+    function erase(target, { area = { x: 0, y: 0, width, height }, size = u * 8.5, ghost = 0.06, eraser = true, felt = "#2B2F38", wood = "#B98A55", seed = 1 } = {}) {
+      const id = "bf-erase-" + index + "-" + erasers++;
+      const rand = seeded(seed * 2741);
+      const step = size * 0.8;
+      const rows = Math.max(1, Math.ceil((area.height - size * 0.4) / step) + 1);
+      let d = "";
+      for (let r = 0; r < rows; r++) {
+        const y = Math.min(area.y + area.height - size * 0.3, area.y + size * 0.4 + r * step + (rand() - 0.5) * size * 0.2);
+        const [a, b] = r % 2 === 0 ? [area.x, area.x + area.width] : [area.x + area.width, area.x];
+        d += (r === 0 ? "M" : " L") + a.toFixed(1) + " " + y.toFixed(1) + " L" + b.toFixed(1) + " " + (y + (rand() - 0.5) * size * 0.3).toFixed(1);
+      }
+      // The path, measured once, to place the eraser along it.
+      const g = svg("g", {}, stage(root));
+      const probe = svg("path", { d }, g);
+      const total = probe.getTotalLength();
+      probe.remove();
+      const blur = (size * 0.12).toFixed(1);
+      // The mask is a picture of what's left: everything, minus the path rubbed so far.
+      const maskFor = (q) => "url(\"data:image/svg+xml," + encodeURIComponent(
+        '<svg xmlns="http://www.w3.org/2000/svg" width="' + width + '" height="' + height + '" viewBox="0 0 ' + width + " " + height + '">'
+        + '<filter id="s" x="-5%" y="-5%" width="110%" height="110%"><feGaussianBlur stdDeviation="' + blur + '"/></filter>'
+        + '<mask id="m" maskUnits="userSpaceOnUse" x="0" y="0" width="' + width + '" height="' + height + '"><rect width="100%" height="100%" fill="#fff"/>'
+        + '<path d="' + d + '" fill="none" stroke="#000" stroke-opacity="' + (1 - ghost) + '" stroke-width="' + (size * 1.15).toFixed(1) + '" stroke-linecap="round" stroke-linejoin="round" pathLength="1000" stroke-dasharray="1000 1001" stroke-dashoffset="' + (1000 * (1 - q)).toFixed(2) + '" filter="url(#s)"/></mask>'
+        + '<rect width="100%" height="100%" fill="#000" mask="url(#m)"/></svg>') + "\")";
+      const block = svg("g", { style: "filter:drop-shadow(0 " + u * 0.5 + "px " + u * 0.5 + "px rgb(0 0 0 / .35))" }, g);
+      const bw = size * 2.4, bh = size * 1.1;
+      svg("rect", { x: -bw / 2, y: -bh / 2, width: bw, height: bh * 0.4, rx: size * 0.12, fill: felt }, block);
+      svg("rect", { x: -bw / 2, y: -bh / 2 + bh * 0.38, width: bw, height: bh * 0.62, rx: size * 0.16, fill: wood }, block);
+      svg("rect", { x: -bw / 2 + size * 0.25, y: -bh / 2 + bh * 0.56, width: bw - size * 0.5, height: bh * 0.08, rx: size * 0.04, fill: "rgb(0 0 0 / 0.14)" }, block);
+      const track = svg("path", { d, fill: "none", stroke: "none" }, g);
+      let last = -1;
+      return {
+        group: g,
+        set(p) {
+          const q = clamp(p);
+          if (q !== last) {
+            last = q;
+            const mask = q > 0 ? maskFor(q) : "";
+            target.style.maskImage = target.style.webkitMaskImage = mask;
+            target.style.maskSize = target.style.webkitMaskSize = width + "px " + height + "px";
+            target.style.maskRepeat = target.style.webkitMaskRepeat = "no-repeat";
+          }
+          const pt = track.getPointAtLength(total * q);
+          const tilt = Math.sin(q * Math.PI * rows * 2) * 4;
+          block.setAttribute("transform", "translate(" + pt.x.toFixed(1) + " " + pt.y.toFixed(1) + ") rotate(" + tilt.toFixed(2) + ")");
+          block.style.display = eraser && q > 0 && q < 1 ? "" : "none";
+          return this;
+        },
+      };
+    }
+
+    /**
      * Text being typed: how much of text is showing at time t, typed from at at cps
      * characters a second. With cursor, a block cursor blinks at the end.
      */
@@ -1125,6 +1246,8 @@ export const KIT_JS = String.raw`
       device,
       pixels,
       typing,
+      dust,
+      erase,
     };
   }
 

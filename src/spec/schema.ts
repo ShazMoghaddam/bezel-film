@@ -42,7 +42,7 @@ export const MUSIC_TRACKS = [
 ] as const;
 export const NATURE_SOUNDS = ["rain", "waves", "stream", "wind"] as const;
 /** The recorded sound effects (see sounds/). */
-export const SOUND_EFFECTS = ["whoosh", "sweep", "swish", "tap", "pop", "click", "tick", "ding"] as const;
+export const SOUND_EFFECTS = ["whoosh", "sweep", "swish", "tap", "pop", "click", "tick", "ding", "chalk"] as const;
 
 /** Chart types that map one to one onto Bezel Charts' `<bezel-chart type="...">`. */
 export const CHART_TYPES = [
@@ -299,15 +299,17 @@ const customScene = z.object({
   sounds: z
     .array(
       z.object({
-        at: z.number().min(0).max(120).describe("Seconds into the scene."),
+        at: z.number().min(0).max(120).describe("Seconds into the scene, or after the start of sentence line if given."),
+        line: z.number().int().min(0).max(40).optional().describe("Count at from when this sentence of the narration starts (0 is the first), like kit.at(line), so the sound stays on its words."),
         sound: z.enum(SOUND_EFFECTS),
         gain: z.number().min(0).max(2).optional().describe("Relative loudness, 1 by default."),
         pitch: z.number().min(-12).max(12).optional().describe("Semitones above or below the sound's usual pitch."),
+        for: z.number().min(0.1).max(20).optional().describe("Seconds to keep repeating it, a little different each time: chalk while a line is written, ticks while a number counts."),
       }),
     )
     .max(40)
     .optional()
-    .describe("Sound effects to land with your scene's movement: whoosh, sweep, swish, tap, pop, click, tick, ding."),
+    .describe("Sound effects to land with your scene's movement: whoosh, sweep, swish, tap, pop, click, tick, ding, chalk."),
 });
 
 export const sceneSchema = z.discriminatedUnion("type", [

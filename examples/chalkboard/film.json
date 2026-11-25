@@ -1,0 +1,353 @@
+{
+  "$schema": "../../schema/film.schema.json",
+  "spec": 1,
+  "title": "How far can you see to the horizon?",
+  "style": "chalkboard",
+  "format": {
+    "aspect": "16:9",
+    "resolution": "1080p",
+    "fps": 30
+  },
+  "voice": {
+    "engine": "kokoro",
+    "gender": "male"
+  },
+  "music": {
+    "source": "generated",
+    "mood": "calm"
+  },
+  "scenes": [
+    {
+      "id": "question",
+      "type": "custom",
+      "file": "scenes/question.js",
+      "props": {
+        "lines": [
+          "How far can you see",
+          "to the horizon?"
+        ]
+      },
+      "narration": "Stand on a beach and look out to sea. How far away is the horizon?",
+      "sounds": [
+        {
+          "at": 0.3,
+          "sound": "chalk",
+          "for": 1.1
+        },
+        {
+          "at": 1.52,
+          "sound": "chalk",
+          "for": 1.1
+        },
+        {
+          "at": 2.94,
+          "sound": "chalk",
+          "for": 0.4,
+          "gain": 0.8
+        },
+        {
+          "at": 3.46,
+          "sound": "chalk",
+          "for": 0.4,
+          "gain": 0.8
+        }
+      ]
+    },
+    {
+      "id": "earth",
+      "type": "custom",
+      "file": "scenes/earth.js",
+      "props": {
+        "you": "you",
+        "horizon": "horizon"
+      },
+      "narration": "Here's you, standing on a round Earth. Your line of sight just grazes the curve, and that point is the horizon. Join it to the Earth's centre, and you get a right-angled triangle. Now we can do some maths.",
+      "sounds": [
+        {
+          "line": 0,
+          "at": 0.2,
+          "sound": "chalk",
+          "for": 1.4
+        },
+        {
+          "line": 0,
+          "at": 1.72,
+          "sound": "chalk",
+          "for": 1.3
+        },
+        {
+          "line": 1,
+          "at": 0.3,
+          "sound": "chalk",
+          "for": 1.8
+        },
+        {
+          "line": 2,
+          "at": 0.2,
+          "sound": "chalk",
+          "for": 2.5
+        },
+        {
+          "line": 3,
+          "at": 0.25,
+          "sound": "sweep",
+          "gain": 0.45
+        },
+        {
+          "line": 3,
+          "at": 0.95,
+          "sound": "sweep",
+          "gain": 0.4,
+          "pitch": -1
+        },
+        {
+          "line": 3,
+          "at": 1.65,
+          "sound": "sweep",
+          "gain": 0.4
+        }
+      ]
+    },
+    {
+      "id": "working",
+      "type": "custom",
+      "file": "scenes/working.js",
+      "props": {
+        "steps": [
+          "(R + h)² = R² + d²",
+          "R² + 2Rh + h² = R² + d²",
+          "d² = 2Rh + h²",
+          "d² ≈ 2Rh",
+          "d ≈ √(2Rh)"
+        ],
+        "note": "h² is tiny next to 2Rh, so we can drop it"
+      },
+      "narration": "Pythagoras says the long side squared is the other two squared, added up. Multiply it out, and the R squared on each side cancels. Your height is tiny next to the size of the Earth, so h squared hardly matters. That leaves a neat rule: d is about the square root of two R h.",
+      "sounds": [
+        {
+          "line": 0,
+          "at": 0.3,
+          "sound": "chalk",
+          "for": 1.44
+        },
+        {
+          "line": 1,
+          "at": 0.2,
+          "sound": "chalk",
+          "for": 1.59
+        },
+        {
+          "line": 1,
+          "at": 1.6,
+          "sound": "chalk",
+          "for": 1.29
+        },
+        {
+          "line": 2,
+          "at": 0.6,
+          "sound": "chalk",
+          "for": 1.14
+        },
+        {
+          "line": 2,
+          "at": 2.2,
+          "sound": "chalk",
+          "for": 1.1,
+          "gain": 0.7
+        },
+        {
+          "line": 3,
+          "at": 0.3,
+          "sound": "chalk",
+          "for": 1.2
+        },
+        {
+          "line": 3,
+          "at": 1.9,
+          "sound": "chalk",
+          "for": 0.7
+        },
+        {
+          "line": 3,
+          "at": 2.85,
+          "sound": "sweep",
+          "gain": 0.45
+        },
+        {
+          "line": 3,
+          "at": 3.5,
+          "sound": "sweep",
+          "gain": 0.4,
+          "pitch": -1
+        },
+        {
+          "line": 3,
+          "at": 4.15,
+          "sound": "sweep",
+          "gain": 0.4
+        }
+      ]
+    },
+    {
+      "id": "numbers",
+      "type": "custom",
+      "file": "scenes/numbers.js",
+      "props": {
+        "rule": "d ≈ √(2Rh)",
+        "lines": [
+          {
+            "text": "R = 6,371 km",
+            "colour": "blue"
+          },
+          {
+            "text": "h = 1.7 m = 0.0017 km",
+            "colour": "pink"
+          },
+          {
+            "text": "d ≈ √(2 × 6,371 × 0.0017)",
+            "colour": "white"
+          },
+          {
+            "text": "d ≈ 4.65 km",
+            "colour": "white"
+          }
+        ],
+        "answer": "≈ 4.7 km",
+        "source": "Earth's radius: NASA"
+      },
+      "narration": "Now for the numbers. The Earth's radius is about 6,371 kilometres. Your eyes are about 1.7 metres above the sand. Put those in, and d comes out at about 4.65 kilometres. So from the beach, the horizon is only about 4.7 kilometres away.",
+      "sounds": [
+        {
+          "line": 1,
+          "at": 0.2,
+          "sound": "chalk",
+          "for": 1.2
+        },
+        {
+          "line": 1,
+          "at": 1.4,
+          "sound": "chalk",
+          "for": 0.5,
+          "gain": 0.6
+        },
+        {
+          "line": 2,
+          "at": 0.2,
+          "sound": "chalk",
+          "for": 1.43
+        },
+        {
+          "line": 3,
+          "at": 0.2,
+          "sound": "chalk",
+          "for": 1.53
+        },
+        {
+          "line": 3,
+          "at": 2.2,
+          "sound": "chalk",
+          "for": 1.18
+        },
+        {
+          "line": 4,
+          "at": 0.6,
+          "sound": "chalk",
+          "for": 0.9
+        },
+        {
+          "line": 4,
+          "at": 1.7,
+          "sound": "chalk",
+          "for": 0.8
+        },
+        {
+          "line": 4,
+          "at": 2.6,
+          "sound": "ding",
+          "gain": 0.6
+        }
+      ]
+    },
+    {
+      "id": "cliff",
+      "type": "custom",
+      "file": "scenes/cliff.js",
+      "props": {
+        "question": "From a 100 m cliff?",
+        "sum": "d ≈ √(2 × 6,371 × 0.1)",
+        "answer": "≈ 36 km",
+        "note": "Air bends light a little, so often a bit further still",
+        "height": "100 m"
+      },
+      "narration": "Now imagine you climb to the top of a cliff, a hundred metres above the sea. The same rule gives about 36 kilometres, nearly eight times as far. And because air bends light a little, you can often see slightly further still.",
+      "sounds": [
+        {
+          "at": 0.2,
+          "sound": "chalk",
+          "for": 1.0
+        },
+        {
+          "at": 1.3,
+          "sound": "chalk",
+          "for": 2.5,
+          "gain": 0.8
+        },
+        {
+          "line": 1,
+          "at": 0.1,
+          "sound": "chalk",
+          "for": 1.4
+        },
+        {
+          "line": 1,
+          "at": 1.8,
+          "sound": "chalk",
+          "for": 0.8
+        },
+        {
+          "line": 1,
+          "at": 2.7,
+          "sound": "chalk",
+          "for": 0.7
+        },
+        {
+          "line": 2,
+          "at": 0.2,
+          "sound": "chalk",
+          "for": 1.2,
+          "gain": 0.7
+        }
+      ]
+    },
+    {
+      "id": "end",
+      "type": "custom",
+      "file": "scenes/end.js",
+      "props": {
+        "lines": [
+          "The higher you stand,",
+          "the further you see."
+        ]
+      },
+      "narration": "So the higher you stand, the further you can see. Next time you're at the seaside, look out to sea and do the maths.",
+      "sounds": [
+        {
+          "at": 0.3,
+          "sound": "chalk",
+          "for": 1.0
+        },
+        {
+          "at": 1.42,
+          "sound": "chalk",
+          "for": 1.0
+        },
+        {
+          "at": 2.6,
+          "sound": "chalk",
+          "for": 2.6,
+          "gain": 0.8
+        }
+      ]
+    }
+  ]
+}

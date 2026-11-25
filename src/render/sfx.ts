@@ -24,6 +24,7 @@ import type { Line, Timeline } from "./timeline.js";
  * click: a gentle click for quiet touches like a quote mark or a web address.
  * tick: a tiny click, many of them, while a number counts up.
  * ding: a small chime as a number lands.
+ * chalk: one stroke of chalk on a board; a few in a row sound like writing.
  */
 export const SOUNDS = SOUND_EFFECTS;
 export type SoundName = (typeof SOUNDS)[number];
@@ -68,6 +69,7 @@ export const PEAK_DB: Record<SoundName, number> = {
   click: -22,
   tick: -28,
   ding: -22,
+  chalk: -21,
 };
 
 /** Every sound in the film, in time order. */
