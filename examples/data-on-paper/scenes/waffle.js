@@ -5,9 +5,12 @@ Bezel.scene((root, kit) => {
   const { u, safe, colours, props } = kit;
   const s = kit.stage();
   const pencil = { "stroke-linecap": "round", "stroke-linejoin": "round", filter: "url(#pencil)" };
-  const size = Math.min(safe.height * 0.86, safe.width * 0.5);
+  // Wide: the grid with a roomy margin for notes. Narrower: the grid at the left, and the
+  // notes wrap in the space to its right.
+  const wide = kit.shape === "wide";
+  const size = wide ? Math.min(safe.height * 0.86, safe.width * 0.5) : Math.min(safe.height * 0.8, safe.width * 0.58);
   const cell = size / 10, gap = cell * 0.14;
-  const left = safe.x + (kit.shape === "wide" ? safe.width * 0.12 : (safe.width - size) / 2);
+  const left = safe.x + (wide ? safe.width * 0.12 : 0);
   const top = safe.y + (safe.height - size) / 2;
   const kinds = [...Array(props.salt).fill("salt"), ...Array(props.ice).fill("ice"), ...Array(props.fresh).fill("fresh")];
   const fills = {
@@ -24,8 +27,8 @@ Bezel.scene((root, kit) => {
   });
 
   // Notes in the margin: each written in its own colour, with an arrow to its squares.
-  const nx = left + size + u * 7;
-  const note = (text, colour, y) => kit.text(root, text, { x: nx, y, size: 4.6, font: "heading", colour });
+  const nx = left + size + u * (wide ? 7 : 4);
+  const note = (text, colour, y) => kit.text(root, text, { x: nx, y, size: 4.6, font: "heading", colour, maxWidth: wide ? undefined : safe.x + safe.width - nx });
   const salt = note(props.notes.salt, colours.palette[0], top + size * 0.25);
   const ice = note(props.notes.ice, colours.palette[5], top + size * 0.68);
   const fresh = note(props.notes.fresh, colours.accent, top + size * 0.86);

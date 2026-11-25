@@ -10,7 +10,9 @@ Bezel.scene((root, kit) => {
   const star = (x, y, r) => Array.from({ length: 10 }, (_, k) => { const a = -Math.PI / 2 + (k * Math.PI) / 5, q = k % 2 ? r * 0.45 : r; return (k ? "L" : "M") + (x + Math.cos(a) * q).toFixed(1) + " " + (y + Math.sin(a) * q).toFixed(1); }).join(" ") + " Z";
 
   // A soft watercolour glow behind the Moon.
-  const mx = safe.x + safe.width * 0.8, my = safe.y + safe.height * 0.26, mr = Math.min(safe.height * 0.17, u * 15);
+  const wideFrame = kit.shape === "wide";
+  const mr = wideFrame ? Math.min(safe.height * 0.17, u * 15) : Math.min(safe.height * 0.09, safe.width * 0.14);
+  const mx = safe.x + safe.width * (wideFrame ? 0.8 : 0.82), my = wideFrame ? safe.y + safe.height * 0.26 : safe.y + mr + u * 2;
   const wash = kit.svg("circle", { cx: mx, cy: my, r: mr * 2.1, fill: "#3A4C86", filter: "url(#wash)", opacity: 0 }, s);
 
   // Stars: a few crayon stars and many dots, placed by a seeded random so they never move.
@@ -38,7 +40,7 @@ Bezel.scene((root, kit) => {
   const hillD = `M${safe.x - u * 6} ${safe.y + safe.height + u * 2} L${safe.x - u * 6} ${hillTop} Q${safe.x + safe.width * 0.3} ${hillTop - u * 9} ${safe.x + safe.width * 0.62} ${hillTop + u * 2} Q${safe.x + safe.width * 0.85} ${hillTop + u * 6} ${safe.x + safe.width + u * 6} ${hillTop + u * 3} L${safe.x + safe.width + u * 6} ${safe.y + safe.height + u * 2} Z`;
   const hill = kit.scribble(s, { d: hillD, colour: "#4F6B9E", gap: u * 1.02, width: u * 1.89, angle: -12, seed: 2 });
   hill.group.setAttribute("filter", "url(#crayon)");
-  const hx = safe.x + safe.width * 0.2, hy = hillTop - u * 5, hw = u * 14, hh = u * 10;
+  const hx = safe.x + safe.width * (wideFrame ? 0.2 : 0.7), hy = hillTop - u * 5, hw = u * 14, hh = u * 10;
   const houseD = `M${hx} ${hy} V${hy - hh} H${hx + hw} V${hy} Z`;
   const roofD = `M${hx - u * 2} ${hy - hh} L${hx + hw / 2} ${hy - hh - u * 8} L${hx + hw + u * 2} ${hy - hh} Z`;
   const house = kit.scribble(s, { d: houseD, colour: "#C9C3D8", gap: u * 0.77, width: u * 1.49, angle: 70, seed: 5 });
@@ -49,8 +51,9 @@ Bezel.scene((root, kit) => {
   const outline = kit.svg("path", { d: kit.rough.rect(hx, hy - hh, hw, hh, { seed: 2, wobble: 0.5 }) + " " + kit.rough.line(hx - u * 2, hy - hh, hx + hw / 2, hy - hh - u * 8, { seed: 3 }) + " " + kit.rough.line(hx + hw / 2, hy - hh - u * 8, hx + hw + u * 2, hy - hh, { seed: 4 }), ...wax, stroke: cream, "stroke-width": u * 0.5 }, s);
 
   // The title, written in by hand.
-  const kicker = kit.text(root, props.kicker, { x: safe.x, y: safe.y + safe.height * 0.12, size: 3.6, colour: coral, font: "heading", style: { filter: "url(#crayon)" } });
-  const title = kit.text(root, props.title, { x: safe.x, y: safe.y + safe.height * 0.2, size: kit.shape === "tall" ? 9 : 10.5, font: "heading", colour: cream, maxWidth: safe.width * (kit.shape === "wide" ? 0.62 : 0.95), style: { lineHeight: "1.02" } });
+  const textTop = wideFrame ? safe.y + safe.height * 0.12 : my + mr + u * 5;
+  const kicker = kit.text(root, props.kicker, { x: safe.x, y: textTop, size: 3.6, colour: coral, font: "heading", style: { filter: "url(#crayon)" } });
+  const title = kit.text(root, props.title, { x: safe.x, y: textTop + safe.height * 0.08, size: wideFrame ? 10.5 : 8, font: "heading", colour: cream, maxWidth: safe.width * (wideFrame ? 0.62 : 0.66), style: { lineHeight: "1.02" } });
 
   plan.sequence(0.2, stars.slice(0, 10).map((n) => ({ node: n, duration: 0.08 })), 0.02);
   plan.line(moonEdge, { at: 0.7, duration: 0.7 });

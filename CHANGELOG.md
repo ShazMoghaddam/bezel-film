@@ -15,6 +15,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - More in the scene kit: neon tubes (`kit.neon`), phone, laptop and browser frames to show an app in (`kit.device`), pixel art from text (`kit.pixels`) and typed text with a cursor (`kit.typing`).
 - Two new font pairings: `pixel` (Press Start 2P and VT323) and `terminal` (VT323), bundled from Fontsource.
 
+### Changed
+
+- Words set with `kit.text` that would run past the safe area's sides or bottom now shrink just enough to fit, down to 60% of their size. Words that already fit are untouched; `fit: false` turns it off.
+- `kit.shape` now calls 4:5 frames `"square"`, as the rest of Bezel Film always has. It used to call them `"tall"`.
+
+### Fixed
+
+- The example films for Whiteboard, Stick figures, Isometric world, Blueprint, Data on paper, the 1950s and 1930s cartoons, Manga, Pop-up book and Crayon book now lay out properly in TikTok, Reels and Shorts (9:16), 4:5 and square frames, not only 16:9.
+
 ## [0.9.0] - 2026-11-25
 
 Four bold and graphic kinds of film: a watercolour journal, a Swiss poster, pop art and risograph. The scene kit gains watercolour washes, a layout grid, comic starbursts and speech bubbles, and overprinting ink layers to build them with.

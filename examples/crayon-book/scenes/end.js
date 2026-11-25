@@ -10,8 +10,9 @@ Bezel.scene((root, kit) => {
   const wide = kit.shape === "wide";
   const circle = (x, y, r) => `M${x - r} ${y} a${r} ${r} 0 1 0 ${r * 2} 0 a${r} ${r} 0 1 0 ${-r * 2} 0 Z`;
 
-  const mr = Math.min(safe.height * 0.3, u * 28);
-  const mx = wide ? safe.x + safe.width * 0.28 : width / 2, my = wide ? safe.y + safe.height * 0.5 : safe.y + mr + u * 4;
+  // A smaller moon on narrow frames, so the words fit underneath it.
+  const mr = wide ? Math.min(safe.height * 0.3, u * 28) : Math.min(safe.height * 0.17, safe.width * 0.3);
+  const mx = wide ? safe.x + safe.width * 0.28 : width / 2, my = wide ? safe.y + safe.height * 0.5 : safe.y + mr + u * 3;
   const wash = kit.svg("circle", { cx: mx, cy: my, r: mr * 1.9, fill: "#3E528E", filter: "url(#wash)", opacity: 0 }, s);
   const fill = kit.scribble(s, { d: circle(mx, my, mr), colour: yellow, gap: u * 0.85, width: u * 1.76, angle: -30, seed: 3 });
   const fill2 = kit.scribble(s, { d: circle(mx + mr * 0.25, my + mr * 0.2, mr * 0.7), colour: "#FFB347", gap: u * 1.36, width: u * 1.35, angle: 50, seed: 4, opacity: 0.55 });
@@ -31,7 +32,7 @@ Bezel.scene((root, kit) => {
   });
   const zs = [0, 1, 2].map((i) => kit.text(root, "z", { x: mx + mr * (0.85 + i * 0.22), y: my - mr * (0.9 + i * 0.3), size: 4 + i * 1.4, font: "heading", colour: cream }));
 
-  const tx = wide ? safe.x + safe.width * 0.58 : safe.x, ty = wide ? safe.y + safe.height * 0.26 : my + mr + u * 8;
+  const tx = wide ? safe.x + safe.width * 0.58 : safe.x, ty = wide ? safe.y + safe.height * 0.26 : my + mr + u * 5;
   const line = kit.text(root, props.line, { x: tx, y: ty, size: wide ? 7.6 : 6.4, font: "heading", colour: cream, maxWidth: wide ? safe.width * 0.42 : safe.width, style: { lineHeight: "1.05", whiteSpace: "pre-line" } });
   const days = kit.text(root, props.days, { x: tx, y: ty + u * (wide ? 22 : 16), size: 11, font: "heading", colour: yellow, style: { filter: "url(#crayon)" } });
   const unit = kit.text(root, props.unit, { x: tx, y: ty + u * (wide ? 34 : 28), size: 4.2, font: "heading", colour: colours.muted });

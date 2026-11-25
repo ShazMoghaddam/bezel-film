@@ -6,10 +6,13 @@ Bezel.scene((root, kit) => {
   const ink = colours.text, paper = "#FFFFFF";
   const r = safe;
   kit.svg("rect", { x: r.x, y: r.y, width: r.width, height: r.height, fill: paper }, s);
-  const lines = kit.speedLines(s, { kind: "motion", box: r, angle: 0, count: 70, seed: 4 });
+  // The lines slide sideways, so they sit in a still frame that does the clipping.
+  const hold = kit.svg("g", { "clip-path": "url(#name-panel)" }, s);
+  kit.svg("rect", { x: r.x, y: r.y, width: r.width, height: r.height }, kit.svg("clipPath", { id: "name-panel" }, kit.svg("defs", {}, s)));
+  const lines = kit.speedLines(hold, { kind: "motion", box: { x: r.x - u * 20, y: r.y, width: r.width + u * 20, height: r.height }, angle: 0, count: 70, seed: 4 });
   kit.svg("rect", { x: r.x, y: r.y, width: r.width, height: r.height, fill: "none", stroke: ink, "stroke-width": u * 0.7 }, s);
   const cy = r.y + r.height * 0.42;
-  const name = kit.text(root, props.name, { x: r.x + r.width / 2, y: cy - u * 9, size: kit.shape === "tall" ? 11 : 15, font: "heading", align: "center", colour: ink,
+  const name = kit.text(root, props.name, { x: r.x + r.width / 2, y: cy - u * 9, size: kit.shape === "wide" ? 15 : kit.shape === "square" ? 11.5 : 9.5, font: "heading", align: "center", colour: ink,
     style: { WebkitTextStroke: `${u * 1.1}px #FFFFFF`, paintOrder: "stroke fill", letterSpacing: "-0.02em" } });
   const strip = kit.text(root, props.tagline, { x: r.x + r.width / 2, y: cy + u * 10, size: 4.6, font: "heading", align: "center", colour: paper,
     style: { background: ink, padding: `${u * 1}px ${u * 3}px` } });

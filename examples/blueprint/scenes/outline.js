@@ -4,8 +4,9 @@ Bezel.scene((root, kit) => {
   const { u, safe, colours, props } = kit;
   const s = kit.stage();
   const line = { fill: "none", stroke: colours.text, "stroke-width": Math.max(1.5, u * 0.28), "stroke-linecap": "round", "stroke-linejoin": "round" };
-  const h = safe.height * 0.86, w = h * (74 / 260);
-  const cx = safe.x + safe.width * (kit.shape === "wide" ? 0.38 : 0.5), top = safe.y + safe.height * 0.07;
+  const wide = kit.shape === "wide";
+  const h = safe.height * (wide ? 0.86 : 0.7), w = h * (74 / 260);
+  const cx = safe.x + safe.width * (wide ? 0.38 : 0.5), top = safe.y + safe.height * (wide ? 0.07 : 0.02);
   const r = w / 2;
   // One side of the bottle, from the cap down to the base; the other side mirrors it.
   const side = (k) => {
@@ -21,8 +22,8 @@ Bezel.scene((root, kit) => {
     "stroke-dasharray": `${u * 3} ${u * 0.8} ${u * 0.5} ${u * 0.8}`, opacity: 0.8 }, s);
 
   // The title block: a framed box with the drawing's name and number.
-  const bw = Math.min(safe.width * 0.36, u * 60), bh = u * 18;
-  const bx = safe.x + safe.width - bw, by = safe.y + safe.height - bh;
+  const bw = wide ? Math.min(safe.width * 0.36, u * 60) : Math.min(safe.width * 0.8, u * 60), bh = u * 18;
+  const bx = wide ? safe.x + safe.width - bw : safe.x + (safe.width - bw) / 2, by = safe.y + safe.height - bh;
   const frame = kit.svg("path", { d: `M${bx} ${by} h${bw} v${bh} h${-bw} Z M${bx} ${by + bh * 0.55} h${bw} M${bx + bw * 0.6} ${by + bh * 0.55} v${bh * 0.45}`, ...line }, s);
   const name = kit.text(root, props.name.toUpperCase(), { x: bx + u * 2, y: by + u * 2.2, size: 4.2, font: "heading" });
   const dwg = kit.text(root, props.drawing, { x: bx + u * 2, y: by + bh * 0.55 + u * 2, size: 2.6, font: "mono", colour: colours.muted });
