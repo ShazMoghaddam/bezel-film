@@ -14,6 +14,7 @@ export interface StyleInfo {
 
 export const STYLE_INFO: readonly StyleInfo[] = [
   { name: "blueprint", label: "Blueprint", description: "Technical drawings plotted in white on blue paper: precise lines, measurements and labels in capitals.", theme: "dark", font: "technical" },
+  { name: "chalkboard", label: "Chalkboard", description: "A lesson worked out in chalk on a dark green slate: written up line by line, with dust off the chalk and a felt eraser wiping the board between ideas.", theme: "dark", font: "chalk" },
   { name: "crayon-book", label: "Crayon book", description: "A picture book drawn in wax crayon on dark paper: scribbled colour, wobbly outlines that boil on twos, and soft watercolour washes.", theme: "dark", font: "handwritten" },
   { name: "dark-keynote", label: "Dark keynote", description: "A product launch on a black stage: the product's screens are the star, with big clean type and slow, confident moves.", theme: "dark", font: "swiss" },
   { name: "data-on-paper", label: "Data on paper", description: "A data journal on graph paper: charts drawn mark by mark in coloured pencil, hatched fills and handwritten notes.", theme: "light", font: "editorial" },
@@ -27,7 +28,6 @@ export const STYLE_INFO: readonly StyleInfo[] = [
   { name: "pixel-game", label: "Pixel game", description: "A 90s video game: pixel-art sprites, chunky text boxes, menus and a level-up for every point you make.", theme: "dark", font: "pixel" },
   { name: "pop-art", label: "Pop art", description: "Comic dots and bold outlines: flat primary colours, halftone shading, starbursts and speech bubbles that punch in.", theme: "light", font: "bold" },
   { name: "pop-up-book", label: "Pop-up book", description: "A storybook spread where card scenes spring up off the page: thick paper cut-outs with white rims, soft shadows and pull tabs.", theme: "light", font: "friendly" },
-  { name: "chalkboard", label: "Chalkboard", description: "A lesson worked out in chalk on a dark green slate: written up line by line, with dust off the chalk and a felt eraser wiping the board between ideas.", theme: "dark", font: "chalk" },
   { name: "retro-terminal", label: "Retro terminal", description: "Glowing green text on an old monitor: commands typed in, logs scrolling, ASCII art and a blinking cursor.", theme: "dark", font: "terminal" },
   { name: "risograph", label: "Risograph", description: "A zine printed one ink at a time: two or three bright inks that overlap into new colours, slightly out of register, with grain.", theme: "light", font: "condensed" },
   { name: "rubber-hose-cartoon", label: "1930s cartoon", description: "Black-and-white characters with bendy limbs and white gloves, bouncing to the beat on flickering film.", theme: "light", font: "editorial" },
