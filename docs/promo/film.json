@@ -1,0 +1,564 @@
+{
+  "$schema": "../../schema/film.schema.json",
+  "spec": 1,
+  "title": "Bezel Film: narrated films, made in code",
+  "style": "dark-keynote",
+  "voice": {
+    "engine": "kokoro",
+    "gender": "female"
+  },
+  "music": {
+    "source": "generated",
+    "mood": "epic"
+  },
+  "captions": true,
+  "scenes": [
+    {
+      "id": "hook",
+      "type": "custom",
+      "file": "scenes/hook.js",
+      "props": {
+        "lines": [
+          "What if your coding agent could make films?",
+          "Not clips.",
+          "Proper narrated films, made in code."
+        ]
+      },
+      "narration": "What if your coding agent could make films? Not clips. Proper, narrated films, made in code.",
+      "sounds": [
+        {
+          "line": 0,
+          "at": 0.1,
+          "sound": "sweep",
+          "gain": 0.35
+        },
+        {
+          "line": 2,
+          "at": 0.1,
+          "sound": "tap",
+          "gain": 0.4
+        }
+      ]
+    },
+    {
+      "id": "reveal",
+      "type": "custom",
+      "file": "scenes/reveal.js",
+      "props": {
+        "line": "Describe an idea. Your agent makes the film.",
+        "facts": "Free  ·  Open source  ·  On npm"
+      },
+      "narration": "Meet Bezel Film. You describe an idea, and your coding agent turns it into a finished film. It's free, open source, and on npm.",
+      "sounds": [
+        {
+          "at": 0.2,
+          "sound": "sweep",
+          "gain": 0.5
+        },
+        {
+          "line": 2,
+          "at": 0.2,
+          "sound": "pop",
+          "gain": 0.35
+        }
+      ]
+    },
+    {
+      "id": "styles",
+      "type": "custom",
+      "file": "scenes/styles.js",
+      "props": {
+        "count": "21 styles",
+        "sub": "Each one its own kind of film",
+        "styles": [
+          {
+            "name": "Whiteboard",
+            "file": "whiteboard",
+            "line": 1
+          },
+          {
+            "name": "Chalkboard",
+            "file": "chalkboard",
+            "line": 2
+          },
+          {
+            "name": "Neon",
+            "file": "neon",
+            "line": 3
+          },
+          {
+            "name": "Pop-up book",
+            "file": "pop-up-book",
+            "line": 4
+          },
+          {
+            "name": "Swiss poster",
+            "file": "swiss-poster",
+            "line": 5
+          },
+          {
+            "name": "Pixel game",
+            "file": "pixel-game",
+            "line": 6
+          },
+          {
+            "name": "Manga",
+            "file": "manga"
+          },
+          {
+            "name": "Watercolour",
+            "file": "watercolour"
+          },
+          {
+            "name": "Pop art",
+            "file": "pop-art"
+          },
+          {
+            "name": "Isometric world",
+            "file": "isometric"
+          },
+          {
+            "name": "Retro terminal",
+            "file": "retro-terminal"
+          },
+          {
+            "name": "Origami",
+            "file": "origami"
+          },
+          {
+            "name": "Crayon book",
+            "file": "crayon-book"
+          },
+          {
+            "name": "Blueprint",
+            "file": "blueprint"
+          },
+          {
+            "name": "Data on paper",
+            "file": "data-on-paper"
+          },
+          {
+            "name": "1950s cartoon",
+            "file": "mid-century-cartoon"
+          },
+          {
+            "name": "1930s cartoon",
+            "file": "rubber-hose-cartoon"
+          },
+          {
+            "name": "Stick figures",
+            "file": "stick-figures"
+          },
+          {
+            "name": "Paper lantern",
+            "file": "paper-lantern"
+          },
+          {
+            "name": "Risograph",
+            "file": "risograph"
+          },
+          {
+            "name": "Dark keynote",
+            "file": "dark-keynote"
+          }
+        ]
+      },
+      "narration": "Pick from 21 styles, each a different kind of film. Whiteboard. Chalkboard. Neon. Pop-up book. Swiss poster. Pixel game. And many more.",
+      "sounds": [
+        {
+          "line": 1,
+          "at": 0,
+          "sound": "click",
+          "gain": 0.3
+        },
+        {
+          "line": 2,
+          "at": 0,
+          "sound": "click",
+          "gain": 0.3
+        },
+        {
+          "line": 3,
+          "at": 0,
+          "sound": "click",
+          "gain": 0.3
+        },
+        {
+          "line": 4,
+          "at": 0,
+          "sound": "click",
+          "gain": 0.3
+        },
+        {
+          "line": 5,
+          "at": 0,
+          "sound": "click",
+          "gain": 0.3
+        },
+        {
+          "line": 6,
+          "at": 0,
+          "sound": "click",
+          "gain": 0.3
+        }
+      ]
+    },
+    {
+      "id": "wall",
+      "type": "custom",
+      "file": "scenes/wall.js",
+      "props": {
+        "line": "No two films look alike.",
+        "files": [
+          "whiteboard",
+          "chalkboard",
+          "neon",
+          "pop-up-book",
+          "swiss-poster",
+          "pixel-game",
+          "manga",
+          "watercolour",
+          "pop-art",
+          "isometric",
+          "retro-terminal",
+          "origami",
+          "crayon-book",
+          "blueprint",
+          "data-on-paper",
+          "mid-century-cartoon",
+          "rubber-hose-cartoon",
+          "stick-figures",
+          "paper-lantern",
+          "risograph",
+          "dark-keynote"
+        ]
+      },
+      "narration": "Every one has its own drawings, motion and type, so no two films look alike.",
+      "sounds": [
+        {
+          "at": 0.6,
+          "sound": "swish",
+          "gain": 0.3,
+          "for": 1.4
+        }
+      ]
+    },
+    {
+      "id": "formats",
+      "type": "custom",
+      "file": "scenes/formats.js",
+      "props": {
+        "heading": "One film, every shape",
+        "labels": [
+          "TikTok · Reels · Shorts",
+          "LinkedIn · Instagram",
+          "YouTube · X"
+        ],
+        "note": "Text kept clear of each app's buttons, and a cover image for every version"
+      },
+      "narration": "One film, every shape. Tall for TikTok, Reels and Shorts. Four by five for LinkedIn and Instagram. Wide for YouTube and X. The words stay clear of each app's buttons, and every version gets a cover image.",
+      "sounds": [
+        {
+          "line": 1,
+          "at": 0.1,
+          "sound": "pop",
+          "gain": 0.35
+        },
+        {
+          "line": 2,
+          "at": 0.1,
+          "sound": "pop",
+          "gain": 0.35
+        },
+        {
+          "line": 3,
+          "at": 0.1,
+          "sound": "pop",
+          "gain": 0.35
+        }
+      ]
+    },
+    {
+      "id": "sound",
+      "type": "custom",
+      "file": "scenes/sound.js",
+      "props": {
+        "heading": "Every film comes with sound",
+        "items": [
+          {
+            "name": "Voice",
+            "note": "Female or male, made on your computer"
+          },
+          {
+            "name": "Music",
+            "note": "Six moods, dipping under the voice"
+          },
+          {
+            "name": "Captions",
+            "note": "So it works on mute"
+          },
+          {
+            "name": "Sound effects",
+            "note": "Landing with the movement"
+          }
+        ]
+      },
+      "narration": "Every film comes with sound. A natural voiceover, female or male. Music for six moods, dipping whenever the voice speaks. Captions, so it works on mute. And sound effects that land with the movement.",
+      "sounds": [
+        {
+          "line": 4,
+          "at": 0.9,
+          "sound": "pop",
+          "gain": 0.4
+        },
+        {
+          "line": 4,
+          "at": 1.3,
+          "sound": "ding",
+          "gain": 0.35
+        }
+      ]
+    },
+    {
+      "id": "agents",
+      "type": "custom",
+      "file": "scenes/agents.js",
+      "props": {
+        "heading": "Works with the agent you already use",
+        "agents": [
+          "Claude Code",
+          "Codex",
+          "Gemini CLI",
+          "Cursor",
+          "GitHub Copilot",
+          "Windsurf",
+          "AGENTS.md"
+        ],
+        "file": "scenes/reveal.js",
+        "checks": [
+          "Same picture for the same moment",
+          "Words inside the safe area",
+          "Readable contrast",
+          "Draws quickly"
+        ]
+      },
+      "narration": "It works with the coding agent you already use. Claude Code, Codex, Gemini CLI, Cursor, GitHub Copilot, Windsurf, and any agent that reads an agents file. Your agent writes each scene in code, and Bezel Film checks every one before it renders.",
+      "sounds": [
+        {
+          "line": 1,
+          "at": 0.1,
+          "sound": "pop",
+          "gain": 0.3,
+          "for": 2
+        },
+        {
+          "line": 2,
+          "at": 1.2,
+          "sound": "tick",
+          "gain": 0.35,
+          "for": 1.4
+        }
+      ]
+    },
+    {
+      "id": "how",
+      "type": "custom",
+      "file": "scenes/how.js",
+      "props": {
+        "heading": "Three steps to your first film",
+        "steps": [
+          "Run one command in an empty folder",
+          "Describe your film to your agent",
+          "Watch it, then ask for changes"
+        ],
+        "note": "Needs Node.js 22 or later",
+        "terminal": [
+          {
+            "step": 0,
+            "text": "$ npx bezel-film init"
+          },
+          {
+            "step": 0,
+            "delay": 1.3,
+            "text": "✓ Ready. Your welcome film is made.",
+            "colour": "#3DDC97",
+            "type": false
+          },
+          {
+            "step": 1,
+            "text": "> Make a one-minute film about our launch,",
+            "colour": "#7C8CFF"
+          },
+          {
+            "step": 1,
+            "delay": 1.4,
+            "text": "  in neon, with upbeat music.",
+            "colour": "#7C8CFF"
+          },
+          {
+            "step": 2,
+            "text": "✓ films/launch/film.mp4",
+            "colour": "#3DDC97",
+            "type": false
+          },
+          {
+            "step": 2,
+            "delay": 1,
+            "text": "> Make the title bigger.",
+            "colour": "#7C8CFF"
+          }
+        ]
+      },
+      "narration": "Getting started takes three steps. Run one command in an empty folder. Describe your film to your agent, in plain words. Then watch it, and ask for changes.",
+      "sounds": [
+        {
+          "line": 1,
+          "at": 0.1,
+          "sound": "tap",
+          "gain": 0.35
+        },
+        {
+          "line": 2,
+          "at": 0.1,
+          "sound": "tap",
+          "gain": 0.35,
+          "pitch": 2
+        },
+        {
+          "line": 3,
+          "at": 0.1,
+          "sound": "tap",
+          "gain": 0.35,
+          "pitch": 4
+        }
+      ]
+    },
+    {
+      "id": "time",
+      "type": "custom",
+      "file": "scenes/time.js",
+      "props": {
+        "figures": [
+          {
+            "value": "230 MB",
+            "label": "Downloaded once",
+            "note": "The voice, a browser and the music",
+            "line": 1
+          },
+          {
+            "value": "Minutes",
+            "label": "To make a one-minute film",
+            "note": "Rendered on your own computer",
+            "line": 2
+          }
+        ],
+        "draft": {
+          "label": "Already have a project? Draft a first film from it",
+          "command": "npx bezel-film draft owner/repo",
+          "line": 4
+        }
+      },
+      "narration": "The first run downloads the voice, a browser and the music, once. About 230 megabytes. After that, a one-minute film takes a few minutes. Already have a project? Draft turns its README into a first film.",
+      "sounds": [
+        {
+          "line": 1,
+          "at": 0.1,
+          "sound": "tap",
+          "gain": 0.4
+        },
+        {
+          "line": 2,
+          "at": 0.1,
+          "sound": "tap",
+          "gain": 0.4
+        }
+      ]
+    },
+    {
+      "id": "private",
+      "type": "custom",
+      "file": "scenes/private.js",
+      "props": {
+        "heading": "Private by design",
+        "items": [
+          {
+            "text": "Runs offline",
+            "line": 1
+          },
+          {
+            "text": "No accounts",
+            "line": 2
+          },
+          {
+            "text": "No API keys",
+            "line": 2,
+            "offset": 0.8
+          },
+          {
+            "text": "Nothing leaves your computer",
+            "line": 2,
+            "offset": 1.6
+          }
+        ]
+      },
+      "narration": "And it's private. After that one download, it runs offline. No accounts, no API keys, and nothing leaves your computer.",
+      "sounds": [
+        {
+          "line": 1,
+          "at": 0.1,
+          "sound": "click",
+          "gain": 0.4
+        },
+        {
+          "line": 2,
+          "at": 0.1,
+          "sound": "pop",
+          "gain": 0.3
+        },
+        {
+          "line": 2,
+          "at": 0.9,
+          "sound": "pop",
+          "gain": 0.3
+        },
+        {
+          "line": 2,
+          "at": 1.7,
+          "sound": "pop",
+          "gain": 0.3
+        }
+      ]
+    },
+    {
+      "id": "close",
+      "type": "custom",
+      "file": "scenes/close.js",
+      "props": {
+        "tagline": "Short narrated films, made in code",
+        "get": [
+          "npx bezel-film init",
+          "github.com/ShazMoghaddam/bezel-film"
+        ],
+        "by": "Made by Shaz Moghaddam · London",
+        "links": [
+          "shazmoghaddam.github.io",
+          "linkedin.com/in/shazmoghaddam"
+        ]
+      },
+      "narration": "Bezel Film. Free on npm, today. Made by Shaz Moghaddam, in London.",
+      "sounds": [
+        {
+          "at": 0.2,
+          "sound": "sweep",
+          "gain": 0.4
+        },
+        {
+          "line": 2,
+          "at": 0.6,
+          "sound": "ding",
+          "gain": 0.45
+        }
+      ]
+    }
+  ]
+}

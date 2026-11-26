@@ -11,9 +11,9 @@
 
 Bezel Film makes polished short films with a voiceover, captions, charts, music and sound effects. Tell your coding agent what you want in plain words, and it does the rest. Everything runs on your own computer, with no accounts and no API keys.
 
-<a href="docs/welcome.mp4"><img src="docs/welcome.gif" alt="The welcome film: a title card, a big number, a colourful bar chart, a list of ideas and a closing card, with captions along the bottom" width="720"></a>
+<a href="docs/promo.mp4"><img src="docs/promo.gif" alt="From the Bezel Film promo: the Bezel Film mark rises on a black stage, then a laptop flicks through the styles, from Whiteboard and Chalkboard to Neon, Pop-up book and Swiss poster" width="720"></a>
 
-[▶ Watch the welcome film with sound](docs/welcome.mp4)
+[▶ Watch the full film with sound](docs/promo.mp4) (2 min 20 s). It was made with Bezel Film itself, installed from npm, in the Dark keynote style. Its film file and scenes are in [`docs/promo`](docs/promo).
 
 ## Make your first film
 
