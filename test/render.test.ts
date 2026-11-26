@@ -31,6 +31,10 @@ describe("splitSentences", () => {
   it("keeps closing quotes with their sentence", () => {
     expect(splitSentences('She said "yes." Then left.')).toEqual(['She said "yes."', "Then left."]);
   });
+
+  it("keeps decimals and version numbers inside their sentence", () => {
+    expect(splitSentences("It comes out at about 4.65 km. Version 1.0.2 is out! Wow...")).toEqual(["It comes out at about 4.65 km.", "Version 1.0.2 is out!", "Wow..."]);
+  });
 });
 
 describe("buildTimeline", () => {
@@ -163,11 +167,30 @@ describe("buildPage", async () => {
     const cues = sceneCues(f, buildTimeline(f).scenes[0]!, style);
     expect(cues).toEqual([{ ms: 200, sound: "tap" }, { ms: 1500, sound: "pop", gain: 0.8 }].map((c) => expect.objectContaining(c)));
   });
+
+  it("counts a sound from the start of its sentence", () => {
+    const f = film([{ type: "custom", file: "a.js", narration: "First we start. Then the chalk writes.", sounds: [{ line: 1, at: 0.25, sound: "chalk" }] }]);
+    const timed = buildTimeline(f).scenes[0]!;
+    const [cue] = sceneCues(f, timed, style);
+    expect(cue!.ms).toBeCloseTo((timed.lines[1]!.start - timed.start + 0.25) * 1000, 3);
+    expect(cue!.ms).toBeGreaterThan(250);
+  });
+
+  it("repeats a sound across a span, a little different each time, the same every time", () => {
+    const f = film([{ type: "custom", file: "a.js", duration: 4, sounds: [{ at: 0.5, sound: "chalk", for: 1.2 }] }]);
+    const cues = sceneCues(f, buildTimeline(f).scenes[0]!, style);
+    expect(cues.length).toBeGreaterThanOrEqual(3);
+    expect(cues.length).toBeLessThanOrEqual(5);
+    expect(cues[0]!.ms).toBe(500);
+    expect(cues.every((c) => c.sound === "chalk" && c.ms >= 500 && c.ms < 1700)).toBe(true);
+    expect(new Set(cues.map((c) => c.pitch)).size).toBe(cues.length);
+    expect(sceneCues(f, buildTimeline(f).scenes[0]!, style)).toEqual(cues);
+  });
 });
 
 describe("loadStyle", () => {
   it("names the styles there are when one doesn't exist", async () => {
-    await expect(loadStyle("chalkboard")).rejects.toThrow('There\'s no "chalkboard" style. Choose from: blueprint, crayon-book, dark-keynote, data-on-paper, data-story, isometric, manga, mid-century-cartoon, neon, origami, paper-lantern, pixel-game, pop-art, pop-up-book, retro-terminal, risograph, rubber-hose-cartoon, stick-figures, swiss-poster, watercolour, whiteboard.');
+    await expect(loadStyle("sketchbook")).rejects.toThrow('There\'s no "sketchbook" style. Choose from: blueprint, chalkboard, crayon-book, dark-keynote, data-on-paper, data-story, isometric, manga, mid-century-cartoon, neon, origami, paper-lantern, pixel-game, pop-art, pop-up-book, retro-terminal, risograph, rubber-hose-cartoon, stick-figures, swiss-poster, watercolour, whiteboard.');
   });
 
   it("loads the style's own CSS", async () => {

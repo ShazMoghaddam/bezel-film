@@ -149,7 +149,26 @@ function sceneBody(timed: TimedScene, style: Style, feel: MotionFeel, cue: Cue =
 
     case "custom":
       // The scene's own code draws everything inside this, full frame. Its sounds are listed in the film.
-      for (const s of scene.sounds ?? []) cue(s.at * 1000, s.sound, { gain: s.gain, pitch: s.pitch });
+      for (const s of scene.sounds ?? []) {
+        // With line, at counts from when that sentence starts, like kit.at(line).
+        const sentence = s.line == null ? undefined : timed.lines[s.line];
+        const from = sentence ? sentence.start - timed.start : 0;
+        if (!s.for) {
+          cue((from + s.at) * 1000, s.sound, { gain: s.gain, pitch: s.pitch });
+          continue;
+        }
+        // Repeated across a span, like strokes of chalk while a line is written: every
+        // 0.24 to 0.36 seconds, each a touch higher or lower and louder or softer. The
+        // variation comes from the scene's place and the sound's start, so it never changes.
+        let at = from + s.at;
+        let n = 0;
+        while (at < from + s.at + s.for - 0.05) {
+          const r = (k: number) => ((Math.sin((timed.index + 1) * 12.9898 + (s.at * 10 + n) * 78.233 + k * 37.719) * 43758.5453) % 1 + 1) % 1;
+          cue(at * 1000, s.sound, { gain: (s.gain ?? 1) * (0.7 + r(1) * 0.3), pitch: (s.pitch ?? 0) + (r(2) - 0.5) * 3 });
+          at += 0.24 + r(3) * 0.12;
+          n++;
+        }
+      }
       return `<div class="custom-root" data-custom="${timed.index}"></div>`;
   }
 }

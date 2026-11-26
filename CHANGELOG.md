@@ -3,6 +3,20 @@
 All notable changes to Bezel Film are listed here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- **Chalkboard**, a bonus style: a lesson worked out in chalk on a dark green slate. A stick of chalk writes the working up line by line with dust falling off it, diagrams are ruler-straight, and a felt eraser wipes the board between ideas. With its guide for agents and an example film, "How far can you see to the horizon?".
+- A `chalk` font pairing: Fredericka the Great and Kalam, bundled from Fontsource.
+- A `chalk` sound effect: a stroke of chalk on a board, a CC0 recording by Breviceps.
+- In the scene kit: `kit.erase` rubs out a drawing with a felt eraser, `kit.dust` lets dust fall from a point, and `kit.drawing` takes `pen: "chalk"` for a stick of chalk and `dust: true` for dust falling as it writes.
+- A custom scene's sounds can take `line`, to count from when a sentence starts so the sound stays on its words, and `for`, to repeat a sound across a span, a little different each time.
+
+### Fixed
+
+- Narration with a decimal or a version number, like "about 4.65 kilometres" or "v1.0.2", was split into sentences at the dot. That broke the captions there and put `kit.at(i)` on the wrong sentence for the rest of the scene. A sentence now ends only where its punctuation is followed by a space.
+
 ## [1.0.0] - 2026-11-25
 
 All twenty styles are in. Bezel Film now makes twenty different kinds of film, from whiteboard explainers and pop-up books to neon signs and green-screen terminals, and every example film works on phones, in feeds and on YouTube. From this release on, film files and the scene kit follow semantic versioning: anything that works in 1.0.0 keeps working until 2.0.0.

@@ -1,0 +1,27 @@
+/* Chalkboard: chalk on a dark green slate. Scenes draw with filter #chalk for the grain,
+   kit.dust for dust off the chalk and kit.erase for the felt eraser. */
+/* The slate: lighter in the middle, with faint clouds of old lessons wiped away. */
+.backdrop{background:
+  radial-gradient(28% 18% at 24% 30%,rgb(242 240 230/.055),transparent 70%),
+  radial-gradient(34% 16% at 70% 62%,rgb(242 240 230/.05),transparent 70%),
+  radial-gradient(22% 14% at 60% 22%,rgb(242 240 230/.035),transparent 70%),
+  radial-gradient(80% 70% at 50% 45%,#2A3A32,transparent 85%)}
+/* A painted wooden frame, with a ledge along the bottom holding chalk. */
+.grain{box-shadow:inset 0 0 0 calc(var(--u)*1.1) #8A5F38,inset 0 0 0 calc(var(--u)*1.5) #5E3E22,inset 0 0 calc(var(--u)*6) calc(var(--u)*2) rgb(0 0 0/.35)}
+.grain::before{content:"";position:absolute;inset:0;opacity:.22;mix-blend-mode:screen;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='2' seed='6' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.9 0 0 0 0 0.92 0 0 0 0 0.88 0 0 0 0.6 -0.32'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.grain::after{content:"";position:absolute;left:0;right:0;bottom:0;height:calc(var(--u)*2.2);
+  background:
+    linear-gradient(90deg,transparent 64%,#F2F0E6 64%,#F2F0E6 67.5%,transparent 67.5%,transparent 69%,#F6D76B 69%,#F6D76B 71%,transparent 71%,transparent 72.5%,#F4A3BE 72.5%,#F4A3BE 75%,transparent 75%) 0 0/100% 45% no-repeat,
+    linear-gradient(90deg,transparent 80%,#3B3F48 80%,#3B3F48 88%,transparent 88%) 0 0/100% 70% no-repeat,
+    linear-gradient(#A0714A,#6E4A2B);
+  box-shadow:0 calc(var(--u)*-.3) calc(var(--u)*.8) rgb(0 0 0/.35)}
+
+/* Ready-made scenes match: everything written in chalk. */
+.display,.heading,.stat-value,.stat-label,.quote,.body,.stop-label{filter:url(#chalk);letter-spacing:.01em}
+.rule{height:calc(var(--u)*.9);width:calc(var(--u)*26);border-radius:var(--u);background:var(--accent);filter:url(#chalk)}
+.card{background:transparent;border:calc(var(--u)*.35) solid rgb(242 240 230/.75);border-radius:calc(var(--u)*1.2);box-shadow:none;filter:url(#chalk)}
+.chip{background:transparent;border:calc(var(--u)*.3) solid var(--c);filter:url(#chalk)}
+.dot{box-shadow:none;filter:url(#chalk)}
+.cta{filter:url(#chalk)}
+.progress{background:var(--accent)}

@@ -1,0 +1,35 @@
+{
+  "name": "chalkboard",
+  "label": "Chalkboard",
+  "description": "A lesson worked out in chalk on a dark green slate: written up line by line, with dust off the chalk and a felt eraser wiping the board between ideas.",
+  "theme": "dark",
+  "font": "chalk",
+  "colours": {
+    "background": "#1F2B25",
+    "surface": "#26342D",
+    "text": "#F2F0E6",
+    "muted": "#AEB8AE",
+    "accent": "#F6D76B",
+    "palette": [
+      "#F6D76B",
+      "#F4A3BE",
+      "#8FCDEB",
+      "#A3DDB6",
+      "#F5B385",
+      "#C9B6EE",
+      "#F2F0E6"
+    ]
+  },
+  "motion": {
+    "level": "calm",
+    "easing": "cubic-bezier(0.22, 1, 0.36, 1)",
+    "enterMs": 650,
+    "staggerMs": 110,
+    "transition": "fade",
+    "transitionMs": 450
+  },
+  "layout": {
+    "safeArea": 0.09,
+    "captionPosition": "bottom"
+  }
+}

@@ -32,9 +32,12 @@ export interface Timeline {
   duration: number;
 }
 
-/** Splits narration into sentences, keeping their punctuation. */
+/**
+ * Splits narration into sentences, keeping their punctuation. A sentence ends only where
+ * its punctuation is followed by a space or the end, so "4.65 km" and "v1.0" stay whole.
+ */
 export function splitSentences(text: string): string[] {
-  const parts = text.match(/[^.!?…]+(?:[.!?…]+["'”’)]*|$)/g) ?? [];
+  const parts = text.match(/(?:[^.!?…]|[.!?…]+(?!["'”’)]*(?:\s|$)))+(?:[.!?…]+["'”’)]*|$)/g) ?? [];
   return parts.map((part) => part.trim()).filter(Boolean);
 }
 

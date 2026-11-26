@@ -50,7 +50,7 @@ Mix ready-made scenes in where they're the best tool. A real chart is better as 
 ## 5. Sound
 
 - Pick a `music.mood` that matches the feeling, not the topic: `calm`, `upbeat`, `dramatic`, `epic`, `ambient` or `reflective`. It dips under the voice by itself.
-- In custom scenes, list `sounds` to land with movement: a `tap` when something lands, `swish` as a line is drawn, `pop` for something small appearing, `ding` for a reveal. Fewer is better: two or three per scene.
+- In custom scenes, list `sounds` to land with movement: a `tap` when something lands, `swish` as a line is drawn, `pop` for something small appearing, `ding` for a reveal, `chalk` for each stroke of chalk. Fewer is better: two or three per scene.
 
 ## 6. Build, look, fix
 

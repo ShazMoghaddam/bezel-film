@@ -46,6 +46,14 @@ const PACKS = {
     commit: "2ec460cd1e85a2870238b1c1a00e115e769060be",
     note: "an unchanged copy; its fingerprint matches other copies of the pack",
   },
+  chalk: {
+    title: "Write/Draw with chalk on board",
+    by: "Breviceps",
+    home: "https://freesound.org/people/Breviceps/sounds/447925/",
+    repo: "soumatheusgomes/editonny",
+    commit: "49714f2fba6eafb76b903376e1fe9f50b685506a",
+    note: "a trimmed copy kept in its sound effects library, credited to the original",
+  },
 } as const;
 
 const SOURCES: Record<SoundName, { pack: keyof typeof PACKS; path: string; sha256: string }> = {
@@ -57,6 +65,7 @@ const SOURCES: Record<SoundName, { pack: keyof typeof PACKS; path: string; sha25
   click: { pack: "kenney", path: "addons/kenney_interface_sounds/click_005.wav", sha256: "d6006cd60538f3e02d9d2980bff5fb73481b9d5abf1145761739e09baec640ee" },
   tick: { pack: "kenney", path: "addons/kenney_interface_sounds/click_003.wav", sha256: "b035afe3fe08b0fd3517c612bdfd362799bffe762d2cbf8f09e6a50322067358" },
   ding: { pack: "kenney", path: "addons/kenney_interface_sounds/confirmation_002.wav", sha256: "b23339f3fdcd9f54520ca73caa3a9ae93ecfb3675acdaf1468990feb5d55d5fa" },
+  chalk: { pack: "chalk", path: "skills/editonny/visuals/library/effects/chalk/chalk-1.wav", sha256: "00ffcd8d55aef94ed1ffb4e89b77a770fbc8d0c822301ae273758f41be95e037" },
 };
 
 async function download(name: SoundName): Promise<string> {
