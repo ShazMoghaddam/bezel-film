@@ -3,6 +3,12 @@
 All notable changes to Bezel Film are listed here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Changed
+
+- The README now opens with a promo film about Bezel Film, made with Bezel Film from npm: what it is, the styles, every platform's shape, the sound, the agents it works with, how to start and how it keeps everything private. Its film file and scenes are in `docs/promo`, and `npm run demo` renders it. It replaces the welcome film, which `init` still makes for every new folder.
+
 ## [1.1.0] - 2026-11-26
 
 Chalkboard, a bonus style, makes twenty-one: a lesson worked out in chalk, line by line, with a felt eraser between ideas and the sound of chalk on the board.

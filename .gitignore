@@ -3,7 +3,7 @@ dist/
 out/
 *.mp4
 # ...except the README demo
-!docs/welcome.mp4
+!docs/promo.mp4
 *.webm
 # Cover images render saves next to each video
 *-cover.png
