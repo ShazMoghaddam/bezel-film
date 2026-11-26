@@ -3,7 +3,9 @@
 All notable changes to Bezel Film are listed here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [1.1.0] - 2026-11-26
+
+Chalkboard, a bonus style, makes twenty-one: a lesson worked out in chalk, line by line, with a felt eraser between ideas and the sound of chalk on the board.
 
 ### Added
 
@@ -11,6 +13,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - A `chalk` font pairing: Fredericka the Great and Kalam, bundled from Fontsource.
 - A `chalk` sound effect: a stroke of chalk on a board, a CC0 recording by Breviceps.
 - In the scene kit: `kit.erase` rubs out a drawing with a felt eraser, `kit.dust` lets dust fall from a point, and `kit.drawing` takes `pen: "chalk"` for a stick of chalk and `dust: true` for dust falling as it writes.
+- A gallery of all twenty-one styles in the README, and Chalkboard in the README banner and social preview.
 - A custom scene's sounds can take `line`, to count from when a sentence starts so the sound stays on its words, and `for`, to repeat a sound across a span, a little different each time.
 
 ### Fixed
@@ -319,7 +322,8 @@ The first release: describe a film in one JSON file, and Bezel Film renders it t
 
 - CI checks on every push and pull request, including a render smoke test, plus Dependabot.
 
-[Unreleased]: https://github.com/ShazMoghaddam/bezel-film/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/ShazMoghaddam/bezel-film/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/ShazMoghaddam/bezel-film/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.9.0...v1.0.0
 [0.9.0]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.7.0...v0.8.0

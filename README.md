@@ -1,4 +1,4 @@
-[![Bezel Film: short narrated films, made in code, from whiteboard to neon. A film strip of scenes in different styles (a whiteboard, a neon sign, a pop-up book) above a soundtrack of voice and music. By Shaz Moghaddam, London.](docs/banner.png)](https://shazmoghaddam.github.io/)
+[![Bezel Film: short narrated films, made in code, from whiteboard to neon. A film strip of scenes in different styles (a whiteboard, a chalkboard lesson, a pop-up book) above a soundtrack of voice and music. By Shaz Moghaddam, London.](docs/banner.png)](https://shazmoghaddam.github.io/)
 
 # Bezel Film
 
@@ -57,18 +57,18 @@ It reads the README, `package.json` or `pyproject.toml`, the changelog and (for 
 - **A natural voice.** Female or male, made on your computer. Hear the options with `npx bezel-film voices`.
 - **Music for every mood.** Six moods, each with a few hand-picked pieces: public-domain recordings, or music composed for the film and played on recorded orchestral instruments. It dips whenever the voice speaks. Or bring your own track.
 - **Made for every platform.** TikTok, Reels, Shorts, LinkedIn, X, WhatsApp and YouTube, each in the right shape with text kept clear of the app's buttons. Write one film and get every version, plus a cover image for each.
-- **Fonts to suit the story.** Eleven pairings, from a magazine serif to handwriting, a Swiss grotesque and pixel and terminal fonts, shipped inside the package. See them with `npx bezel-film styles`.
+- **Fonts to suit the story.** Twelve pairings, from a magazine serif to handwriting, a Swiss grotesque, chalk, and pixel and terminal fonts, shipped inside the package. See them with `npx bezel-film styles`.
 - **Scenes your agent draws.** Beyond the ready-made scenes, your agent can write whole scenes in code: drawings that draw themselves, characters, anything. Bezel Film gives it a kit to build with, a director's guide, and checks that catch mistakes before you render.
 - **Charts that move.** Drawn with [Bezel Charts](https://github.com/ShazMoghaddam/bezel-charts), in bold colours.
 - **Works with your agent.** Claude Code, Codex, Gemini CLI, Cursor, GitHub Copilot, Windsurf, and any agent that reads `AGENTS.md`.
 - **Private and offline.** After the one-time download, nothing leaves your computer.
 - **Smooth and repeatable.** Every frame is drawn on a frozen clock, so films look the same on any computer, every time.
 
-## Twenty kinds of film
+## Twenty-one kinds of film
 
 Each style is a different kind of film, not just a new colour scheme. Here's the opening of each one's example film, every frame drawn in code:
 
-[![The opening frames of twenty example films, one per style: Whiteboard, Stick figures, Isometric world, Blueprint, Data on paper, 1950s cartoon, 1930s cartoon, Manga, Pop-up book, Crayon book, Origami, Paper lantern, Watercolour, Swiss poster, Pop art, Risograph, Neon, Dark keynote, Pixel game and Retro terminal](docs/styles.jpg)](#styles-and-fonts)
+[![The opening frames of twenty-one example films, one per style: Whiteboard, Stick figures, Isometric world, Blueprint, Data on paper, 1950s cartoon, 1930s cartoon, Manga, Pop-up book, Crayon book, Origami, Paper lantern, Watercolour, Swiss poster, Pop art, Risograph, Neon, Dark keynote, Pixel game, Retro terminal and Chalkboard](docs/styles.jpg)](#styles-and-fonts)
 
 Plus `data-story`, the clean, chart-led look of the ready-made scenes. See them all in [Styles and fonts](#styles-and-fonts), and the films themselves in [`examples/`](examples).
 
@@ -388,7 +388,7 @@ On Linux, the voice engine also tries to download large GPU files it doesn't nee
 - **v0.8.0 (released):** four paper and craft styles: Pop-up book, Crayon book, Origami and Paper lantern
 - **v0.9.0 (released):** four bold and graphic styles: Watercolour, Swiss poster, Pop art and Risograph
 - **v1.0.0 (released):** the last four styles: Neon, Dark keynote, Pixel game and Retro terminal. All twenty styles are in, and every example film works on phones, in feeds and on YouTube. From here on, film files and the scene kit follow semantic versioning
-- **After v1.0.0:** Chalkboard, a bonus style built on Whiteboard
+- **v1.1.0 (released):** Chalkboard, a bonus style: a lesson worked out in chalk, with a felt eraser and a chalk sound
 
 ## Contributing
 
