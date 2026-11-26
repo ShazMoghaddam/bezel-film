@@ -225,6 +225,24 @@ function workerCount(): number {
  * k, k + n, k + 2n…, and a small reorder buffer hands frames to ffmpeg in order.
  * Pages never run more than a few frames ahead, so memory stays small.
  */
+/** How long one frame may take to draw before it's tried again, then given up on. */
+export const FRAME_TIMEOUT_MS = 60_000;
+
+/** A promise that gives up after a while, so a stuck step stops with a message instead of waiting for ever. */
+export async function withTimeout<T>(work: Promise<T>, ms: number, message: string): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => reject(new FrameTimeout(message)), ms);
+  });
+  try {
+    return await Promise.race([work, timeout]);
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+export class FrameTimeout extends Error {}
+
 async function captureFrames(
   pages: Page[],
   frames: number,
@@ -232,6 +250,8 @@ async function captureFrames(
   write: (frame: Buffer) => Promise<void>,
   onFrame: (done: number) => void,
   snapshots = 1,
+  where: (seconds: number) => string = (seconds) => `${seconds.toFixed(2)}s`,
+  timeoutMs = FRAME_TIMEOUT_MS,
 ): Promise<void> {
   // With true motion blur, each frame is several snapshots in a row, and the encoder blends them.
   const shots = frames * snapshots;
@@ -260,8 +280,27 @@ async function captureFrames(
       for (let i = k; i < shots; i += pages.length) {
         while (i - next >= maxAhead) await new Promise<void>((resolve) => waiting.push(resolve));
         const t = snapshotTime(Math.floor(i / snapshots), i % snapshots, snapshots, fps);
-        await page.evaluate((s) => (globalThis as unknown as BezelPage).__bezel.seek(s), t);
-        const shot = (await cdp.send("Page.captureScreenshot", { format: "png", optimizeForSpeed: true })) as { data: string };
+        const draw = async () => {
+          await page.evaluate((s) => (globalThis as unknown as BezelPage).__bezel.seek(s), t);
+          return (await cdp.send("Page.captureScreenshot", { format: "png", optimizeForSpeed: true })) as { data: string };
+        };
+        // A frame that hangs is tried once more (a stalled screenshot usually clears),
+        // then the render stops and says where, rather than waiting for ever.
+        const frame = Math.floor(i / snapshots) + 1;
+        const seconds = Math.round(timeoutMs / 1000);
+        let shot: { data: string };
+        try {
+          shot = await withTimeout(draw(), timeoutMs, "");
+        } catch (error) {
+          if (!(error instanceof FrameTimeout)) throw error;
+          shot = await withTimeout(
+            draw(),
+            timeoutMs,
+            `Frame ${frame} (${where(t)}) didn't finish drawing in ${seconds} seconds, twice, so the render stopped. ` +
+              "If it's a custom scene, check its draw function for a loop that never ends or work that grows each frame, " +
+              "then run bezel-film preview to see that scene.",
+          );
+        }
         ready.set(i, Buffer.from(shot.data, "base64"));
         writing = writing.then(flush);
       }
@@ -289,13 +328,29 @@ async function speakFilm(film: Film, voice: Voice | null, onProgress?: Progress)
   return { clips, seconds };
 }
 
+/** "3.40s, in scene 2 (reveal)": where a moment falls, for messages. */
+export function describeMoment(timeline: Timeline, seconds: number): string {
+  const timed = timeline.scenes.find((scene) => seconds >= scene.start && seconds < scene.end) ?? timeline.scenes.at(-1);
+  if (!timed) return `${seconds.toFixed(2)}s`;
+  const scene = timed.scene;
+  const name = scene.type === "custom" ? scene.file : (scene.id ?? scene.type);
+  return `${seconds.toFixed(2)}s, in scene ${timed.index + 1} (${name})`;
+}
+
+/** How far through a scene the cover is taken, unless the film says: late enough for everything to have arrived. */
+export const COVER_SHARE = 0.75;
+
 /**
- * The moment used for the cover: the first scene once everything has risen in,
- * which is usually the title.
+ * The moment used for the cover: the film's `cover` setting, or else three quarters of
+ * the way through the first scene, when it has all arrived but hasn't started to leave.
  */
-export function coverSeconds(timeline: Timeline): number {
-  const first = timeline.scenes[0]!;
-  return first.start + Math.min(2, (first.end - first.start) * 0.6);
+export function coverSeconds(timeline: Timeline, cover?: Film["cover"]): number {
+  const index = cover === undefined ? 0 : typeof cover.scene === "number" ? cover.scene - 1 : timeline.scenes.findIndex((s) => s.scene.id === cover.scene);
+  const timed = timeline.scenes[index] ?? timeline.scenes[0]!;
+  const length = timed.end - timed.start;
+  const at = cover?.at ?? length * COVER_SHARE;
+  // Never past the scene's end, where the next one is already coming in.
+  return timed.start + Math.min(at, length * 0.95);
 }
 
 /**
@@ -396,7 +451,7 @@ export async function renderFilm(film: Film, options: RenderOptions): Promise<Re
       const pages = [page, ...extraPages];
       await captureFrames(pages, frames, fps, encoder.write, (done) => {
         if (done % fps === 0 || done === frames) onProgress?.(`${label}Drawing frames: ${done} of ${frames}`);
-      }, snapshots);
+      }, snapshots, (seconds) => describeMoment(timeline, seconds));
       onProgress?.(`${label}Encoding the video…`);
       await encoder.finish();
       encoder = undefined;
@@ -404,7 +459,7 @@ export async function renderFilm(film: Film, options: RenderOptions): Promise<Re
       let cover: string | undefined;
       if (options.cover !== false) {
         cover = coverPath(target.output);
-        await page.evaluate((t) => (globalThis as unknown as BezelPage).__bezel.seek(t, true), coverSeconds(timeline));
+        await page.evaluate((t) => (globalThis as unknown as BezelPage).__bezel.seek(t, true), coverSeconds(timeline, target.film.cover));
         await writeFile(cover, await page.screenshot({ type: "png" }));
       }
       await Promise.all(pages.map((p) => p.context().close()));

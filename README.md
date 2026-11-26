@@ -93,7 +93,7 @@ Everything below is for when you want to go further or edit films by hand.
 | `npx bezel-film setup` | Does the one-time downloads (voice and browser) |
 | `npx bezel-film schema` | Prints the film file's JSON Schema |
 
-`render` also takes `--for tiktok,reels,x` (or `--for all`) to make a version for each platform, `--show-safe-zones` to shade the parts each app covers, `--quality high` for true motion blur in a final version, and `--no-cover`.
+`render` also takes `--for tiktok,reels,x` (or `--for all`) to make a version for each platform, `--show-safe-zones` to shade the parts each app covers, `--quality high` for true motion blur in a final version, and `--no-cover`. With `--for`, `-o` is a folder for the videos, or the video's own name when you render one platform (`-o promo-linkedin.mp4`).
 
 `init` also takes `--yes` (no questions), `--agents claude,cursor` and `--no-sample`, so agents and scripts can run it too.
 
@@ -186,7 +186,8 @@ Maps work at country and region scale, so places in the same city sit on top of 
 | `music.volume` | `0` to `1` | `0.2` |
 | `music.file` | path to your own track, relative to the film file | none |
 | `sfx.volume` | `0` to `1`, where `0` turns them off. See [Sound effects](#sound-effects) | `0.5` |
-| `captions` | `true`, `false` | `true` |
+| `captions` | `true`, `false`: the sentence being spoken, along the bottom. A long sentence shows in parts of up to two lines, so captions never grow up into the picture | `true` |
+| `cover` | Where the cover image comes from: `{ "scene": "reveal" }` (a scene's `id`, or its number from 1), with `"at"` for seconds into it | three quarters of the way through the first scene |
 | `motion` | `calm`, `lively`, `punchy`, see [Motion](#motion) | the style's choice (`lively`) |
 
 ### Custom scenes
@@ -389,6 +390,7 @@ On Linux, the voice engine also tries to download large GPU files it doesn't nee
 - **v0.9.0 (released):** four bold and graphic styles: Watercolour, Swiss poster, Pop art and Risograph
 - **v1.0.0 (released):** the last four styles: Neon, Dark keynote, Pixel game and Retro terminal. All twenty styles are in, and every example film works on phones, in feeds and on YouTube. From here on, film files and the scene kit follow semantic versioning
 - **v1.1.0 (released):** Chalkboard, a bonus style: a lesson worked out in chalk, with a felt eraser and a chalk sound
+- **v1.2.0 (released):** captions that stay out of the picture, covers you can choose, renders that never hang silently, and better first drafts
 
 ## Contributing
 

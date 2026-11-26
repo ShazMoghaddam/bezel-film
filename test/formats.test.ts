@@ -116,8 +116,29 @@ describe("several formats from one film", () => {
 
   it("names covers after their video and takes them once the opening has settled", () => {
     expect(coverPath("films/demo/film-tiktok.mp4")).toBe("films/demo/film-tiktok-cover.png");
-    const f = film();
-    expect(coverSeconds(buildTimeline(f))).toBeCloseTo(1.8);
+    const timeline = buildTimeline(film());
+    const first = timeline.scenes[0]!;
+    expect(coverSeconds(timeline)).toBeCloseTo(first.start + (first.end - first.start) * 0.75);
+  });
+
+  it("takes the cover from the scene the film names, by id or number", () => {
+    const scenes = [
+      { type: "title", id: "intro", title: "Hi", narration: "Hello there, everyone, and welcome." },
+      { type: "stat", id: "big", value: 5, label: "things", narration: "There are five things to know." },
+    ];
+    const make = (cover: unknown) => {
+      const result = validateFilm({ ...base, scenes, cover });
+      if (!result.ok) throw new Error(result.errors.join("\n"));
+      return result.film;
+    };
+    const byId = make({ scene: "big", at: 1 });
+    const timeline = buildTimeline(byId);
+    expect(coverSeconds(timeline, byId.cover)).toBeCloseTo(timeline.scenes[1]!.start + 1);
+    const byNumber = make({ scene: 2 });
+    const second = timeline.scenes[1]!;
+    expect(coverSeconds(buildTimeline(byNumber), byNumber.cover)).toBeCloseTo(second.start + (second.end - second.start) * 0.75);
+    expect(validateFilm({ ...base, scenes, cover: { scene: "nope" } }).ok).toBe(false);
+    expect(validateFilm({ ...base, scenes, cover: { scene: 3 } }).ok).toBe(false);
   });
 
   it("keeps WhatsApp videos under 16 MB", () => {

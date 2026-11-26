@@ -111,11 +111,15 @@ export const KIT_JS = String.raw`
     const width = innerWidth;
     const height = innerHeight;
     const u = Math.min(width, height) / 100;
+    // Our captions, at their tallest (two lines: longer sentences show in parts), plus a gap.
+    const captionBox = document.querySelector(".caption");
+    const captionSize = captionBox ? parseFloat(getComputedStyle(captionBox.querySelector("span")).fontSize) : u * 2.8;
+    const captionRoom = (captionBox ? parseFloat(getComputedStyle(captionBox).bottom) || 0 : 0) + captionSize * 1.6 * 2 + u * 1.5;
     const inset = {
       top: parseFloat(cs.paddingTop),
       right: parseFloat(cs.paddingRight),
       // Keep clear of our captions too, when they're on and no platform zone already does.
-      bottom: Math.max(parseFloat(cs.paddingBottom), info.captions && !info.zoned ? u * 15 : 0),
+      bottom: Math.max(parseFloat(cs.paddingBottom), info.captions && !info.zoned ? captionRoom : 0),
       left: parseFloat(cs.paddingLeft),
     };
     const safe = { ...inset, x: inset.left, y: inset.top, width: width - inset.left - inset.right, height: height - inset.top - inset.bottom };
@@ -850,6 +854,8 @@ export const KIT_JS = String.raw`
      * A layout grid inside the safe area, as a Swiss poster is built on. Returns the
      * column and row sizes, and cell(c, r, cols, rows) for the box spanning those cells.
      * grid.lines(parent) draws the grid itself, for when you want it to show.
+     * x(c) and y(r) are where column c and row r start, so x(cols) is a gutter past the
+     * right edge: use grid.right and grid.bottom for the edges themselves.
      */
     function grid(cols = 12, rows = 8, { area = safe, gutter = u * 2 } = {}) {
       const colW = (area.width - gutter * (cols - 1)) / cols, rowH = (area.height - gutter * (rows - 1)) / rows;
@@ -857,6 +863,7 @@ export const KIT_JS = String.raw`
       const y = (r) => area.y + r * (rowH + gutter);
       return {
         cols, rows, colW, rowH, gutter, x, y,
+        left: area.x, top: area.y, right: area.x + area.width, bottom: area.y + area.height,
         cell(c, r, cw = 1, rh = 1) { return { x: x(c), y: y(r), width: cw * colW + (cw - 1) * gutter, height: rh * rowH + (rh - 1) * gutter }; },
         lines(parent, { colour = info.colours.muted, width: w = 1, opacity = 0.25 } = {}) {
           let d = "";

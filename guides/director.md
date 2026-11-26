@@ -65,6 +65,7 @@ Mix ready-made scenes in where they're the best tool. A real chart is better as 
 Before rendering, check every scene against these. Fix anything that fails.
 
 - Would someone stop scrolling for the first frame?
+- Does the cover sell the film? It's taken three quarters of the way through the first scene. If another scene says it better (the reveal, the big number), set `"cover": { "scene": "<its id>" }`.
 - Is there one clear thing to look at in every moment?
 - Can every word be read on a phone, at a glance?
 - Does every scene look like the style, all the way through, not like a web page?

@@ -37,6 +37,12 @@ function monthYear(date: string, long = false): string {
 }
 
 /** Versions as people say them: "version 2.1", leaving off a trailing ".0". */
+const NUMBERS = ["no", "one", "two", "three"];
+/** "one command", "two commands": the install lines, as spoken. */
+const countCommands = (install: string) => {
+  const n = install.split("\n").filter((line) => line.trim()).length;
+  return `${NUMBERS[n] ?? n} command${n === 1 ? "" : "s"}`;
+};
 const spokenVersion = (version: string) => `version ${version.replace(/\.0$/, "")}`;
 
 /** The releases worth showing: the first, then the latest few. */
@@ -86,7 +92,7 @@ export function draftFilm(facts: RepoFacts, options: DraftOptions = {}): FilmInp
       ...(usage && installLine ? { caption: shorten(installLine, 160) } : {}),
       narration: usage
         ? say("Getting started is quick.", installLine ? "Install it with one command, then a few lines like these are all you need." : "A few lines like these are all you need.")
-        : say("Getting started takes one command."),
+        : say(`Getting started takes ${countCommands(facts.install!)}.`),
     });
   }
 

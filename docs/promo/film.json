@@ -12,6 +12,9 @@
     "mood": "epic"
   },
   "captions": true,
+  "cover": {
+    "scene": "reveal"
+  },
   "scenes": [
     {
       "id": "hook",

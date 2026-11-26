@@ -34,7 +34,8 @@ Options
                         the film file), or where voices saves its samples
                         (default: voice-samples)
   --for <list>          render: make a version for each platform, e.g. tiktok,reels,x
-                        (or "all"). -o is then a folder.
+                        (or "all"). -o is then a folder, or a file name
+                        such as promo-linkedin.mp4 for one platform.
                         draft: the platform the film is for, e.g. tiktok
                         preview: the platform to see the film on, e.g. tiktok
   --show-safe-zones     render: shade the parts each platform's app covers
@@ -258,9 +259,14 @@ async function render(path: string | undefined, flags: RenderFlags): Promise<num
   }
   const name = basename(path!, extname(path!));
   const presets = flags.for ? parsePresets(flags.for) : [];
-  const folder = flags.output ?? dirname(path!);
+  // With --for, -o is a folder for the videos, or the video's own name for one platform.
+  const outputIsFile = !!flags.output && /\.mp4$/i.test(flags.output);
+  if (outputIsFile && presets.length > 1) {
+    throw new UsageError(`-o ${flags.output} names one video, but you're rendering ${presets.length} platforms. Give a folder instead, e.g. -o ${dirname(flags.output!) === "." ? "videos" : join(dirname(flags.output!), "videos")}`);
+  }
+  const folder = presets.length && outputIsFile ? dirname(flags.output!) : (flags.output ?? dirname(path!));
   if (presets.length) await mkdir(folder, { recursive: true });
-  const targets = presets.map((preset) => ({ preset, output: join(folder, `${name}-${preset}.mp4`) }));
+  const targets = presets.map((preset) => ({ preset, output: outputIsFile ? flags.output! : join(folder, `${name}-${preset}.mp4`) }));
   const target = flags.output && !presets.length ? flags.output : join(dirname(path!), `${name}.mp4`);
   const status = statusLine();
   const started = Date.now();
