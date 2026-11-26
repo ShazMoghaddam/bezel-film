@@ -3,11 +3,32 @@
 All notable changes to Bezel Film are listed here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [1.2.0] - 2026-11-26
+
+A tidy-up from making real films with Bezel Film: captions that stay out of the picture, covers you can choose, renders that never hang silently, and better first drafts.
+
+### Added
+
+- A `cover` setting chooses where the cover image comes from: `{ "scene": "reveal" }`, by a scene's id or its number, with `at` for seconds into it.
+- `kit.grid` now gives its edges as `left`, `right`, `top` and `bottom`. `x(cols)` and `y(rows)` sit a gutter past the edge, which was easy to trip over.
+- The checks now warn about words that sit where the captions show.
 
 ### Changed
 
+- A long sentence's caption now shows in parts of up to two lines, each for its share of the words, so captions never grow up into the picture.
+- `kit.safe` now keeps clear of two lines of captions, measured from the captions themselves. In square and 4:5 frames that's a few pixels more room than before.
+- The cover is now taken three quarters of the way through the first scene, once everything has arrived. It used to be taken two seconds in, before most custom scenes had finished building.
+- With `--for` and one platform, `-o` can name the video itself, e.g. `-o promo-linkedin.mp4`. It used to make a folder with that name. With several platforms, `-o` must be a folder, and says so if it isn't.
 - The README now opens with a promo film about Bezel Film, made with Bezel Film from npm: what it is, the styles, every platform's shape, the sound, the agents it works with, how to start and how it keeps everything private. Its film file and scenes are in `docs/promo`, and `npm run demo` renders it. It replaces the welcome film, which `init` still makes for every new folder.
+
+### Fixed
+
+- A frame that stops drawing no longer hangs a render for ever. It's tried once more, then the render stops and names the scene and the moment.
+- `draft`:
+  - It no longer takes a list from far down a README, or from notes and sources, as the project's features.
+  - It drops Markdown line breaks and escapes from the narration.
+  - It counts the commands it shows ("takes two commands").
+  - It only uses example code from a getting-started section.
 
 ## [1.1.0] - 2026-11-26
 
@@ -328,7 +349,8 @@ The first release: describe a film in one JSON file, and Bezel Film renders it t
 
 - CI checks on every push and pull request, including a render smoke test, plus Dependabot.
 
-[Unreleased]: https://github.com/ShazMoghaddam/bezel-film/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/ShazMoghaddam/bezel-film/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/ShazMoghaddam/bezel-film/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/ShazMoghaddam/bezel-film/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.9.0...v1.0.0
 [0.9.0]: https://github.com/ShazMoghaddam/bezel-film/compare/v0.8.0...v0.9.0

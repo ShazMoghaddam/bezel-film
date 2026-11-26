@@ -413,7 +413,8 @@ export const RUNTIME_JS = String.raw`
       c.el.style.scale = pulse && u > 0 && u < 1 ? String(1 + PULSE_SIZE * Math.sin(Math.PI * u) * (1 - u)) : "";
     }
 
-    // Captions: the sentence being spoken, held until the next one starts.
+    // Captions: the sentence being spoken, held until the next one starts. A long one is
+    // shown in parts of at most two lines, each for its share of the sentence's words.
     let text = "";
     let fade = 0;
     if (data.captions) {
@@ -423,8 +424,22 @@ export const RUNTIME_JS = String.raw`
         const next = lines[i + 1];
         const holdUntil = next && next.scene === line.scene ? next.start : line.end + 0.35;
         if (t >= line.start && t < holdUntil) {
-          text = line.text;
-          fade = Math.min(clamp((t - line.start) / 0.12), next && next.scene === line.scene ? 1 : clamp((holdUntil - t) / 0.2));
+          const parts = captionParts[i] || [line.text];
+          let k = 0;
+          let partStart = line.start;
+          if (parts.length > 1) {
+            const words = parts.map((part) => part.split(" ").length);
+            const total = words.reduce((a, b) => a + b, 0);
+            let at = line.start;
+            for (k = 0; k < parts.length - 1; k++) {
+              const ends = at + (line.end - line.start) * (words[k] / total);
+              if (t < ends) break;
+              at = ends;
+            }
+            partStart = at;
+          }
+          text = parts[k];
+          fade = Math.min(clamp((t - partStart) / 0.12), next && next.scene === line.scene ? 1 : clamp((holdUntil - t) / 0.2));
           break;
         }
       }
@@ -483,6 +498,39 @@ export const RUNTIME_JS = String.raw`
     }
   }
 
+  // Long sentences, split into caption parts of at most two lines each, so a caption never
+  // grows up into the picture. Measured once the fonts are in, so every frame agrees.
+  const MAX_CAPTION_LINES = 2;
+  let captionParts = [];
+  function splitCaptions() {
+    if (!data.captions) return;
+    const was = captionText.textContent;
+    const fits = (words) => {
+      captionText.textContent = words.join(" ");
+      return captionText.getClientRects().length <= MAX_CAPTION_LINES;
+    };
+    captionParts = data.lines.map((line) => {
+      const words = line.text.split(/\s+/).filter(Boolean);
+      if (fits(words)) return [line.text];
+      const parts = [];
+      let rest = words;
+      while (rest.length) {
+        let n = 1;
+        while (n < rest.length && fits(rest.slice(0, n + 1))) n++;
+        if (n < rest.length) {
+          // End the part at a comma or the like when there's one in its second half.
+          for (let j = n; j > Math.ceil(n / 2); j--) {
+            if (/[,;:]$/.test(rest[j - 1])) { n = j; break; }
+          }
+        }
+        parts.push(rest.slice(0, n).join(" "));
+        rest = rest.slice(n);
+      }
+      return parts;
+    });
+    captionText.textContent = was;
+  }
+
   async function ready() {
     // Every bundled face, not just the ones the text so far has asked for. Scenes built
     // below measure their words, and a face that only starts loading then would be
@@ -528,6 +576,7 @@ export const RUNTIME_JS = String.raw`
     fitText();
     fitScenes();
     setupMaps();
+    splitCaptions();
     if (data.customs.length) {
       if (!window.__bezelKit) throw new Error("The scene kit didn't load");
       buildCustoms();
@@ -558,6 +607,13 @@ export const RUNTIME_JS = String.raw`
     return { safe: custom.kit.safe, texts };
   }
 
-  window.__bezel = { seek, ready, inspect };
+  // For the checks: where the caption showing now sits, or null when there isn't one.
+  function captionBox() {
+    if (!captionText.textContent || Number(caption.style.opacity) <= 0) return null;
+    const r = captionText.getBoundingClientRect();
+    return { x: r.left, y: r.top, width: r.width, height: r.height };
+  }
+
+  window.__bezel = { seek, ready, inspect, captionBox };
 })();
 `;

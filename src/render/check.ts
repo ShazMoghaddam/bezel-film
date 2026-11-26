@@ -37,6 +37,7 @@ interface BezelPage {
   __bezel: {
     seek(seconds: number, still?: boolean): void;
     inspect(index: number): { safe: Box & { top: number; right: number; bottom: number; left: number }; texts: { text: string; colour: string; background: string | null; rect: Box }[] } | null;
+    captionBox(): Box | null;
   };
 }
 interface Box {
@@ -45,6 +46,10 @@ interface Box {
   width: number;
   height: number;
 }
+
+/** Whether two boxes overlap by more than a sliver. */
+const overlaps = (a: Box, b: Box, sliver: number) =>
+  a.x < b.x + b.width - sliver && b.x < a.x + a.width - sliver && a.y < b.y + b.height - sliver && b.y < a.y + a.height - sliver;
 
 const seek = (page: Page, t: number) => page.evaluate((t) => (globalThis as unknown as BezelPage).__bezel.seek(t, true), t);
 const shot = (page: Page) => page.screenshot({ type: "png", scale: "css" });
@@ -83,6 +88,22 @@ export async function checkCustomScenes(page: Page, film: Film, timeline: Timeli
     const perFrame = (performance.now() - started) / times.length;
     if (perFrame > SLOW_MS) add("warning", `takes about ${Math.round(perFrame)} ms to draw each frame, which makes renders slow. Build things once when the scene starts, and only move them in draw.`);
 
+    // Where the captions go during this scene: each sentence, early and late, as a long
+    // one is shown in parts.
+    const captions: Box[] = [];
+    if (film.captions) {
+      for (const line of timed.lines) {
+        for (const f of [0.15, 0.85]) {
+          const box = await page.evaluate((t) => {
+            const bezel = (globalThis as unknown as BezelPage).__bezel;
+            bezel.seek(t);
+            return bezel.captionBox();
+          }, line.start + (line.end - line.start) * f);
+          if (box) captions.push(box);
+        }
+      }
+    }
+
     // Once it has settled: where its words are, and whether they can be read.
     await seek(page, timed.start + Math.max(0, length - 0.15));
     const view = await page.evaluate((i) => (globalThis as unknown as BezelPage).__bezel.inspect(i), timed.index);
@@ -93,6 +114,8 @@ export async function checkCustomScenes(page: Page, film: Film, timeline: Timeli
       const r = t.rect;
       if (r.x < safe.x - tolerance || r.y < safe.y - tolerance || r.x + r.width > safe.x + safe.width + tolerance || r.y + r.height > safe.y + safe.height + tolerance) {
         add("warning", `"${t.text}" runs outside the safe area (kit.safe), where the platform's buttons or the captions can cover it. Keep words inside kit.safe.`);
+      } else if (captions.some((c) => overlaps(c, r, tolerance))) {
+        add("warning", `"${t.text}" sits where the captions show, so they cover it. Move it up, or keep the scene's words higher in kit.safe.`);
       }
     }
     if (!texts.length) continue;

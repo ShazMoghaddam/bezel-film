@@ -106,6 +106,19 @@ describe("reading a README", () => {
     expect(readReadme(`# X\n\n## Usage\n\n\`\`\`js\n${long}\n\`\`\`\n`).usage).toBeUndefined();
   });
 
+  it("doesn't take a list from far down the README, or from notes and sources", () => {
+    const filler = Array.from({ length: 6 }, (_, i) => `## Part ${i}\n\nSome prose about part ${i}.\n`).join("\n");
+    expect(readReadme(`# X\n\nIntro words here.\n\n${filler}\n## Ranking\n\n- Gran Abuelo\n- Methuselah\n`).features).toEqual([]);
+    expect(readReadme(`# X\n\nIntro words here.\n\n## Notes\n\n- tables are for interest only\n- sources differ slightly\n`).features).toEqual([]);
+  });
+
+  it("only takes example code from a getting-started section", () => {
+    const md = "# X\n\n## Make your first film\n\n```bash\nnpx x init\n```\n\n## Scenes\n\n```json\n{ \"type\": \"map\" }\n```\n";
+    const facts = readReadme(md);
+    expect(facts.install).toBe("npx x init");
+    expect(facts.usage).toBeUndefined();
+  });
+
   it("reads a roadmap of ticked boxes", () => {
     expect(facts.roadmap.map((item) => [item.label, item.done])).toEqual([
       ["CSV support", true],
@@ -136,6 +149,11 @@ describe("reading a changelog", () => {
 });
 
 describe("plain text", () => {
+  it("drops Markdown line breaks and escapes", () => {
+    expect(plain("Drawn with charts.\\\nBy Shaz")).toBe("Drawn with charts. By Shaz");
+    expect(plain("2 \\* 3 \\_x\\_")).toBe("2 * 3 _x_");
+  });
+
   it("strips markdown, HTML and emoji but keeps code", () => {
     expect(plain("**Bold** [link](https://x.y) ![img](a.png) <b>tag</b> `<my-tag>` 🚀 :tada: done")).toBe("Bold link tag <my-tag> done");
   });
@@ -227,6 +245,12 @@ describe("drafting a film", () => {
     expect(say("outro")).toBe("Try Tidy today. It's free and open source. Find it on GitHub.");
   });
 
+  it("counts the commands it shows", () => {
+    const say = (install: string) => draftFilm({ name: "X", install, features: [], releases: [], roadmap: [], sources: [] }).scenes.find((s) => s.type === "code")?.narration;
+    expect(say("npm install x")).toBe("Getting started takes one command.");
+    expect(say("git clone x\npip install -r requirements.txt")).toBe("Getting started takes two commands.");
+  });
+
   it("leaves out scenes it has nothing for", () => {
     const film = draftFilm({ name: "Bare", features: [], releases: [], roadmap: [], sources: [] });
     expect(validateFilm(film).ok).toBe(true);
@@ -269,5 +293,13 @@ describe("bezel-film draft", () => {
     const again = cli(["draft", "."], folder);
     expect(again.status).toBe(2);
     expect(again.stderr).toContain("film.json already exists");
+  }, 30_000);
+  it("render: -o is one video's name for one platform, and must be a folder for several", async () => {
+    const folder = await mkdtemp(join(tmpdir(), "bezel-render-cli-"));
+    await writeFile(join(folder, "README.md"), README);
+    expect(cli(["draft", "."], folder).status).toBe(0);
+    const several = cli(["render", "film.json", "--for", "tiktok,x", "-o", "promo.mp4"], folder);
+    expect(several.status).toBe(2);
+    expect(several.stderr).toContain("names one video, but you're rendering 2 platforms");
   }, 30_000);
 });

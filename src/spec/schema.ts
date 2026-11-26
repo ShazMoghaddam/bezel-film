@@ -410,6 +410,20 @@ export const filmSchema = z
     music: musicSchema.prefault({}),
     sfx: sfxSchema.prefault({}),
     captions: z.boolean().default(true),
+    cover: z
+      .object({
+        scene: z
+          .union([z.string().min(1), z.number().int().min(1)])
+          .describe("The scene to take the cover from: its id, or its number counting from 1."),
+        at: z
+          .number()
+          .min(0)
+          .optional()
+          .describe("Seconds into that scene. Defaults to three quarters of the way through, once it has all arrived."),
+      })
+      .strict()
+      .optional()
+      .describe("Where the cover image comes from. Defaults to three quarters of the way through the first scene."),
     motion: z
       .enum(MOTION_LEVELS)
       .optional()
@@ -433,6 +447,13 @@ export const filmSchema = z
         seen.add(scene.id);
       }
     });
+    const cover = film.cover?.scene;
+    if (typeof cover === "number" && cover > film.scenes.length) {
+      ctx.addIssue({ code: "custom", path: ["cover", "scene"], message: `there are only ${film.scenes.length} scenes` });
+    }
+    if (typeof cover === "string" && !film.scenes.some((scene) => scene.id === cover)) {
+      ctx.addIssue({ code: "custom", path: ["cover", "scene"], message: `no scene has the id "${cover}"` });
+    }
   });
 
 /** A film after validation, with every default filled in. */

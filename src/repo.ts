@@ -88,6 +88,10 @@ export function plain(text: string): string {
     .replace(/(\*\*|__)(.*?)\1/g, "$2")
     .replace(/(^|[\s(])[*_]([^*_\s][^*_]*?)[*_](?=[\s).,:;!?]|$)/g, "$1$2")
     .replace(/:[a-z0-9_+-]+:/g, "")
+    // A backslash at the end of a line is a Markdown line break, and one before a mark
+    // keeps the mark as itself: neither belongs in the words.
+    .replace(/\\(?=\n|$)/g, "")
+    .replace(/\\([\\`*_{}[\]()#+\-.!|])/g, "$1")
     .replace(EMOJI, "")
     .replace(/&nbsp;/g, " ")
     .replace(/&amp;/g, "&")
@@ -149,7 +153,11 @@ const isLink = (item: string) => /^\s*\[[^\]]*\]\([^)]*\)\s*$/.test(item);
 const toc = (items: string[]) => items.filter(isLink).length > items.length / 2;
 
 const FEATURE_HEADINGS = /feature|highlight|what (it|you|can)|why|key|benefit|capabilit|what's (inside|included)/i;
-const START_HEADINGS = /install|getting started|get started|quick ?start|setup|set up|usage|use it|how to|example/i;
+const START_HEADINGS = /install|getting started|get started|quick ?start|setup|set up|usage|use it|how to|example|your first|first steps|try it/i;
+/** Sections whose lists are reference material, never what the project does. */
+const REFERENCE_HEADINGS = /note|source|data|method|caveat|limitation|disclaimer|reference|glossary|footnote|appendix/i;
+/** Without a features heading, only lists this near the top can be what the project does. */
+const EARLY_SECTIONS = 5;
 const SKIP_HEADINGS = /licen[cs]e|contribut|credit|acknowledg|sponsor|changelog|support|security|table of contents|contents|faq|badge|author|thanks/i;
 
 interface ReadmeFacts {
@@ -181,10 +189,14 @@ export function readReadme(markdown: string): ReadmeFacts {
     if (intro) break;
   }
 
-  // Features: a list under a features-like heading, or else the first real list.
+  // Features: a list under a features-like heading, or else the first real list near the
+  // top. A list further down is usually reference material (notes, sources, a ranking),
+  // and no features scene is better than a wrong one.
   const candidates = [
     ...parts.filter((s) => FEATURE_HEADINGS.test(s.heading)),
-    ...parts.filter((s) => !SKIP_HEADINGS.test(s.heading) && !START_HEADINGS.test(s.heading) && !/roadmap/i.test(s.heading)),
+    ...parts
+      .slice(0, EARLY_SECTIONS)
+      .filter((s) => !SKIP_HEADINGS.test(s.heading) && !START_HEADINGS.test(s.heading) && !REFERENCE_HEADINGS.test(s.heading) && !/roadmap/i.test(s.heading)),
   ];
   let features: string[] = [];
   for (const part of candidates) {
@@ -195,8 +207,11 @@ export function readReadme(markdown: string): ReadmeFacts {
     }
   }
 
-  // Getting started: the first install command, and the first code that isn't shell.
-  const start = [...parts.filter((s) => START_HEADINGS.test(s.heading)), ...parts];
+  // Getting started: the first install command, and the first code that isn't shell. The
+  // example code only comes from a getting-started section: code elsewhere is usually
+  // reference (an option, an API, a sample file) and makes a confusing first step.
+  const starting = parts.filter((s) => START_HEADINGS.test(s.heading));
+  const start = [...starting, ...parts];
   let install: string | undefined;
   let usage: CodeSample | undefined;
   for (const part of start) {
@@ -208,7 +223,7 @@ export function readReadme(markdown: string): ReadmeFacts {
       }
       // Only a short example: a long one cut off part way through reads as broken.
       const length = block.code.split("\n").length;
-      if (!usage && !SHELL.has(block.language) && block.code.trim() && length <= 16) usage = block;
+      if (!usage && starting.includes(part) && !SHELL.has(block.language) && block.code.trim() && length <= 16) usage = block;
     }
     if (install && usage) break;
   }

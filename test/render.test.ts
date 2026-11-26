@@ -310,3 +310,23 @@ describe("custom scene files", () => {
     for (const file of ["../intro.js", "scenes/../../x.js", "/home/me/x.js", "C:x.js", "C:\\x.js", "scenes/intro.ts", "scenes/my scene.js"]) expect(check(file), file).toBe(false);
   });
 });
+
+describe("stuck frames", async () => {
+  const { FrameTimeout, describeMoment, withTimeout } = await import("../src/render/index.js");
+
+  it("gives up on a step that never finishes, with the message given", async () => {
+    await expect(withTimeout(new Promise(() => {}), 20, "Frame 9 took too long")).rejects.toThrow(FrameTimeout);
+    await expect(withTimeout(new Promise(() => {}), 20, "Frame 9 took too long")).rejects.toThrow("Frame 9 took too long");
+    await expect(withTimeout(Promise.resolve(4), 20, "")).resolves.toBe(4);
+  });
+
+  it("says which scene a moment falls in", () => {
+    const f = film([
+      { type: "title", id: "intro", title: "Hi", narration: "Hello there, everyone." },
+      { type: "stat", value: 5, label: "things", narration: "There are five things." },
+    ]);
+    const timeline = buildTimeline(f);
+    expect(describeMoment(timeline, 0.5)).toBe("0.50s, in scene 1 (intro)");
+    expect(describeMoment(timeline, timeline.scenes[1]!.start + 0.1)).toMatch(/in scene 2 \(stat\)$/);
+  });
+});
